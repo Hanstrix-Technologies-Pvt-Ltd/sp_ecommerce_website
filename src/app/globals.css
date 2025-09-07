@@ -1,0 +1,208 @@
+  @import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  /* --foreground: #171717; */
+  --text-primary: #1f2937;
+  /* Dark gray for primary text */
+  --text-secondary: #374151;
+  /* Medium gray for secondary text */
+  --text-muted: #6b7280;
+  /* Light gray for muted text */
+  --blue-primary: #2563eb;
+  /* Accessible blue */
+  --blue-secondary: #1d4ed8;
+  /* Darker blue for contrast */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-muted: #9ca3af;
+  }
+}
+
+body {
+  /* background: var(--background); */
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Accessibility improvements */
+*:focus {
+  outline: 2px solid var(--blue-primary);
+  outline-offset: 2px;
+}
+
+/* Custom text colors with better contrast */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--blue-primary);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Custom utility for vertical text */
+.writing-mode-vertical {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom hover effects */
+.transition-colors {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Container utility */
+.container {
+  max-width: 1200px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom gradient backgrounds with better contrast */
+.bg-gradient-blue {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Custom shadow */
+.shadow-blue {
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.15);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Button focus states */
+button:focus,
+a:focus {
+  outline: 2px solid var(--blue-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .text-muted {
+    color: var(--text-secondary);
+  }
+
+  .bg-gradient-blue {
+    background: var(--blue-primary);
+  }
+}
+
+/* Image scroll animation */
+@keyframes image-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% - 2rem));
+  }
+}
+
+.animate-image-scroll {
+  animation: image-scroll 5s linear infinite;
+}
+
+/* Partner images scroll animation - for many images */
+@keyframes partner-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-partner-scroll {
+  animation: partner-scroll 30s linear infinite;
+  width: max-content;
+}
+
+/* Partners scroll animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20000s linear infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+  
+  .animate-image-scroll,
+  .animate-scroll,
+  .animate-partner-scroll {
+    animation: none;
+  }
+}
