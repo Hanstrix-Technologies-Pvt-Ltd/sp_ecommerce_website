@@ -1,15 +1,61 @@
+// app/(site)/(pages)/about/page.tsx
+import type { Metadata } from "next";
 import PageHeader from "@/app/(site)/components/PageHeader";
+import Intro from "./components/Intro";
+import AboutTabs from "./components/AboutTabs";
+import ABOUT_CONTENT from "@/data/AboutContent";
+import { JSX } from "react";
 
-export default function AboutUs() {
+export const metadata: Metadata = {
+  title: "About Us | STELZ Multiparking | Innovative Parking Solutions",
+  description:
+    "Learn about STELZ Multiparking's mission, vision, and commitment to providing innovative, automated parking solutions for modern urban spaces.",
+  keywords: [
+    "about STELZ",
+    "parking company",
+    "STELZ mission",
+    "automated parking solutions",
+    "mechanical parking systems",
+  ],
+  alternates: { canonical: "https://stelzparking.com/about" },
+  openGraph: {
+    title: "About Us | STELZ Multiparking",
+    description:
+      "Learn about STELZ Multiparking's mission, vision, and commitment to providing innovative, automated parking solutions.",
+    url: "https://stelzparking.com/about",
+    type: "website",
+    images: [
+      {
+        url: "https://stelzparking.com/assets/home/Logo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "STELZ Multiparking Logo",
+      },
+    ],
+    siteName: "STELZ Multiparking",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | STELZ Multiparking",
+    description:
+      "Learn about STELZ Multiparking's mission, vision, and commitment to providing innovative, automated parking solutions.",
+    images: ["https://stelzparking.com/assets/home/Logo.jpg"],
+  },
+};
+
+export default function AboutUs(): JSX.Element {
   return (
     <>
       <PageHeader title="About Us" breadcrumbLabel="Who We Are" />
-      <div className="min-h-screen bg-white pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <h1 className="text-4xl font-bold text-gray-900">About Us</h1>
-          <p className="mt-4 text-gray-600">Coming Soon...</p>
-        </div>
-      </div>
+
+      {/* Intro block */}
+      <Intro
+        intro={ABOUT_CONTENT.intro}
+        youtube="https://youtu.be/KQBZgdnIpLU"
+      />
+      <AboutTabs />
+
+      {/* (Next: mount Tabs, Philosophy, Why, Clients...) */}
     </>
   );
 }

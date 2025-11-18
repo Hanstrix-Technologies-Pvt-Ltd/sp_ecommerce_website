@@ -14,13 +14,13 @@ export default function PageHeader({
   title,
   breadcrumbLabel,
   imageSrc = "/assets/pageTemplate/template_top.jpg",
-  heightClass = "h-28 md:h-33",
+  heightClass = "h-27 md:h-31",
 }: PageHeaderProps) {
   /* =========================
      Single built-in softener
      0–100 (higher = lighter)
      ========================= */
-  const SOFTEN = 70; // <— change this number to adjust globally
+  const SOFTEN = 80; // <— change this number to adjust globally
 
   const s = Math.max(0, Math.min(100, SOFTEN));
   const brightness = 1 + (0.15 * s) / 100;   // up to +15%
@@ -30,8 +30,6 @@ export default function PageHeader({
 
   return (
     <header role="banner" className="relative w-full">
-      {/* tiny white separator below fixed navbar */}
-      <div aria-hidden className="h-2 bg-white" />
 
       <div className={`relative w-full ${heightClass}`}>
         <Image
@@ -69,12 +67,12 @@ export default function PageHeader({
                     stelzparking.com
                   </Link>
                 </li>
-                <li aria-hidden className="text-[#174b92] font-medium">›</li>
+                <li aria-hidden className="text-[#174b92] font-medium">&gt;</li>
                 <li className="font-medium">{breadcrumbLabel}</li>
               </ol>
             </nav>
 
-            <h1 className="mt-2 text-[28px] md:text-[44px] font-extrabold leading-tight tracking-tight text-[#174b92]">
+            <h1 className="mt-1 text-[28px] md:text-[40px] font-extrabold leading-tight tracking-tight text-[#174b92]">
               {title}
             </h1>
           </div>

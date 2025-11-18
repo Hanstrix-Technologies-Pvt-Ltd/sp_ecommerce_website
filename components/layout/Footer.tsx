@@ -1,4 +1,3 @@
-// components/layout/Footer.tsx
 import Link from "next/link";
 import { Linkedin, Facebook, Instagram, Youtube, Phone, MessageCircle } from "lucide-react";
 import { content } from "@/data/HomeFooterContent";
@@ -8,20 +7,21 @@ export default function Footer() {
 
   const socials = [
     { key: "linkedin", href: f.contact.socials.linkedin, label: "LinkedIn", Icon: Linkedin },
-    { key: "facebook", href: f.contact.socials.facebook, label: "Facebook", Icon: Facebook },
     { key: "instagram", href: f.contact.socials.instagram, label: "Instagram", Icon: Instagram },
     { key: "youtube", href: f.contact.socials.youtube, label: "YouTube", Icon: Youtube },
+    { key: "facebook", href: f.contact.socials.facebook, label: "Facebook", Icon: Facebook },
   ].filter((s) => !!s.href);
 
   return (
     <footer className="bg-linear-to-b from-[#0C41AA] to-[#0a0a1a] text-white">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-4 md:grid-cols-3 lg:gap-12">
+      {/* ADDED horizontal padding so md doesn't hug the edge */}
+      <div className="mx-auto grid max-w-7xl gap-8 py-4 px-4 sm:px-6 md:px-8 lg:px-10 md:grid-cols-3 lg:gap-15">
         {/* Office */}
         <section aria-labelledby="footer-office">
           <h3 id="footer-office" className="mb-3 text-lg font-bold md:text-2xl">
             {f.office.title}
           </h3>
-          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-lg">
+          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-[16px]">
             {f.office.address}
           </address>
         </section>
@@ -31,16 +31,14 @@ export default function Footer() {
           <h3 id="footer-factory" className="mb-3 text-lg font-bold md:text-2xl">
             {f.factory.title}
           </h3>
-          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-lg">
+          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-[16px]">
             {f.factory.address}
           </address>
         </section>
 
         {/* Contact */}
         <section aria-labelledby="footer-contact">
-          <h3 id="footer-contact" className="mb-1 text-lg font-bold md:text-2xl">
-            Phone Number
-          </h3>
+          <h3 id="footer-contact" className="mb-1 text-lg font-bold md:text-2xl">Phone Number</h3>
           <ul className="mb-2 space-y-1 text-sm md:text-base">
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0" />
@@ -86,7 +84,8 @@ export default function Footer() {
         </section>
       </div>
 
-      <div className="border-t border-white/20 px-6 md:px-4 lg:px-4 py-4 text-center text-sm md:text-base">
+      {/* Keep bottom bar padding consistent at md and up */}
+      <div className="border-t border-white/20 px-4 sm:px-6 md:px-8 lg:px-10 py-4 text-center text-sm md:text-base">
         {f.copyright}
       </div>
     </footer>

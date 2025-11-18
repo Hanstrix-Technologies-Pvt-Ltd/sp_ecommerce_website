@@ -1,9 +1,47 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import PageHeader from "@/app/(site)/components/PageHeader";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Our Clients | STELZ Multiparking | Trusted Partners",
+  description:
+    "Discover the trusted clients and partners who rely on STELZ Multiparking's innovative automated parking systems. Read real testimonials and success stories.",
+  keywords: [
+    "STELZ clients",
+    "parking clients",
+    "client testimonials",
+    "parking partners",
+    "case studies",
+  ],
+  alternates: {
+    canonical: "https://stelzparking.com/clients",
+  },
+  openGraph: {
+    title: "Our Clients | STELZ Multiparking",
+    description:
+      "Discover the trusted clients and partners who rely on STELZ Multiparking's innovative automated parking systems.",
+    url: "https://stelzparking.com/clients",
+    type: "website",
+    images: [
+      {
+        url: "https://stelzparking.com/assets/home/Logo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "STELZ Multiparking Clients",
+      },
+    ],
+    siteName: "STELZ Multiparking",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Our Clients | STELZ Multiparking",
+    description:
+      "Discover the trusted clients and partners who rely on STELZ Multiparking's innovative automated parking systems.",
+    images: ["https://stelzparking.com/assets/home/Logo.jpg"],
+  },
+};
 
 
 /* ---------- LOGO ORDER ---------- */
@@ -31,7 +69,7 @@ const logos = [
   "maavi",
   "nanik",
   "pavani",
-  "Phoenix",
+  "phoenix",
   "sattva",
   "sapra",
   "shriram",
@@ -72,7 +110,7 @@ function BlueArrow() {
 
 /* ---------- CUT-CORNER SQUARE LOGO CARD ---------- */
 function DocLogo({ name }: { name: string }) {
-  const src = `/assets/clients/${name}.png`;
+  const src = `/assets/clients/${name}.webp`;
   const CUT = 45; // px — top-right triangle size
 
   return (
@@ -125,7 +163,7 @@ export default function ClientsPage() {
             Partners Who Trust Stelz
           </h2>
 
-          <p className="mt-3 md:mt-4 w-full text-base md:text-lg leading-7 md:leading-8 text-neutral-600">
+          <p className="mt-3 md:mt-4 w-full text-base md:text-lg leading-7 md:leading-8 text-neutral-600 hover:text-red-500">
             We take pride in collaborating with industry leaders who trust Stelz Parking for innovative and
             reliable car parking solutions. Our partnerships reflect a shared commitment to quality, efficiency,
             and long-term value across every project.
@@ -135,11 +173,7 @@ export default function ClientsPage() {
         {/* logos grid — wider side padding */}
         <div className={`mx-auto w-full max-w-[1600px] ${GUTTERS.partnersGrid}`}>
           <div
-            className="
-              mx-auto mt-8 md:mt-10 grid
-              grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6
-              gap-x-5 md:gap-x-6 gap-y-0
-            "
+            className="mx-auto mt-8 md:mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 md:gap-x-6 gap-y-0"
           >
             {logos.map((name) => (
               <DocLogo key={name} name={name} />

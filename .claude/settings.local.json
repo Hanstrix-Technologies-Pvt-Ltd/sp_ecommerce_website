@@ -12,7 +12,10 @@
       "Bash(find:*)",
       "Bash(head:*)",
       "Bash(git checkout:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(tree /F c:UsersrohitDesktopSTELZstelz-websiteapp 2)",
+      "Bash(nul)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []

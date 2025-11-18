@@ -17,7 +17,7 @@ const BLUE_BG = "bg-[#174b92]";
 const ANIM = {
   overlayDuration: 0.5,
   drawerDuration: 0.5,
-  drawerDelay: 0.4, // entry: overlay -> drawer | exit: drawer -> overlay
+  drawerDelay: 0.4,
   dropdownDuration: 0.32,
   accordionDuration: 0.26,
 } as const;
@@ -154,7 +154,7 @@ export default function Navbar(): JSX.Element {
       {/* space under fixed header */}
       <div className="pt-[88px]" />
 
-      {/* MOBILE/TABLET: overlay + drawer (symmetric timing) */}
+      {/* MOBILE/TABLET: overlay + drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -234,7 +234,7 @@ function DesktopTopItem({
           >
             {/* hover bridge */}
             <div className="absolute -top-3 left-0 h-3 w-full" />
-            <MenuList items={item.children as NavLink[]} />
+            <MenuList items={item.children as NavLink[]} depth={0} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -249,18 +249,19 @@ function TopLink({
   item: NavLink;
   active: boolean;
 }): JSX.Element {
-  // Desktop: smaller font & no gap before '+'
   const base =
-    "inline-flex items-center gap-1 lg:gap-0 text-[16px] font-medium uppercase tracking-[0.04em] text-neutral-900";
+    "inline-flex items-center gap-0 text-[16px] font-medium uppercase tracking-[0.04em] select-none";
+
   return (
     <Link
       href={item.href ?? "#"}
-      className={`${base} ${active ? "opacity-90" : "hover:opacity-80"} select-none`}
+      className={`${base} ${active ? "text-[#174b92]" : "text-neutral-900 hover:text-[#174b92]"}`}
     >
       <span className="inline-flex items-center">
         {item.label}
         {item.expandable && (
-          <span className="ml-0.5 text-[18px] font-medium leading-none text-black">+</span>
+          /* plus inherits current link color (hover + active) */
+          <span className="ml-0.5 text-[18px] font-medium leading-none text-current">+</span>
         )}
       </span>
     </Link>
@@ -269,50 +270,61 @@ function TopLink({
 
 /* ---------------- Shared dropdown list ---------------- */
 
-function MenuList({ items }: { items: NavLink[] }): JSX.Element {
+type MenuListProps = { items: NavLink[]; depth?: number };
+
+function MenuList({ items, depth = 0 }: MenuListProps): JSX.Element {
+  const pathname = usePathname(); // NEW: needed to style active dropdown items
+
   const onParentOnlyClick = (i: NavLink) => (e: ReactMouseEvent<HTMLAnchorElement>): void => {
     if (isProductsParentOnly(i) && hasKids(i)) {
-      // prevent navigation for section headers
       e.preventDefault();
       e.stopPropagation();
-      // no-op; on desktop the flyout shows via hover, on mobile we handle in MobileMenu
     }
   };
 
+  const gapClass = depth === 0 ? "gap-1 lg:gap-0" : "gap-2 lg:gap-1";
+  const widthClass = depth === 0 ? "min-w-56" : "min-w-64";
+
   return (
-    <ul className="min-w-56 rounded-xs border border-neutral-200 bg-white py-4 shadow-xl">
+    <ul className={`${widthClass} rounded-xs border border-neutral-200 bg-white py-2.5 shadow-xl`}>
       {items.map((i: NavLink) => {
         const kids = hasKids(i);
+        const selfActive = isActive(pathname, i.href); // NEW
+
         return (
           <li key={i.label} className="relative group/sub">
             <Link
               href={i.href ?? "#"}
               onClick={onParentOnlyClick(i)}
-              className="
-                block px-4 py-4 text-[14px] font-medium uppercase tracking-wide
-                text-neutral-800 transition-colors duration-300
+              className={`
+                block px-3 py-3 text-[14px] font-medium uppercase tracking-wide
+                transition-colors duration-300
+                ${selfActive ? "bg-[#174b92] text-white" : "text-neutral-800"}
                 lg:hover:bg-[#174b92] lg:hover:text-white
                 focus:bg-[#174b92] focus:text-white active:bg-[#174b92] active:text-white
-              "
+              `}
             >
-              <span className="inline-flex w-full items-center gap-2 lg:gap-1">
+              <span className={`inline-flex w-full items-center ${gapClass}`}>
                 {i.label}
-                {kids && <span className="ml-auto text-[16px] font-medium text-black">+</span>}
+                {kids && (
+                  /* plus inherits the item's text color → white when active/hover/focus */
+                  <span className="ml-auto text-[16px] font-medium text-current">+</span>
+                )}
               </span>
             </Link>
 
             {kids && (
               <div
                 className="
-                  absolute left-[calc(100%+8px)] top-0
-                  invisible translate-x-1 opacity-0
-                  group-hover/sub:visible group-hover/sub:translate-x-0 group-hover/sub:opacity-100
-                  transition-[opacity,transform,visibility] duration-300
+                  absolute left-full -ml-px top-0
+                  invisible opacity-0
+                  group-hover/sub:visible group-hover/sub:opacity-100
+                  transition-[opacity,visibility] duration-300
                   z-60
                 "
               >
-                <div className="absolute -left-3 top-0 h-full w-3" />
-                <MenuList items={i.children as NavLink[]} />
+                <div className="absolute -left-px top-0 h-full w-px" />
+                <MenuList items={i.children as NavLink[]} depth={depth + 1} />
               </div>
             )}
           </li>
@@ -322,90 +334,133 @@ function MenuList({ items }: { items: NavLink[] }): JSX.Element {
   );
 }
 
+
 /* ---------------- Mobile / Tablet ---------------- */
 
 function MobileMenu({ onNavigate }: { onNavigate: () => void }): JSX.Element {
+  const pathname = usePathname();
   const [openKeys, setOpenKeys] = useState<Record<string, boolean>>({});
-  const toggle = (k: string): void =>
-    setOpenKeys((s) => ({ ...s, [k]: !s[k] }));
+  const toggle = (k: string): void => setOpenKeys((s) => ({ ...s, [k]: !s[k] }));
+  const [highlightKeys, setHighlightKeys] = useState<Record<string, boolean>>({});
+  const toggleHighlight = (k: string) =>
+    setHighlightKeys((s) => ({ ...s, [k]: !s[k] }));  
 
-  const ItemRow = ({
-    item,
-    level = 0,
-  }: {
-    item: NavLink;
-    level?: number;
-  }): JSX.Element => {
-    const kids = hasKids(item);
-    const pad = 12 + level * 12;
 
-    const onLinkClick = (e: ReactMouseEvent<HTMLAnchorElement>): void => {
-      if (kids && isProductsParentOnly(item)) {
-        // parent-only items expand/collapse instead of navigating
-        e.preventDefault();
-        e.stopPropagation();
-        toggle(item.label);
-      } else {
-        onNavigate();
-      }
-    };
 
-    const onToggleBtn = (e: ReactMouseEvent<HTMLButtonElement>): void => {
+const ItemRow = ({
+  item,
+  level = 0,
+}: {
+  item: NavLink;
+  level?: number;
+}): JSX.Element => {
+  const kids = hasKids(item);
+  const selfActive = isActive(pathname, item.href);
+  const isChild = level > 0;
+
+  // desktop’s “section header” rule for TOP-LEVEL groups if you still use it
+  const parentOnlyTop = !isChild && kids && isProductsParentOnly(item);
+
+  // This is the submenu header you care about: a CHILD that itself has children
+  const isChildHeader = isChild && kids;
+
+  // expanded (for opening via '+')
+  const isExpanded = !!openKeys[item.label];
+
+  // NEW: visual highlight for tap on child headers (no nav, no expand)
+  const isHighlighted = !!highlightKeys[item.label];
+  const headerActive = isChildHeader && isHighlighted;
+
+  const onLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isChildHeader) {
+      // Do NOTHING except highlight
       e.preventDefault();
       e.stopPropagation();
-      toggle(item.label);
-    };
-
-    return (
-      <div className="w-full">
-        <div className="flex items-center" style={{ paddingLeft: pad, paddingRight: 8 }}>
-          <Link
-            href={item.href ?? "#"}
-            onClick={onLinkClick}
-            className="
-              flex-1 py-2.5 text-[15px] font-medium uppercase tracking-wide text-neutral-900
-              focus:bg-[#174b92] focus:text-white active:bg-[#174b92] active:text-white
-            "
-          >
-            {item.label}
-          </Link>
-
-          {kids && (
-            <button
-              aria-label="Expand section"
-              className="ml-2 inline-flex size-8 items-center justify-center rounded-md hover:bg-neutral-100"
-              onClick={onToggleBtn}
-            >
-              {/* mobile + is 20px */}
-              <motion.span
-                className="text-[20px] font-medium text-black"
-                animate={{ rotate: openKeys[item.label] ? 45 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                +
-              </motion.span>
-            </button>
-          )}
-        </div>
-
-        <AnimatePresence initial={false}>
-          {kids && openKeys[item.label] && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: ANIM.accordionDuration, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden pb-0.5"
-            >
-              {(item.children as NavLink[]).map((c: NavLink) => (
-                <ItemRow key={`${item.label}-${c.label}`} item={c} level={level + 1} />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
+      toggleHighlight(item.label);
+      return;
+    }
+    if (parentOnlyTop) {
+      // If you keep top-level section headers non-navigable on mobile:
+      e.preventDefault();
+      e.stopPropagation();
+      toggle(item.label); // or comment this out if you want '+' only at top-level too
+      return;
+    }
+    // Real page → navigate & close drawer
+    onNavigate();
   };
+
+  const onToggleBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggle(item.label); // '+' exclusively expands/collapses
+  };
+
+  return (
+    <div className="w-full">
+      {/* header row — paddings unchanged */}
+      <div className="flex items-center px-4 ">
+        <Link
+          href={item.href ?? "#"}
+          onClick={onLinkClick}
+          className={[
+            "flex-1 py-2.5 text-[15px] font-medium uppercase tracking-wide transition-colors pl-1.5",
+            // Top-level (main) active rule stays the same
+            !isChild &&
+              (selfActive ? "text-[#174b92]" : "text-neutral-900 hover:text-[#174b92]"),
+            // Child rows: turn blue on route active OR when header is tapped (highlighted)
+            isChild &&
+              (selfActive || headerActive
+                ? "bg-[#174b92] text-white"
+                : "text-neutral-900 hover:text-[#174b92]"),
+            "focus:bg-[#174b92] focus:text-white active:bg-[#174b92] active:text-white",
+          ].join(" ")}
+          aria-current={selfActive ? "page" : undefined}
+        >
+          {item.label}
+        </Link>
+
+        {kids && (
+          <button
+            aria-label="Expand section"
+            className="ml-2 inline-flex items-center justify-center rounded-md hover:bg-neutral-100 pr-1.5"
+            onClick={onToggleBtn}
+          >
+            <motion.span
+              className={`text-[20px] font-medium ${
+                // '+' turns white whenever the header is highlighted (tapped)
+                headerActive ? "text-[#174b92]" : selfActive ? "text-[#174b92]" : "text-black"
+              }`}
+              animate={{ rotate: isExpanded ? 45 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              +
+            </motion.span>
+          </button>
+        )}
+      </div>
+
+      {/* submenu opens only via '+' */}
+      <AnimatePresence initial={false}>
+        {kids && openKeys[item.label] && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: ANIM.accordionDuration, ease: [0.22, 1, 0.36, 1] }}
+            className="-mt-px overflow-hidden"
+          >
+            {(item.children as NavLink[]).map((c: NavLink) => (
+              <ItemRow key={`${item.label}-${c.label}`} item={c} level={level + 1} />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+
 
   return (
     <div className="flex flex-col">
@@ -415,3 +470,4 @@ function MobileMenu({ onNavigate }: { onNavigate: () => void }): JSX.Element {
     </div>
   );
 }
+

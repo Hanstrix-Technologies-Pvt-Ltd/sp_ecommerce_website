@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   ],
 };
 
-type Item = { id: number | string; image: string; title: string };
+type Item = { id: number | string; image: string; title: string; link: string };
 const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -68,7 +68,7 @@ export default function ProductsPage() {
             {/* 1 (mobile) -> 3 (tablet) -> 2 (desktop/laptop) */}
             <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-3 lg:grid-cols-2">
               {items.map((item) => {
-                const href = `/products/${slugify(item.title)}`;
+                const href = `/portfolios/${item.link}`;
                 return (
                   <article
                     key={item.id}
@@ -88,8 +88,8 @@ export default function ProductsPage() {
                             loading="lazy"
                             className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                             sizes="(max-width: 640px) 100vw,
-                                   (max-width: 1024px) 33vw,  /* 3 cols on tablets */
-                                   50vw"                       /* 2 cols on desktops */
+                                   (max-width: 1024px) 33vw,
+                                   50vw"
                           />
                         </div>
                       </div>

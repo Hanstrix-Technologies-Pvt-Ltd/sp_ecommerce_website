@@ -13,7 +13,7 @@ export const NAV: readonly NavLink[] = [
     href: "/about",
     expandable: true,
     children: [
-      { label: "WHO WE ARE", href: "/about/who-we-are" },
+      { label: "WHO WE ARE", href: "/about" },
       { label: "R & D", href: "/about/r-and-d" },
       { label: "BLOG", href: "/about/blog" },
     ],
@@ -28,35 +28,32 @@ export const NAV: readonly NavLink[] = [
     children: [
       {
         label: "STACK PARKING",
-        href: "/products/stack",
         expandable: true,
         children: [
-          { label: "3-LEVEL STACK PARKING", href: "/products/stack/3-level-stack-parking" },
-          { label: "3-LEVEL PIT STACKER", href: "/products/stack/3-level-pit-stacker" },
-          { label: "CANTILEVER PARKING", href: "/products/stack/cantilever-parking" },
-          { label: "CAR HOIST", href: "/products/stack/car-hoist" },
-          { label: "TURN TABLE", href: "/products/stack/turn-table" },
+          { label: "S-01 TWO LEVEL STACKER", href: "/portfolios/stack/stack-parking" },
+          { label: "S-011 THREE LEVEL STACKER", href: "/portfolios/stack/3-level-stack-parking" },
+          { label: "PS-11 TWO LEVEL PIT STACKER", href: "/portfolios/stack/pit-stacker" },
+          { label: "PS-111 THREE LEVEL PIT STACKER", href: "/portfolios/stack/3-level-pit-stacker" },
+          { label: "S-CL-01 CANTILEVER", href: "/portfolios/stack/cantilever-parking" },
         ],
       },
       {
         label: "PUZZLE PARKING",
-        href: "/products/puzzle",
         expandable: true,
         children: [
-          { label: "PIT PUZZLE", href: "/products/puzzle/pit-puzzle" },
-          { label: "PUZZLE PARKING", href: "/products/puzzle/puzzle-parking" },
-          { label: "3-LEVEL PIT PUZZLE", href: "/products/puzzle/3-level-pit-puzzle" },
-          { label: "OP - 01", href: "/products/puzzle/op-01" },
+          { label: "P-01 TWO LEVEL PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
+          { label: "PP-01 TWO LEVEL PIT PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
+          { label: "PP-02 THREE LEVEL PIT PUZZLE", href: "/portfolios/puzzle/3-level-pit-puzzle" },
+          { label: "OP-01 OVER GROUND PUZZLE", href: "/portfolios/puzzle/op-01" },
         ],
       },
       {
         label: "AUTOMATIC",
-        href: "/products/automatic",
         expandable: true,
         children: [
-          { label: "ROTATORY", href: "/products/automatic/rotatory" },
-          { label: "OP - 01", href: "/products/automatic/op-01" },
-          { label: "CANTILEVER PARKING", href: "/products/automatic/cantilever-parking" },
+          { label: "CAR HOIST", href: "/portfolios/automatic/car-hoist" },
+          { label: "ROTARY", href: "/portfolios/automatic/rotary" },
+          { label: "TURN TABLE", href: "/portfolios/automatic/turn-table" },
         ],
       },
     ],
@@ -70,9 +67,9 @@ export const NAV: readonly NavLink[] = [
 export const content = {
   hero: {
     images: [
-      "/assets/home/HeroBg1.jpg",
-      "/assets/home/HeroBg2.jpg",
-      "/assets/home/HeroBg3.jpg",
+      "/assets/home/HeroBg1.webp",
+      "/assets/home/HeroBg2.webp",
+      "/assets/home/HeroBg3.webp",
     ],
     taglines: [
       "Smarter Parking. Smaller Footprint.",

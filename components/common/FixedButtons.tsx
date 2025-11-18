@@ -17,7 +17,6 @@ export default function FixedButtons() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // Lift + deeper shadow on hover
   const cardVariants = {
     rest: { scale: 1, boxShadow: "0 14px 32px rgba(23,75,146,0.35)" },
     hover: {
@@ -27,7 +26,6 @@ export default function FixedButtons() {
     },
   } as const;
 
-  // Icon chip "pops out" a little
   const chipVariants = {
     rest: { x: 0, scale: 1 },
     hover: { x: 6, scale: 1.08, transition: { type: "spring", stiffness: 300, damping: 16 } },
@@ -35,35 +33,38 @@ export default function FixedButtons() {
 
   return (
     <>
-      {/* Download Brochure (fixed right middle) */}
-      <motion.a
-        href={content.hero.brochure}
-        download
+      {/* Wrapper handles entrance; anchor handles hover variants */}
+      <motion.div
         initial={{ opacity: 0, x: 96 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.35, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        // IMPORTANT: single-line className (no newlines)
-        className="fixed right-0 top-2/5 -translate-y-1/2 z-50 inline-flex items-center justify-between rounded-sm bg-[#2458a4] px-3.5 py-2 text-white ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
-        aria-label="Download Brochure"
-        variants={cardVariants}
-        initial="rest"
-        whileHover="hover"
-        animate="rest"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-30"
       >
-        <span className="pr-3 text-[14px] leading-tight text-center">
-          Download
-          <br />
-          Brochure
-        </span>
-
-        <motion.span
-          className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"
-          aria-hidden
-          variants={chipVariants}
+        <motion.a
+          href={content.hero.brochure}
+          download
+          aria-label="Download Brochure"
+          variants={cardVariants}
+          initial="rest"
+          animate="rest"
+          whileHover="hover"
+          className="inline-flex items-center justify-between rounded-sm bg-[#2458a4] px-3.5 py-2 text-white ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
         >
-          <HiDownload className="h-5 w-5 text-white" />
-        </motion.span>
-      </motion.a>
+          <span className="pr-3 text-[14px] leading-tight text-center">
+            Download
+            <br />
+            Brochure
+          </span>
+
+          <motion.span
+            className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"
+            aria-hidden
+            variants={chipVariants}
+          >
+            <HiDownload className="h-5 w-5 text-white" />
+          </motion.span>
+        </motion.a>
+      </motion.div>
 
       {/* Scroll to top (fixed bottom right) */}
       <AnimatePresence>
@@ -76,7 +77,7 @@ export default function FixedButtons() {
             whileHover={{ scale: 1.06 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-4 md:right-6 z-50 flex h-12 w-12 items-center justify-center rounded-xl bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
+            className="fixed bottom-8 right-2 md:right-6 z-30 flex h-11 w-11 items-center justify-center rounded-lg bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
             aria-label="Scroll to top"
           >
             <HiChevronUp className="h-6 w-6" />

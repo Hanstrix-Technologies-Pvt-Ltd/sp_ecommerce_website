@@ -67,7 +67,7 @@ export default function ConceptCarousel() {
                 >
                   <div className="relative group">
                     {/* Rounded, no shadow, slightly smaller height */}
-                    <div className="overflow-hidden rounded-[16px] bg-white">
+                    <div className="overflow-hidden rounded-2xl bg-white">
                       <div className="relative h-[300px] md:h-[380px] lg:h-[420px]">
                         <Image
                           src={m.image}
