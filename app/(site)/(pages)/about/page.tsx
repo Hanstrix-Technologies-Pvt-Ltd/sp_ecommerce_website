@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://stelzparking.com/assets/home/Logo.jpg",
+        url: "https://stelzparking.com/assets/home/Logo.webp",
         width: 1200,
         height: 630,
         alt: "STELZ Multiparking Logo",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "About Us | STELZ Multiparking",
     description:
       "Learn about STELZ Multiparking's mission, vision, and commitment to providing innovative, automated parking solutions.",
-    images: ["https://stelzparking.com/assets/home/Logo.jpg"],
+    images: ["https://stelzparking.com/assets/home/Logo.webp"],
   },
 };
 

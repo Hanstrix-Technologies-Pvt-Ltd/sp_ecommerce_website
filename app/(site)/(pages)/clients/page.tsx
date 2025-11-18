@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://stelzparking.com/assets/home/Logo.jpg",
+        url: "https://stelzparking.com/assets/home/Logo.webp",
         width: 1200,
         height: 630,
         alt: "STELZ Multiparking Clients",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "Our Clients | STELZ Multiparking",
     description:
       "Discover the trusted clients and partners who rely on STELZ Multiparking's innovative automated parking systems.",
-    images: ["https://stelzparking.com/assets/home/Logo.jpg"],
+    images: ["https://stelzparking.com/assets/home/Logo.webp"],
   },
 };
 
@@ -148,7 +148,7 @@ export default function ClientsPage() {
       {/* ===================== PARTNERS ===================== */}
       <section
         className="relative bg-cover bg-center py-6 md:py-10"
-        style={{ backgroundImage: "url(/assets/backgrounds/clients.jpg)" }}
+        style={{ backgroundImage: "url(/assets/backgrounds/clients.webp)" }}
       >
         {/* label + title + paragraph — full width, px-5 sides */}
         <div className="w-full px-5 text-center">

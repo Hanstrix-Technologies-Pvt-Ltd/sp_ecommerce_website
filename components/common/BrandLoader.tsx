@@ -30,7 +30,7 @@ export default function BrandLoader({ size = 96, className }: BrandLoaderProps) 
         {/* logo */}
         <div className="absolute inset-0 grid place-items-center">
           <Image
-            src="/assets/home/LogoTransparent.png"
+            src="/assets/home/LogoTransparent.webp"
             alt="STELZ"
             width={Math.round(size * 0.55)}
             height={Math.round(size * 0.22)}

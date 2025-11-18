@@ -58,7 +58,7 @@ export default function ProductBody({ p }: { p: ProductRecord }) {
 
           {/* quote art bottom-right */}
           <Image
-            src="/assets/products/blockquote.png"
+            src="/assets/products/blockquote.webp"
             alt=""
             width={220} height={250}
             className="pointer-events-none select-none absolute bottom-0 right-5"

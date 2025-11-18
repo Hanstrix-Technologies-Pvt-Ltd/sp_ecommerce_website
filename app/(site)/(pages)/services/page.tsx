@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://stelzparking.com/assets/backgrounds/services.jpg",
+        url: "https://stelzparking.com/assets/backgrounds/services.webp",
         width: 1200,
         height: 630,
         alt: "STELZ Parking Services",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "Services | STELZ Multiparking",
     description:
       "Explore STELZ Multiparking's comprehensive parking services including installation, maintenance, and support.",
-    images: ["https://stelzparking.com/assets/backgrounds/services.jpg"],
+    images: ["https://stelzparking.com/assets/backgrounds/services.webp"],
   },
 };
 
@@ -56,7 +56,7 @@ export default function ServicesPage() {
               <div
                 className="relative w-full rounded-none md:rounded-md bg-no-repeat"
                 style={{
-                  backgroundImage: "url(/assets/backgrounds/services.jpg)",
+                  backgroundImage: "url(/assets/backgrounds/services.webp)",
                   backgroundSize: "100% 100%",
                   backgroundPosition: "center",
                   maxWidth: "1440px",

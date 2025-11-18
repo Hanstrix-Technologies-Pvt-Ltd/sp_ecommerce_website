@@ -6,7 +6,7 @@ export default function ContactSidebar() {
     <aside aria-labelledby="contact-title" className="relative lg:flex lg:flex-col lg:h-full">
       <div className="relative flex flex-col rounded-md bg-white shadow-sm ring-1 ring-slate-200 lg:h-full">
         {/* Blue top bar */}
-        <div className="h-[4px] w-full bg-[#174b92] rounded-t-md" />
+        <div className="h-1 w-full bg-[#174b92] rounded-t-md" />
 
         {/* MOBILE padding only added (kept sm/md exactly the same) */}
         <div className="flex-1 p-4 sm:p-7 md:p-8">{/* add pb-16 sm:pb-0 if a floating CTA overlaps */}

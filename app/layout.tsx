@@ -120,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               name: "STELZ MULTIPARKING PVT LTD",
               alternateName: "STELZ Multiparking",
               url: content.meta.siteUrl,
-              logo: `${content.meta.siteUrl}/assets/Logo.jpg`,
+              logo: `${content.meta.siteUrl}/assets/Logo.webp`,
               description: content.meta.description,
               address: [
                 {

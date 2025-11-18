@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://stelzparking.com/assets/home/Logo.jpg",
+        url: "https://stelzparking.com/assets/home/Logo.webp",
         width: 1200,
         height: 630,
         alt: "STELZ Research & Development",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: "Research & Development | STELZ Multiparking",
     description:
       "Explore STELZ Multiparking's research and development initiatives driving innovation in automated, mechanical parking systems.",
-    images: ["https://stelzparking.com/assets/home/Logo.jpg"],
+    images: ["https://stelzparking.com/assets/home/Logo.webp"],
   },
 };
 

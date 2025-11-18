@@ -13,7 +13,7 @@ interface PageHeaderProps {
 export default function PageHeader({
   title,
   breadcrumbLabel,
-  imageSrc = "/assets/pageTemplate/template_top.jpg",
+  imageSrc = "/assets/pageTemplate/template_top.webp",
   heightClass = "h-27 md:h-31",
 }: PageHeaderProps) {
   /* =========================

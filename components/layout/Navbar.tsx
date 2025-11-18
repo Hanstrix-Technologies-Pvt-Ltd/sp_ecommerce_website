@@ -105,7 +105,7 @@ export default function Navbar(): JSX.Element {
           {/* LEFT: Logo */}
           <div className="flex min-w-[200px] items-center gap-3">
             <Image
-              src="/assets/home/Logo.jpg"
+              src="/assets/home/Logo.webp"
               alt="STELZ"
               width={800}
               height={200}
@@ -177,7 +177,7 @@ export default function Navbar(): JSX.Element {
             >
               <div className="flex items-center justify-between border-b px-4 py-3">
                 <Image
-                  src="/assets/home/Logo.jpg"
+                  src="/assets/home/Logo.webp"
                   alt="STELZ"
                   width={800}
                   height={200}
