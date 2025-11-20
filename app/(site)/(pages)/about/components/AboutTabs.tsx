@@ -29,10 +29,10 @@ function renderParagraph(p: RichParagraph, key: React.Key) {
 
 function SectionBlock({ section }: { section: AboutSection }) {
   return (
-    <>
-      {/* conditional heading */}
+    <div className="space-y-3">
+      {/* conditional heading: only render if provided */}
       {section.heading ? (
-        <h3 className="text-[17px] font-semibold text-[#616161]">
+        <h3 className="text-[22px] font-semibold text-[#2b2b2b]">
           {section.heading}
         </h3>
       ) : null}
@@ -40,13 +40,13 @@ function SectionBlock({ section }: { section: AboutSection }) {
       {section.paragraphs?.map((para, idx) => renderParagraph(para, idx))}
 
       {section.items?.length ? (
-        // CHANGED: Added list-disc, pl-5 for bullets, and reduced space-y to 1 for compactness
-        <ul className="list-disc pl-10 space-y-1">
+        <ul className="list-disc pl-6 space-y-2">
           {section.items.map((it, ix) => (
             <li key={ix} className="text-[17px] leading-7 text-[#616161]">
               {it.label ? (
                 <strong className="font-semibold text-[#616161]">
-                  {it.label}:{" "}
+                  {it.label}
+                  {": "}
                 </strong>
               ) : null}
               <span>{it.text}</span>
@@ -54,13 +54,13 @@ function SectionBlock({ section }: { section: AboutSection }) {
           ))}
         </ul>
       ) : null}
-    </>
+    </div>
   );
 }
 
 function TabPanel({ content }: { content: TabContent }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-6">
       {content.sections.map((s, i) => (
         <SectionBlock key={i} section={s} />
       ))}
@@ -80,77 +80,144 @@ const LABELS: Record<TabKey, string> = {
 };
 
 export default function AboutTabs(): React.JSX.Element {
-  const [active, setActive] = React.useState<TabKey>("about");
+  // desktop: controlled tabs; mobile/tablet: accordions
+  const [active, setActive] = React.useState<TabKey | null>(null); // no default open
   const tabs: Record<TabKey, TabContent> = ABOUT_CONTENT.tabs;
 
+  // for desktop view only
+  const setDesktopActive = (key: TabKey) => setActive(key);
+
   return (
-    /* bg-white to prevent any inherited dark/black background,
-       px-10 on md+ (px-4 on mobile), and NO top margin */
-    <section className="bg-white px-4 md:px-20 pb-15">
-      {/* Tab list */}
-      <div
-        role="tablist"
-        aria-label="About sections"
-        className="relative w-full overflow-hidden bg-[#F5F5F5]"
-      >
-        <div className="grid grid-cols-3">
-          {TAB_KEYS.map((key, idx) => {
-            const isActive = active === key;
-            return (
-              <button
-                key={key}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`panel-${key}`}
-                id={`tab-${key}`}
-                onClick={() => setActive(key)}
-                className={[
-                  "relative flex items-center justify-center py-3 text-center text-[17px] transition-colors font-medium",
-                  isActive ? "font-semibold text-[#006DDB]" : "text-[#616161]",
-                  // a bit of horizontal breathing room so the short divider looks detached
-                  "px-2",
-                ].join(" ")}
-              >
-                {/* active blue top bar */}
-                {isActive ? (
-                  <span
-                    className="absolute inset-x-0 top-0 h-1 bg-[#006DDB]"
-                    aria-hidden
-                  />
-                ) : null}
+    /* full-bleed white bg to remove black gutters */
+    <section className="relative py-0">
+      <span aria-hidden className="absolute inset-0 bg-white" />
+      <div className="relative mx-auto max-w-[1450px] px-4 md:px-10 pb-15">
+        {/* ---------- Desktop tabs ---------- */}
+        <div className="hidden md:block">
+          <div
+            role="tablist"
+            aria-label="About sections"
+            className="relative w-full overflow-hidden bg-[#F5F5F5]"
+          >
+            <div className="grid grid-cols-3">
+              {TAB_KEYS.map((key, idx) => {
+                const isActive = active === key || (active === null && key === "about"); // highlight About until user clicks
+                return (
+                  <button
+                    key={key}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`panel-${key}`}
+                    id={`tab-${key}`}
+                    onClick={() => setDesktopActive(key)}
+                    className={[
+                      "relative flex items-center justify-center py-4 text-center text-[18px] transition-colors",
+                      isActive ? "font-semibold text-[#006DDB]" : "text-[#616161]",
+                      "px-3",
+                    ].join(" ")}
+                  >
+                    {/* blue top bar on active */}
+                    {isActive ? (
+                      <span
+                        className="absolute inset-x-0 top-0 h-1 bg-[#006DDB]"
+                        aria-hidden
+                      />
+                    ) : null}
 
-                {LABELS[key]}
+                    {LABELS[key]}
 
-                {/* short vertical separator (not on the last tab) */}
-                {idx !== TAB_KEYS.length - 1 ? (
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-7 w-px bg-black/15"
-                  />
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Panels */}
-      <div className="mt-8">
-        {TAB_KEYS.map((key) => {
-          const isActive = active === key;
-          return (
-            <div
-              key={key}
-              role="tabpanel"
-              id={`panel-${key}`}
-              aria-labelledby={`tab-${key}`}
-              hidden={!isActive}
-              className="space-y-6"
-            >
-              {isActive ? <TabPanel content={tabs[key]} /> : null}
+                    {/* short vertical separator (not on last) with top/bottom gaps */}
+                    {idx !== TAB_KEYS.length - 1 ? (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-7 w-px bg-black/15"
+                        style={{ marginTop: "-2px", marginBottom: "-2px" }}
+                      />
+                    ) : null}
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+
+          {/* Panels — show current only; default to About content when none selected yet */}
+          <div className="mt-8">
+            {TAB_KEYS.map((key) => {
+              const show =
+                (active === null && key === "about") || active === key;
+              return (
+                <div
+                  key={key}
+                  role="tabpanel"
+                  id={`panel-${key}`}
+                  aria-labelledby={`tab-${key}`}
+                  hidden={!show}
+                >
+                  {show ? <TabPanel content={tabs[key]} /> : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ---------- Mobile/Tablet accordions ---------- */}
+        <div className="md:hidden">
+          <ul className="divide-y divide-black/10 bg-[#F5F5F5]">
+            {TAB_KEYS.map((key) => {
+              const open = active === key;
+              return (
+                <li key={key}>
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    onClick={() => setActive(open ? null : key)}
+                    className="w-full flex items-center gap-3 px-4 py-4 text-[18px] text-left"
+                  >
+                    {/* chevron LEFT of label */}
+                    <span
+                      className={[
+                        "inline-block transition-transform",
+                        open ? "rotate-90" : "rotate-0",
+                      ].join(" ")}
+                      aria-hidden
+                    >
+                      {/* lucide chevron via inline SVG to avoid extra deps */}
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={open ? "#006DDB" : "#616161"}
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </span>
+                    <span
+                      className={open ? "font-semibold text-[#006DDB]" : "text-[#616161]"}
+                    >
+                      {LABELS[key]}
+                    </span>
+                  </button>
+
+                  {/* content with smooth height transition; no auto scroll */}
+                  <div
+                    className={[
+                      "grid transition-[grid-template-rows] duration-300 ease-out",
+                      open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                    ].join(" ")}
+                  >
+                    <div className="overflow-hidden px-4 pb-5">
+                      <TabPanel content={tabs[key]} />
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </section>
   );

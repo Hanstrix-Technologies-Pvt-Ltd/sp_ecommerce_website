@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import PageHeader from "@/app/(site)/components/PageHeader";
 import Intro from "./components/Intro";
 import AboutTabs from "./components/AboutTabs";
+import Philosophy from "./components/Philosophy";
+import WhyStelz from "./components/WhyStelz";
+import PartnersCarousel from "./components/PartnersCarousel";
 import ABOUT_CONTENT from "@/data/AboutContent";
 import { JSX } from "react";
 
@@ -54,7 +57,9 @@ export default function AboutUs(): JSX.Element {
         youtube="https://youtu.be/KQBZgdnIpLU"
       />
       <AboutTabs />
-
+      <Philosophy />
+      <WhyStelz />
+      <PartnersCarousel />
       {/* (Next: mount Tabs, Philosophy, Why, Clients...) */}
     </>
   );

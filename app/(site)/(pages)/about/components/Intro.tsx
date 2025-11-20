@@ -52,7 +52,7 @@ export default function Intro({ intro, youtube }: Props): React.JSX.Element {
     : null;
 
   return (
-    <section className="bg-white">
+    <section className="bg-white pt-20">
       <div className="mx-auto max-w-[1450px] px-4 md:px-10 py-10 md:py-12">
         {/* 2-col on lg+, stacked on sm/md */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
