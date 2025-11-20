@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Poppins", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html {
+  scroll-behavior:inherit
+}
+
+
+
+/* ------------------------------------------------------------CUSTOM DESIGNS------------------------------------------------ */
+
+/* Improved focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid #0C41AA;
+  outline-offset: 2px;
+}
+
+button{
+  cursor: pointer;
+}
+
+/* Left-to-right sweeping overlay for the mobile drawer */
+@keyframes overlay-sweep {
+  from { width: 0; }
+  to   { width: 100vw; }
+}
+.mobile-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100vh;
+  animation: overlay-sweep 250ms ease forwards;
+  /* tint color is set in JSX via Tailwind (bg-black/30) */
+}
+
+/* Scrolling animation for highlights banner */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
