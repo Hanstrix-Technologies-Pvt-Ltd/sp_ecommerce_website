@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { HiDownload, HiChevronUp } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { content } from "@/data/HomeFooterContent";
+import { Space_Grotesk } from "next/font/google";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export default function FixedButtons() {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -28,17 +34,21 @@ export default function FixedButtons() {
 
   const chipVariants = {
     rest: { x: 0, scale: 1 },
-    hover: { x: 6, scale: 1.08, transition: { type: "spring", stiffness: 300, damping: 16 } },
+    hover: {
+      x: 6,
+      scale: 1.08,
+      transition: { type: "spring", stiffness: 300, damping: 16 },
+    },
   } as const;
 
   return (
     <>
-      {/* Wrapper handles entrance; anchor handles hover variants */}
+      {/* Download brochure fixed button */}
       <motion.div
         initial={{ opacity: 0, x: 96 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.35, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-30"
+        className="fixed right-0 top-1/2 z-30 -translate-y-1/2"
       >
         <motion.a
           href={content.hero.brochure}
@@ -50,7 +60,9 @@ export default function FixedButtons() {
           whileHover="hover"
           className="inline-flex items-center justify-between rounded-sm bg-[#2458a4] px-3.5 py-2 text-white ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
         >
-          <span className="pr-3 text-[14px] leading-tight text-center">
+          <span
+            className={`${spaceGrotesk.className} pr-3 text-[13px] leading-tight text-center`}
+          >
             Download
             <br />
             Brochure
@@ -77,7 +89,7 @@ export default function FixedButtons() {
             whileHover={{ scale: 1.06 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-2 md:right-6 z-30 flex h-11 w-11 items-center justify-center rounded-lg bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85]"
+            className="fixed bottom-8 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-lg bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85] md:right-6"
             aria-label="Scroll to top"
           >
             <HiChevronUp className="h-6 w-6" />

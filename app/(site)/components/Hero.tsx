@@ -1,36 +1,65 @@
 "use client";
 
 import { content } from "@/data/HomeFooterContent";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { useState, useEffect, type JSX } from "react";
 import Image from "next/image";
+import { Raleway } from "next/font/google";
 
-export default function Hero() {
+const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+// right → left “typing” reveal (no cursor)
+const typingVariants: Variants = {
+  hidden: {
+    clipPath: "inset(0 0 0 100%)", // hide from the right
+  },
+  visible: {
+    clipPath: "inset(0 0 0 0%)",
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 0.61, 0.36, 1],
+    },
+  },
+};
+
+export default function Hero(): JSX.Element {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
 
-  // Auto-rotate backgrounds and taglines - FASTER (3 seconds instead of 5)
+  // Auto-rotate backgrounds + taglines
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % content.hero.images.length);
-    }, 3000); // Faster rotation
-
+    const interval = setInterval(
+      () => setCurrentIndex((prev) => (prev + 1) % content.hero.images.length),
+      3000
+    );
     return () => clearInterval(interval);
   }, []);
 
+  // Duplicate highlights for seamless loop
+  const duplicatedHighlights = [
+    ...content.hero.highlights,
+    ...content.hero.highlights,
+  ];
+
+  /**
+   * Navbar is fixed, and layout already has <div className="pt-[88px]" /> under it.
+   * This hero fills the remaining viewport: 100vh - 88px.
+   */
   return (
-    <section className="relative h-[calc(100vh-200px)] md:h-[70vh] min-h-[400px] w-full overflow-hidden">
-      {/* Background Images with Crossfade - Optimized */}
-      <AnimatePresence mode="wait">
+    <section className="relative h-[calc(100vh-88px)] w-full overflow-hidden bg-black">
+      {/* ================== BACKGROUND IMAGES (cover full hero) ================== */}
+      <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          transition={{ duration: 0.6 }}
+          className="absolute inset-0"
         >
-          {/* Optimized Image using next/image */}
           <Image
             src={content.hero.images[currentIndex]}
             alt={`STELZ Parking - ${content.hero.taglines[currentIndex]}`}
@@ -41,57 +70,64 @@ export default function Hero() {
             className="object-cover"
             onLoad={() => setIsLoading(false)}
           />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-linear-to-b from-black/30 to-black/30" />
+          {/* Dark overlay for contrast */}
+          <div className="absolute inset-0 bg-black/40" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full items-center justify-center px-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`tagline-${currentIndex}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }} // Faster tagline transition
-            className="text-center"
-          >
-            <h1 className="text-2xl font-mono tracking-wide text-white transition-colors md:text-3xl lg:text-4xl"
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#0C41AA")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+      {/* ================== FOREGROUND LAYOUT ================== */}
+      <div className="relative z-10 flex h-full flex-col">
+        {/* -------- Image / tagline region (text centered in this area) -------- */}
+        <div className="relative flex flex-1 items-center justify-center px-4">
+          {/* Centered tagline */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`tagline-${currentIndex}`}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={typingVariants}
+              className="inline-block overflow-hidden text-center"
             >
-              {content.hero.taglines[currentIndex]}
-            </h1>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+              <h1
+                className={`${raleway.className} text-[38px] font-semibold tracking-wide text-white`}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#0C41AA";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "white";
+                }}
+              >
+                {content.hero.taglines[currentIndex]}
+              </h1>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-      {/* Carousel Indicators */}
-      <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-        {content.hero.images.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`h-2.5 w-2.5 rounded-full transition-all ${
-              currentIndex === idx ? "w-8" : "bg-white/50 hover:bg-white/80"
-            }`}
-            style={{
-              backgroundColor: currentIndex === idx ? "#0C41AA" : "rgba(255, 255, 255, 0.5)",
-            }}
-            onMouseEnter={(e) => {
-              if (currentIndex !== idx) {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(255, 255, 255, 0.8)"
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (currentIndex !== idx) {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(255, 255, 255, 0.5)"
-              }
-            }}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
+        {/* -------- Highlights banner at the very bottom -------- */}
+        <div className="pointer-events-auto w-full border-y border-gray-200 bg-white/98 py-3">
+          <div
+            className="flex gap-8 whitespace-nowrap"
+            style={{ animation: "scroll 15s linear infinite" }}
+          >
+            {duplicatedHighlights.map((highlight, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 text-[16px] uppercase tracking-wide"
+                style={{ color: "#0C41AA" }}
+              >
+                <span
+                  className="inline-block h-1.5 w-1.5 rounded-full border-2"
+                  style={{
+                    borderColor: "#9E9E9E",
+                    backgroundColor: "transparent",
+                  }}
+                />
+                {highlight}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
