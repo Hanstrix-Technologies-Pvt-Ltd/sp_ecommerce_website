@@ -1,9 +1,27 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { content } from "@/data/HomeFooterContent";
 
 const baseUrl = content.meta.siteUrl;
 const defaultOgImage = content.meta.ogImage;
+const companyName = "STELZ MULTIPARKING PVT LTD";
 
+/**
+ * Enhanced viewport configuration for better mobile performance and accessibility
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  colorScheme: "light",
+  viewportFit: "cover",
+};
+
+/**
+ * Generate comprehensive page metadata with SEO best practices
+ * Supports canonical URLs, OG tags, Twitter cards, and more
+ */
 export function generatePageMetadata(
   title: string,
   description: string,
@@ -12,33 +30,47 @@ export function generatePageMetadata(
     ogImage?: string;
     canonicalUrl?: string;
     noIndex?: boolean;
-    type?: "website" | "article";
+    noFollow?: boolean;
+    type?: "website" | "article" | "blog";
     publishedTime?: Date;
     modifiedTime?: Date;
     authors?: string[];
+    alternateLinks?: Array<{ hrefLang: string; href: string }>;
   }
 ): Metadata {
   const ogImage = options?.ogImage || defaultOgImage;
   const canonicalUrl = options?.canonicalUrl || `${baseUrl}`;
-  const ogType = (options?.type || "website") as "website" | "article";
+  const ogType = (options?.type === "blog" ? "article" : options?.type || "website") as "website" | "article";
 
   return {
-    title,
+    title: {
+      template: "%s | STELZ Multiparking",
+      default: title,
+      absolute: title,
+    },
     description,
     keywords: options?.keywords || [],
     alternates: {
       canonical: canonicalUrl,
+      languages: options?.alternateLinks?.reduce(
+        (acc, alt) => ({
+          ...acc,
+          [alt.hrefLang]: alt.href,
+        }),
+        {}
+      ),
     },
     robots: {
       index: !options?.noIndex,
-      follow: true,
+      follow: !options?.noFollow,
       googleBot: {
         index: !options?.noIndex,
-        follow: true,
+        follow: !options?.noFollow,
         "max-image-preview": "large",
         "max-snippet": -1,
         "max-video-preview": -1,
       },
+      nocache: false,
     },
     openGraph: {
       type: ogType,
@@ -53,6 +85,14 @@ export function generatePageMetadata(
           width: 1200,
           height: 630,
           alt: title,
+          type: "image/webp",
+        },
+        {
+          url: ogImage.replace(".webp", ".jpg"),
+          width: 1200,
+          height: 630,
+          alt: title,
+          type: "image/jpeg",
         },
       ],
       publishedTime: options?.publishedTime?.toISOString(),
@@ -63,10 +103,20 @@ export function generatePageMetadata(
       title,
       description,
       images: [ogImage],
+      creator: "@stelzparking",
+      site: "@stelzparking",
     },
     authors: options?.authors?.map((author) => ({ name: author })) || [
-      { name: "STELZ MULTIPARKING PVT LTD" },
+      { name: companyName },
     ],
+    creator: companyName,
+    publisher: companyName,
+    applicationName: "STELZ Multiparking",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "STELZ Multiparking",
+    },
   };
 }
 
@@ -213,7 +263,7 @@ export function generateLocalBusinessSchema() {
     "@type": "LocalBusiness",
     "@id": baseUrl,
     name: "STELZ MULTIPARKING PVT LTD",
-    image: `${baseUrl}/assets/Logo.jpg`,
+    image: `${baseUrl}/assets/Logo.webp`,
     url: baseUrl,
     telephone: content.footer.contact.phone,
     address: {
@@ -235,5 +285,187 @@ export function generateLocalBusinessSchema() {
       content.footer.contact.socials.instagram,
       content.footer.contact.socials.youtube,
     ].filter(Boolean),
+  };
+}
+
+/**
+ * Generate WebSite schema with search action support
+ */
+export function generateWebsiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": baseUrl,
+    name: "STELZ Multiparking",
+    url: baseUrl,
+    description:
+      "Innovative automated parking solutions for modern urban spaces",
+    image: `${baseUrl}/assets/Logo.webp`,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${baseUrl}/search?q={search_term_string}`,
+      },
+      query_input: "required name=search_term_string",
+    },
+  };
+}
+
+/**
+ * Generate comprehensive Organization schema with multiple properties
+ */
+export function generateEnhancedOrganizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": ["Organization", "LocalBusiness"],
+    "@id": baseUrl,
+    name: "STELZ MULTIPARKING PVT LTD",
+    alternateName: "STELZ Multiparking",
+    url: baseUrl,
+    logo: {
+      "@type": "ImageObject",
+      url: `${baseUrl}/assets/Logo.webp`,
+      width: 250,
+      height: 250,
+    },
+    image: `${baseUrl}/assets/Logo.webp`,
+    description:
+      "Leading provider of innovative automated parking solutions in India",
+    slogan: "Engineering Tomorrow's Parking",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: content.footer.office.address,
+      addressLocality: "Bengaluru",
+      addressRegion: "Karnataka",
+      postalCode: "560098",
+      addressCountry: "IN",
+    },
+    telephone: content.footer.contact.phone,
+    email: content.footer.contact.email,
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: content.footer.contact.phone,
+      contactType: "Customer Service",
+      areaServed: "IN",
+      availableLanguage: ["en", "hi"],
+    },
+    sameAs: [
+      content.footer.contact.socials.linkedin,
+      content.footer.contact.socials.facebook,
+      content.footer.contact.socials.instagram,
+      content.footer.contact.socials.youtube,
+    ].filter(Boolean),
+    foundingDate: "2020",
+    founderName: "STELZ Team",
+    areaServed: {
+      "@type": "Country",
+      name: "India",
+    },
+    knowsAbout: [
+      "Automated Parking Systems",
+      "Puzzle Parking",
+      "Stack Parking",
+      "Mechanical Parking",
+      "Smart City Solutions",
+      "Urban Mobility",
+    ],
+  };
+}
+
+/**
+ * Generate rich video schema for embedded videos
+ */
+export function generateVideoSchema(video: {
+  url: string;
+  thumbnailUrl: string;
+  title: string;
+  description: string;
+  uploadDate: Date;
+  duration?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    url: video.url,
+    thumbnailUrl: video.thumbnailUrl,
+    name: video.title,
+    description: video.description,
+    uploadDate: video.uploadDate.toISOString(),
+    duration: video.duration || "PT5M",
+  };
+}
+
+/**
+ * Generate FAQ schema in bulk
+ */
+export function generateEnhancedFAQSchema(
+  faqs: Array<{
+    question: string;
+    answer: string;
+    keywords?: string[];
+  }>
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      keywords: faq.keywords,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+}
+
+/**
+ * Generate Product/Service collection schema
+ */
+export function generateCollectionSchema(collection: {
+  name: string;
+  description: string;
+  url: string;
+  items: Array<{
+    name: string;
+    url: string;
+    image?: string;
+  }>;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Collection",
+    name: collection.name,
+    description: collection.description,
+    url: `${baseUrl}${collection.url}`,
+    mainEntity: collection.items.map((item) => ({
+      "@type": "Thing",
+      name: item.name,
+      url: `${baseUrl}${item.url}`,
+      image: item.image ? `${baseUrl}${item.image}` : undefined,
+    })),
+  };
+}
+
+/**
+ * Generate breadcrumb schema with JSON structure
+ */
+export function generateEnhancedBreadcrumbSchema(
+  items: Array<{
+    name: string;
+    url: string;
+  }>
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: `${baseUrl}${item.url}`,
+    })),
   };
 }

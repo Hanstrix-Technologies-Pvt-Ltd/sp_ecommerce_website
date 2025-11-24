@@ -52,15 +52,15 @@ export default function ParkingModelsCarousel(): JSX.Element {
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* Title */}
         <div className="mb-8 md:mb-12 text-center">
-          <h2 className="mb-3 text-2xl md:text-3xl lg:text-4xl font-medium">
-            <span style={{ color: "#0C41AA" }}>Parking</span>{" "}
-            <span className="text-gray-900">Models</span>
+          <h2 className="mb-3 text-[30px] ">
+            <span className="text-[#0C41AA]">Parking</span>{" "}
+            <span className="text-[#1F1F1F] font-medium">Models</span>
           </h2>
           <div className="mt-3 flex items-center justify-center gap-1.5">
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
-            <div className="h-1 rounded-full" style={{ width: "200px", backgroundColor: "#1E88E5" }} />
+            <div className="h-1 rounded-full" style={{ width: "200px", backgroundColor: "#2575FC" }} />
           </div>
         </div>
 

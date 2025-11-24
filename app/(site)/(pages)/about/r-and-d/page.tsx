@@ -1,5 +1,8 @@
+// app/(site)/(pages)/about/r-and-d/page.tsx
 import type { Metadata } from "next";
 import PageHeader from "@/app/(site)/components/PageHeader";
+import Hero from "./components/Hero";
+import Tabs from "./components/Tabs";
 
 export const metadata: Metadata = {
   title: "Research & Development | STELZ Multiparking | Innovation Lab",
@@ -43,13 +46,11 @@ export const metadata: Metadata = {
 export default function RAndDPage() {
   return (
     <>
-      <PageHeader title="Research & Development" breadcrumbLabel="R & D" />
-      <div className="min-h-screen bg-white pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <h1 className="text-4xl font-bold text-gray-900">R & D</h1>
-          <p className="mt-4 text-gray-600">Coming Soon...</p>
-        </div>
-      </div>
+      <PageHeader title="R & D" breadcrumbLabel="R & D" />
+      <main className="bg-white">
+        <Hero />
+        <Tabs />
+      </main>
     </>
   );
 }

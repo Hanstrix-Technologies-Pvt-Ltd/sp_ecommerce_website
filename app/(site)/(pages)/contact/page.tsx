@@ -1,5 +1,9 @@
+// app/(site)/(pages)/contact/page.tsx
 import type { Metadata } from "next";
 import PageHeader from "@/app/(site)/components/PageHeader";
+import ContactDetails from "./components/ContactDetails";
+import ContactForm from "./components/ContactForm";
+import ContactGlobal from "./components/ContactGlobal";
 
 export const metadata: Metadata = {
   title: "Contact Us | STELZ Multiparking | Get in Touch",
@@ -43,13 +47,12 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <PageHeader title="Contact Us" breadcrumbLabel="Contact Us" />
-      <div className="min-h-screen bg-white pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <h1 className="text-4xl font-bold text-gray-900">Contact Us</h1>
-          <p className="mt-4 text-gray-600">Coming Soon...</p>
-        </div>
-      </div>
+      <PageHeader title="Contact Us" breadcrumbLabel="Contact" />
+      <main className="bg-white text-[#616161]">
+        <ContactDetails/>
+        <ContactForm />
+        <ContactGlobal/>
+      </main>
     </>
   );
 }
