@@ -1,9 +1,6 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @theme inline {
   --color-background: var(--background);
@@ -11,23 +8,9 @@
   --font-sans: "Poppins", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-}
-
 html {
   scroll-behavior:inherit
 }
-
-
 
 /* ------------------------------------------------------------CUSTOM DESIGNS------------------------------------------------ */
 
@@ -68,4 +51,116 @@ button{
 
 .animate-scroll {
   animation: scroll 40s linear infinite;
+}
+
+
+/* ========= Leaflet pin pulse ========= */
+
+@keyframes map-pin-pulse {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  70% { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+/* root wrapper inserted by DivIcon */
+.map-pin-root {
+  position: relative;
+  transform: translate(-50%, -50%);
+}
+
+/* core layout */
+.map-pin-inner {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* animated outer ring that expands + fades */
+.map-pin-pulse {
+  position: absolute;
+  inset: 5px; /* controls pulse start radius */
+  border-radius: 9999px;
+  border: 2px solid rgba(0, 109, 219, 0.7);
+  animation: map-pin-pulse 2.4s ease-out infinite;
+}
+
+/* solid center disc + static halo */
+.map-pin-core {
+  position: relative;
+  display: flex;
+  width: 15px;
+  height: 15px;
+  border-radius: 9999px;
+  background-color: #006ddb; /* Stelz blue */
+  align-items: center;
+  justify-content: center;
+}
+
+/* lighter inner dot */
+.map-pin-core-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #cfe4ff;
+}
+
+/* ========= Tooltip bubble ========= */
+
+.map-pin-tooltip {
+  position: absolute;
+  bottom: 135%;
+  left: 50%;
+  width: 280px;
+  transform: translateX(-50%) translateY(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 5;
+}
+
+.map-pin-tooltip-inner {
+  position: relative;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  padding: 18px 22px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.map-pin-tooltip-inner h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.map-pin-tooltip-inner p {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* arrow under tooltip */
+.map-pin-tooltip-inner::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background-color: #1f1f1f;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* visible state – controlled from React via isActive */
+.map-pin-root.is-active .map-pin-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Ensure map sits under your fixed buttons */
+.leaflet-container {
+  z-index: 0 !important;
 }

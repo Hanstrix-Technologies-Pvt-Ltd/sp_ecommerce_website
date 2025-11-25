@@ -58,15 +58,15 @@ export default function FootprintCarousel() {
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* Title block */}
         <div className="mb-6 text-center">
-          <h2 className="text-[35px] font-medium tracking-tight text-gray-900">
-            <span style={{ color: "#0C41AA" }}>STELZ</span>{" "}
-            <span className="text-gray-900">Footprint</span>
+          <h2 className="text-[30px] tracking-tight">
+            <span className="text-[#0C41AA]">STELZ</span>{" "}
+            <span className="text-[#1F1F1F] font-medium">Footprint</span>
           </h2>
           <div className="mt-3 flex items-center justify-center gap-1.5">
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
-            <div className="h-1 rounded-full" style={{ width: "220px", backgroundColor: "#1E88E5" }} />
+            <div className="h-1 rounded-full" style={{ width: "220px", backgroundColor: "#2575FC" }} />
           </div>
         </div>
 
@@ -85,15 +85,11 @@ export default function FootprintCarousel() {
                   /* 1 / 2 / 3 / 4 / 5 across at base/sm/md/xl/2xl */
                   className="basis-full sm:basis-1/2 md:basis-1/4 xl:basis-1/5 pl-2 md:pl-0"
                 >
-                  {/* Reserve bottom space so floating info card never overlaps content.
-                      % padding scales with width on small screens; fixed space on md+. */}
                   <div className="relative group pb-[22%] sm:pb-[18%] md:pb-20">
-                    {/* Image: height scales with width on small screens via aspect-ratio.
-                       From md up, it snaps to a fixed height (h-60) like your spec. */}
                     <div className="overflow-hidden rounded-[20px] shadow-sm">
                       <div
                         className="relative w-full md:h-60"
-                        style={{ aspectRatio: "4 / 3" }} // applies under md; md:h-60 overrides
+                        style={{ aspectRatio: "4 / 3" }}
                       >
                         <Image
                           src={project.image}
@@ -123,16 +119,16 @@ export default function FootprintCarousel() {
                         group-hover:-translate-y-2
                       "
                     >
-                      <h3 className="text-base md:text-[15px] xl:text-[17px] font-semibold text-gray-900 line-clamp-2">
+                      <h3 className="text-[14px] font-semibold text-[#1F1F1F] line-clamp-2">
                         {project.name}
                       </h3>
                       <div className="mt-2 text-[13px] leading-6">
                         {project.spaces ? (
-                          <p className="text-gray-600">
+                          <p className="text-[#616161]">
                             <span className="font-medium">Car Spaces</span> – {project.spaces}
                           </p>
                         ) : null}
-                        <p className="text-gray-500">
+                        <p className="text-[#616161]">
                           <span className="font-medium">Location</span> – {project.location}
                         </p>
                       </div>

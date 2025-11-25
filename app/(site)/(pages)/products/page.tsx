@@ -6,22 +6,32 @@ import PageHeader from "@/app/(site)/components/PageHeader";
 import { content } from "@/data/ProductsContent";
 
 export const metadata: Metadata = {
-  title: "Products | STELZ Parking Systems",
+  title: "Products | STELZ Parking Systems | Automated Parking Solutions",
   description:
     "Explore STELZ parking products including stackers, pit stackers, puzzle parking, turn tables, car hoists and more. Browse features, photos and case studies.",
-  alternates: { canonical: "/products" },
+  alternates: { canonical: "https://stelzparking.com/products" },
   openGraph: {
     title: "Products | STELZ Parking Systems",
     description:
       "Explore STELZ parking products including stackers, pit stackers, puzzle parking, turn tables, car hoists and more.",
-    url: "/products",
+    url: "https://stelzparking.com/products",
     type: "website",
+    images: [
+      {
+        url: "https://stelzparking.com/assets/backgrounds/products.webp",
+        width: 1200,
+        height: 630,
+        alt: "STELZ Parking Products",
+      },
+    ],
+    siteName: "STELZ Multiparking",
   },
   twitter: {
     card: "summary_large_image",
     title: "Products | STELZ Parking Systems",
     description:
       "Explore STELZ parking products including stackers, pit stackers, puzzle parking, turn tables, car hoists and more.",
+    images: ["https://stelzparking.com/assets/backgrounds/products.webp"],
   },
   keywords: [
     "parking systems",

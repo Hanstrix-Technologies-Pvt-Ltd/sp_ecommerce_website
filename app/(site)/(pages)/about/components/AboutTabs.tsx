@@ -209,7 +209,7 @@ export default function AboutTabs(): React.JSX.Element {
                       open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
                     ].join(" ")}
                   >
-                    <div className="overflow-hidden px-4 pb-5">
+                    <div className="overflow-hidden px-4">
                       <TabPanel content={tabs[key]} />
                     </div>
                   </div>
