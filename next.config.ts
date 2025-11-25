@@ -4,12 +4,6 @@ const nextConfig: NextConfig = {
   // Use Babel React Compiler for automatic memoization and performance optimizations
   reactCompiler: true,
 
-  /**
-   * PERFORMANCE: Image Optimization
-   * - AVIF & WebP formats for modern browsers
-   * - Automatic fallback to JPEG for unsupported browsers
-   * - Built-in optimization via Next.js Image component
-   */
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [],
@@ -20,12 +14,6 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  /**
-   * SECURITY & PERFORMANCE: Headers
-   * - Cache-Control: 1 year for immutable assets
-   * - Security headers: prevent XSS, clickjacking, MIME sniffing
-   * - CSP & Referrer-Policy for privacy
-   */
   headers: async () => {
     return [
       {
@@ -50,11 +38,6 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value: "geolocation=(), microphone=(), camera=()",
-          },
-          // Enable gzip compression
-          {
-            key: "Content-Encoding",
-            value: "gzip",
           },
         ],
       },
