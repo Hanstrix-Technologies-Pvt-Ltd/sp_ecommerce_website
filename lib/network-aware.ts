@@ -221,7 +221,8 @@ export function onNetworkChange(callback: (network: NetworkInfo) => void): () =>
 
 /**
  * Create a minimal inline script to detect network before hydration
- * This prevents layout shift caused by network-dependent rendering
+ * Only stores data in sessionStorage, does NOT modify DOM during hydration
+ * This prevents hydration mismatches
  */
 export function getNetworkDetectionScript(): string {
   return `
@@ -236,13 +237,6 @@ export function getNetworkDetectionScript(): string {
         sessionStorage.setItem('network-type', type);
         sessionStorage.setItem('is-slow-network', isSlowNetwork ? 'true' : 'false');
         sessionStorage.setItem('save-data', hasSaveData ? 'true' : 'false');
-
-        // Add class to html for CSS-based optimizations
-        if (isSlowNetwork || hasSaveData) {
-          document.documentElement.classList.add('slow-network');
-        } else {
-          document.documentElement.classList.add('fast-network');
-        }
       }
     })();
   `;
