@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/google-font-preconnect */
 // app/layout.tsx
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
@@ -7,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import FixedButtons from "@/components/common/FixedButtons";
 import CustomCursor from "@/components/common/CustomCursor";
 import ScrollRestore from "@/components/common/ScrollRestore";
+import { NetworkClassProvider } from "@/components/common/NetworkClassProvider";
 import { Poppins } from "next/font/google";
 import { content } from "@/data/HomeFooterContent";
 import { viewport as seoViewport } from "@/lib/seo";
@@ -265,6 +267,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className="bg-white text-neutral-900 font-sans">
+        <NetworkClassProvider />
         <CustomCursor />
         <Navbar />
         {children}

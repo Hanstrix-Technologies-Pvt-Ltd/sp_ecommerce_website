@@ -110,7 +110,7 @@ export default function Navbar(): JSX.Element {
               width={800}
               height={200}
               priority
-              className="h-20 w-auto"
+              className="h-18 w-auto"
             />
           </div>
 
@@ -118,7 +118,7 @@ export default function Navbar(): JSX.Element {
           <div className="flex-1" />
 
           {/* Desktop menu */}
-          <ul className="hidden items-center gap-6 lg:flex">
+          <ul className="hidden items-center gap-5 lg:flex">
             {NAV.map((item: NavLink) => (
               <DesktopTopItem
                 key={item.label}
@@ -152,7 +152,7 @@ export default function Navbar(): JSX.Element {
       </motion.header>
 
       {/* space under fixed header */}
-      <div className="pt-[88px]" />
+      <div className="pt-[84px]" />
 
       {/* MOBILE/TABLET: overlay + drawer */}
       <AnimatePresence>
