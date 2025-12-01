@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { content } from "@/data/HomeFooterContent";
+import { content } from "@/data/locale/en/HomeFooterContent";
 
 const baseUrl = content.meta.siteUrl;
 const defaultOgImage = content.meta.ogImage;

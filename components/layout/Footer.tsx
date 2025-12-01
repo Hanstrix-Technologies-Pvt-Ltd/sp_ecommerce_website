@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { Linkedin, Facebook, Instagram, Youtube, Phone, MessageCircle } from "lucide-react";
-import { content } from "@/data/HomeFooterContent";
 
-export default function Footer() {
+type FooterContent = typeof import("@/data/locale/en/HomeFooterContent").content;
+
+type FooterProps = {
+  content: FooterContent;
+};
+
+export default function Footer({ content }: FooterProps) {
   const f = content.footer;
 
   const socials = [
@@ -38,7 +43,9 @@ export default function Footer() {
 
         {/* Contact */}
         <section aria-labelledby="footer-contact">
-          <h3 id="footer-contact" className="mb-1 text-lg font-bold md:text-2xl">Phone Number</h3>
+          <h3 id="footer-contact" className="mb-1 text-lg font-bold md:text-2xl">
+            {f.contact.phoneLabel || "Phone Number"}
+          </h3>
           <ul className="mb-2 space-y-1 text-sm md:text-base">
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0" />
@@ -54,7 +61,9 @@ export default function Footer() {
             </li>
           </ul>
 
-          <h3 className="mb-1 text-lg font-bold md:text-2xl">Email Address</h3>
+          <h3 className="mb-1 text-lg font-bold md:text-2xl">
+            {f.contact.emailLabel || "Email Address"}
+          </h3>
           <a
             className="mb-2 block text-sm hover:underline transition-colors md:text-base text-gray-400"
             href={`mailto:${f.contact.email}`}
@@ -64,7 +73,9 @@ export default function Footer() {
 
           {/* Socials */}
           <div>
-            <h4 className="mb-1 text-base font-bold md:text-2xl">Follow Us</h4>
+            <h4 className="mb-1 text-base font-bold md:text-2xl">
+              {f.contact.followUs || "Follow Us"}
+            </h4>
             <div className="flex items-center gap-3">
               {socials.map((s) => (
                 <Link

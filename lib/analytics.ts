@@ -10,9 +10,8 @@
  * });
  */
 
-type EventData = {
-  [key: string]: string | number | boolean | undefined | object | any[];
-};
+type EventValue = string | number | boolean | undefined | object | unknown[];
+type EventData = Record<string, EventValue>;
 
 /**
  * Track custom events in Google Analytics 4

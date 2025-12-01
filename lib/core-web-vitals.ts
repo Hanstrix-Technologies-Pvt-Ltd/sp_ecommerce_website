@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Core Web Vitals Monitoring & Optimization
  * Tracks LCP, FID/INP, CLS, TTFB, FCP for performance analysis
@@ -306,11 +307,8 @@ export function prefersReducedMotion(): boolean {
  * Helper: Format metrics for console logging
  */
 export function formatMetricsForLogging(metrics: Record<string, VitalResult>): string {
-  return Object.entries(metrics)
-    .map(
-      ([key, vital]) =>
-        `${vital.metric}: ${vital.value}ms (${vital.status.toUpperCase()})`
-    )
+  return Object.values(metrics)
+    .map((vital) => `${vital.metric}: ${vital.value}ms (${vital.status.toUpperCase()})`)
     .join("\n");
 }
 

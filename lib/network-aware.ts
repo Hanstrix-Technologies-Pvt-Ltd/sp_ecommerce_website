@@ -3,16 +3,23 @@
  * Adapts loading strategy based on device network conditions (2G/3G/4G/5G)
  */
 
-/**
- * Detect effective network type and connection speed
- * Returns device connection info for adaptive loading
- */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+type MinimalConnection = {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+  addEventListener?: (type: string, listener: () => void) => void;
+  removeEventListener?: (type: string, listener: () => void) => void;
+};
+
 export interface NetworkInfo {
   effectiveType: "slow-2g" | "2g" | "3g" | "4g" | "5g" | "unknown";
-  downlink: number; // Mbps
-  rtt: number; // Round-trip time in ms
+  downlink: number;
+  rtt: number;
   saveData: boolean;
-}
+};
 
 /**
  * Get network information from NavigatorConnection API
@@ -28,10 +35,12 @@ export function getNetworkInfo(): NetworkInfo {
     };
   }
 
-  const connection =
-    (navigator as any).connection ||
-    (navigator as any).mozConnection ||
-    (navigator as any).webkitConnection;
+  const nav = navigator as Navigator & {
+    connection?: MinimalConnection;
+    mozConnection?: MinimalConnection;
+    webkitConnection?: MinimalConnection;
+  };
+  const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
 
   if (!connection) {
     return {
