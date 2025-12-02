@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useState } from "react";
 import {
@@ -13,8 +14,6 @@ interface NetworkAwareWrapperProps {
   slowNetworkFallback?: React.ReactNode;
   onNetworkChange?: (isSlowNetwork: boolean) => void;
   className?: string;
-  reduceMotion?: boolean;
-  reduceAnimations?: boolean;
 }
 
 /**
@@ -27,8 +26,6 @@ export function NetworkAwareWrapper({
   slowNetworkFallback,
   onNetworkChange: onNetworkChangeCallback,
   className = "",
-  reduceMotion = true,
-  reduceAnimations = true,
 }: NetworkAwareWrapperProps) {
   const [mounted, setMounted] = useState(false);
   const [isSlowConn, setIsSlowConn] = useState(false);

@@ -5,8 +5,11 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { JSX, useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Menu, X } from "lucide-react";
-import { NAV, type NavLink } from "@/data/NavContent";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import type { NavLink } from "@/data/locale/en/NavContent";
+import type { Locale } from "@/lib/i18n/config";
+import { translatePath } from "@/lib/i18n/slugMap";
 
 const BLUE_HEX = "#174b92";
 const BLUE_BG = "bg-[#174b92]";
@@ -23,11 +26,7 @@ const ANIM = {
 } as const;
 
 /** items that are section headers (no page) and must not navigate on click */
-const PRODUCTS_PARENT_ONLY = new Set<string>([
-  "/products/stack",
-  "/products/puzzle",
-  "/products/automatic",
-]);
+const PRODUCTS_PARENT_ONLY = new Set<string>(["/products/stack", "/products/puzzle", "/products/automatic"]);
 
 function isActive(pathname: string, href?: string): boolean {
   if (!href) return false;
@@ -76,7 +75,12 @@ const drawerVariants: Variants = {
   },
 };
 
-export default function Navbar(): JSX.Element {
+type NavbarProps = {
+  locale: Locale;
+  nav: readonly NavLink[];
+};
+
+export default function Navbar({ locale, nav }: NavbarProps): JSX.Element {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [elevated, setElevated] = useState<boolean>(false);
@@ -114,40 +118,40 @@ export default function Navbar(): JSX.Element {
             />
           </div>
 
-          {/* push links right */}
-          <div className="flex-1" />
+          {/* CENTER: Desktop menu */}
+          <div className="hidden flex-1 items-center justify-center lg:flex">
+            <ul className="flex items-center gap-5">
+              {nav.map((item: NavLink) => (
+                <DesktopTopItem
+                  key={item.label}
+                  item={item}
+                  active={isActive(pathname, item.href ? translatePath(item.href, locale) : undefined)}
+                  locale={locale}
+                />
+              ))}
+            </ul>
+          </div>
 
-          {/* Desktop menu */}
-          <ul className="hidden items-center gap-5 lg:flex">
-            {NAV.map((item: NavLink) => (
-              <DesktopTopItem
-                key={item.label}
-                item={item}
-                active={isActive(pathname, item.href)}
-              />
-            ))}
-          </ul>
-
-          {/* Mobile hamburger */}
-          <button
-            aria-label="Open menu"
-            className="lg:hidden inline-flex size-12 items-center justify-center rounded-lg hover:bg-neutral-100"
-            onClick={(): void => setMobileOpen(true)}
-          >
-            <Menu color={BLUE_HEX} size={36} />
-          </button>
+          {/* RIGHT: Switcher + mobile toggle */}
+          <div className="flex items-center justify-end gap-3">
+            <LanguageSwitcher key={locale} />
+            <button
+              aria-label="Open menu"
+              className="inline-flex size-12 items-center justify-center rounded-lg hover:bg-neutral-100 lg:hidden"
+              onClick={(): void => setMobileOpen(true)}
+            >
+              <Menu color={BLUE_HEX} size={36} />
+            </button>
+          </div>
         </nav>
 
         {/* Bottom rail */}
         <div className={`${BLUE_BG} h-1.5`} />
 
         {/* Subtle fade edge under navbar (fades in when elevated) */}
-        <motion.div
+        <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 -bottom-3 h-3 bg-linear-to-b from-black/10 to-transparent"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: elevated ? 1 : 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         />
       </motion.header>
 
@@ -193,8 +197,12 @@ export default function Navbar(): JSX.Element {
                 </button>
               </div>
 
+              <div className="px-4 py-3">
+                <LanguageSwitcher key={`mobile-${locale}`} />
+              </div>
+
               <nav className="px-2 py-3">
-                <MobileMenu onNavigate={(): void => setMobileOpen(false)} />
+                <MobileMenu onNavigate={(): void => setMobileOpen(false)} nav={nav} locale={locale} />
               </nav>
             </motion.aside>
           </>
@@ -209,11 +217,14 @@ export default function Navbar(): JSX.Element {
 function DesktopTopItem({
   item,
   active,
+  locale,
 }: {
   item: NavLink;
   active: boolean;
+  locale: Locale;
 }): JSX.Element {
   const [open, setOpen] = useState<boolean>(false);
+  const href = item.href ? translatePath(item.href, locale) : "#";
 
   return (
     <li
@@ -221,7 +232,7 @@ function DesktopTopItem({
       onMouseEnter={(): void => setOpen(true)}
       onMouseLeave={(): void => setOpen(false)}
     >
-      <TopLink item={item} active={active} />
+      <TopLink item={item} active={active} href={href} />
       <AnimatePresence>
         {hasKids(item) && open && (
           <motion.div
@@ -234,7 +245,7 @@ function DesktopTopItem({
           >
             {/* hover bridge */}
             <div className="absolute -top-3 left-0 h-3 w-full" />
-            <MenuList items={item.children as NavLink[]} depth={0} />
+            <MenuList items={item.children as NavLink[]} depth={0} locale={locale} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -245,16 +256,18 @@ function DesktopTopItem({
 function TopLink({
   item,
   active,
+  href,
 }: {
   item: NavLink;
   active: boolean;
+  href: string;
 }): JSX.Element {
   const base =
     "inline-flex items-center gap-0 text-[16px] font-medium uppercase tracking-[0.04em] select-none";
 
   return (
     <Link
-      href={item.href ?? "#"}
+      href={href}
       className={`${base} ${active ? "text-[#174b92]" : "text-neutral-900 hover:text-[#174b92]"}`}
     >
       <span className="inline-flex items-center">
@@ -270,9 +283,9 @@ function TopLink({
 
 /* ---------------- Shared dropdown list ---------------- */
 
-type MenuListProps = { items: NavLink[]; depth?: number };
+type MenuListProps = { items: NavLink[]; depth?: number; locale: Locale };
 
-function MenuList({ items, depth = 0 }: MenuListProps): JSX.Element {
+function MenuList({ items, depth = 0, locale }: MenuListProps): JSX.Element {
   const pathname = usePathname(); // NEW: needed to style active dropdown items
 
   const onParentOnlyClick = (i: NavLink) => (e: ReactMouseEvent<HTMLAnchorElement>): void => {
@@ -289,12 +302,13 @@ function MenuList({ items, depth = 0 }: MenuListProps): JSX.Element {
     <ul className={`${widthClass} rounded-xs border border-neutral-200 bg-white py-2.5 shadow-xl`}>
       {items.map((i: NavLink) => {
         const kids = hasKids(i);
-        const selfActive = isActive(pathname, i.href); // NEW
+        const href = i.href ? translatePath(i.href, locale) : "#";
+        const selfActive = isActive(pathname, href);
 
         return (
           <li key={i.label} className="relative group/sub">
             <Link
-              href={i.href ?? "#"}
+              href={href}
               onClick={onParentOnlyClick(i)}
               className={`
                 block px-3 py-3 text-[14px] font-medium uppercase tracking-wide
@@ -324,7 +338,7 @@ function MenuList({ items, depth = 0 }: MenuListProps): JSX.Element {
                 "
               >
                 <div className="absolute -left-px top-0 h-full w-px" />
-                <MenuList items={i.children as NavLink[]} depth={depth + 1} />
+                <MenuList items={i.children as NavLink[]} depth={depth + 1} locale={locale} />
               </div>
             )}
           </li>
@@ -337,7 +351,15 @@ function MenuList({ items, depth = 0 }: MenuListProps): JSX.Element {
 
 /* ---------------- Mobile / Tablet ---------------- */
 
-function MobileMenu({ onNavigate }: { onNavigate: () => void }): JSX.Element {
+function MobileMenu({
+  onNavigate,
+  nav,
+  locale,
+}: {
+  onNavigate: () => void;
+  nav: readonly NavLink[];
+  locale: Locale;
+}): JSX.Element {
   const pathname = usePathname();
   const [openKeys, setOpenKeys] = useState<Record<string, boolean>>({});
   const toggle = (k: string): void => setOpenKeys((s) => ({ ...s, [k]: !s[k] }));
@@ -355,7 +377,8 @@ const ItemRow = ({
   level?: number;
 }): JSX.Element => {
   const kids = hasKids(item);
-  const selfActive = isActive(pathname, item.href);
+  const href = item.href ? translatePath(item.href, locale) : "#";
+  const selfActive = isActive(pathname, href);
   const isChild = level > 0;
 
   // desktop’s “section header” rule for TOP-LEVEL groups if you still use it
@@ -401,7 +424,7 @@ const ItemRow = ({
       {/* header row — paddings unchanged */}
       <div className="flex items-center px-4 ">
         <Link
-          href={item.href ?? "#"}
+          href={href}
           onClick={onLinkClick}
           className={[
             "flex-1 py-2.5 text-[15px] font-medium uppercase tracking-wide transition-colors pl-1.5",
@@ -464,7 +487,7 @@ const ItemRow = ({
 
   return (
     <div className="flex flex-col">
-      {NAV.map((item: NavLink) => (
+      {nav.map((item: NavLink) => (
         <ItemRow key={item.label} item={item} />
       ))}
     </div>

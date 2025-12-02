@@ -1,14 +1,10 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @next/next/no-img-element */
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import {
-  isSlowNetwork,
-  getAdaptiveImageDimensions,
-  hasSaveDataEnabled,
-  shouldReduceMotion,
-  buildAdaptiveSrcSet,
-} from "@/lib/network-aware";
+import { isSlowNetwork, hasSaveDataEnabled } from "@/lib/network-aware";
 
 interface OptimizedImageProps {
   src: string;
@@ -22,7 +18,6 @@ interface OptimizedImageProps {
   responsive?: boolean;
   // Network-aware overrides
   slowNetworkSrc?: string; // Fallback for slow networks
-  format?: "webp" | "avif" | "auto";
   quality?: number;
   // Layout shift prevention
   aspectRatio?: string;
@@ -46,7 +41,6 @@ export default function OptimizedImage({
   sizes,
   responsive = true,
   slowNetworkSrc,
-  format = "auto",
   quality = 85,
   aspectRatio = `${width}/${height}`,
   containerClassName = "",

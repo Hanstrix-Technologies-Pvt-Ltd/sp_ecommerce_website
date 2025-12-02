@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { HiDownload, HiChevronUp } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
-import { content } from "@/data/HomeFooterContent";
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { stripLocaleFromPath } from "@/lib/i18n/slugMap";
+import { content as enContent } from "@/data/locale/en/HomeFooterContent";
+import { content as deContent } from "@/data/locale/de/HomeFooterContent";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({
@@ -13,6 +17,9 @@ const spaceGrotesk = Space_Grotesk({
 
 export default function FixedButtons() {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const pathname = usePathname() || "/";
+  const { locale } = useMemo(() => stripLocaleFromPath(pathname), [pathname]);
+  const localizedContent = locale === "de" ? deContent : enContent;
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -51,9 +58,9 @@ export default function FixedButtons() {
         className="fixed right-0 top-1/2 z-30 -translate-y-1/2"
       >
         <motion.a
-          href={content.hero.brochure}
+          href={localizedContent.hero.brochure}
           download
-          aria-label="Download Brochure"
+          aria-label={locale === "de" ? "Broschüre herunterladen" : "Download Brochure"}
           variants={cardVariants}
           initial="rest"
           animate="rest"
@@ -63,9 +70,9 @@ export default function FixedButtons() {
           <span
             className={`${spaceGrotesk.className} pr-3 text-[13px] leading-tight text-center`}
           >
-            Download
+            {locale === "de" ? "Broschüre" : "Download"}
             <br />
-            Brochure
+            {locale === "de" ? "herunterladen" : "Brochure"}
           </span>
 
           <motion.span

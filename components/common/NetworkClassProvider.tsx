@@ -22,19 +22,32 @@ export function NetworkClassProvider(): null {
     }
 
     // Listen for network changes
-    const connection =
-      (navigator as any).connection ||
-      (navigator as any).mozConnection ||
-      (navigator as any).webkitConnection;
+    type MinimalConnection = {
+      effectiveType?: string;
+      downlink?: number;
+      rtt?: number;
+      saveData?: boolean;
+      addEventListener?: (type: string, listener: () => void) => void;
+      removeEventListener?: (type: string, listener: () => void) => void;
+    };
+
+    const nav = navigator as Navigator & {
+      connection?: MinimalConnection;
+      mozConnection?: MinimalConnection;
+      webkitConnection?: MinimalConnection;
+    };
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
 
     if (connection) {
       const handleNetworkChange = () => {
         const type = connection.effectiveType || 'unknown';
+        const rtt = connection.rtt ?? 0;
+        const downlink = connection.downlink ?? 0;
         const isSlowNetwork =
           type === 'slow-2g' ||
           type === '2g' ||
           type === '3g' ||
-          (connection.rtt > 300 && connection.downlink < 1);
+          (rtt > 300 && downlink < 1);
         const hasSaveData = connection.saveData || false;
 
         sessionStorage.setItem('network-type', type);
@@ -50,8 +63,8 @@ export function NetworkClassProvider(): null {
         }
       };
 
-      connection.addEventListener('change', handleNetworkChange);
-      return () => connection.removeEventListener('change', handleNetworkChange);
+      connection.addEventListener?.('change', handleNetworkChange);
+      return () => connection.removeEventListener?.('change', handleNetworkChange);
     }
   }, []);
 

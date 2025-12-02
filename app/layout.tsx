@@ -1,18 +1,22 @@
 /* eslint-disable @next/next/google-font-preconnect */
 // app/layout.tsx
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import type { ReactNode } from "react";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FixedButtons from "@/components/common/FixedButtons";
 import CustomCursor from "@/components/common/CustomCursor";
 import ScrollRestore from "@/components/common/ScrollRestore";
+import AnalyticsConsent from "@/components/common/AnalyticsConsent";
 import { NetworkClassProvider } from "@/components/common/NetworkClassProvider";
 import { Poppins } from "next/font/google";
-import { content } from "@/data/HomeFooterContent";
 import { viewport as seoViewport } from "@/lib/seo";
 import { getNetworkDetectionScript } from "@/lib/network-aware";
+import { getRequestLocale, getHreflangAlternates, getCanonical } from "@/lib/i18n/locale";
+import { LOCALE_META, SITE_URL, type Locale } from "@/lib/i18n/config";
+import { getFooterContent, getNavContent } from "@/lib/i18n/content";
+import type { NavLink } from "@/data/locale/en/NavContent";
 
 /**
  * Font optimization with font-display: swap for better performance
@@ -37,93 +41,105 @@ export const viewport: Viewport = seoViewport;
  * Root metadata with comprehensive SEO optimization
  * Includes Open Graph, Twitter Cards, and search engine directives
  */
-export const metadata: Metadata = {
-  metadataBase: new URL(content.meta.siteUrl),
-  title: {
-    template: "%s | STELZ Multiparking",
-    default: content.meta.title,
-    absolute: content.meta.title,
-  },
-  description: content.meta.description,
-  keywords: [
-    "STELZ Multiparking",
-    "automated parking",
-    "car parking solutions",
-    "puzzle parking",
-    "stack parking",
-    "mechanical parking",
-    "parking systems India",
-    "Bengaluru parking",
-    "space-saving parking",
-    "smart parking technology",
-  ],
-  authors: [{ name: "STELZ MULTIPARKING PVT LTD" }],
-  creator: "STELZ MULTIPARKING PVT LTD",
-  publisher: "STELZ MULTIPARKING PVT LTD",
-  applicationName: "STELZ Multiparking",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "STELZ Multiparking",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const footerModule = await getFooterContent(locale);
+  const meta = footerModule.content.meta;
+
+  const canonical = getCanonical("/", locale);
+  const alternates = getHreflangAlternates("/");
+
+  return {
+    metadataBase: new URL(meta.siteUrl),
+    title: {
+      template: "%s | STELZ Multiparking",
+      default: meta.title,
+      absolute: meta.title,
+    },
+    description: meta.description,
+    keywords: [
+      "STELZ Multiparking",
+      "automated parking",
+      "car parking solutions",
+      "puzzle parking",
+      "stack parking",
+      "mechanical parking",
+      "parking systems India",
+      "Bengaluru parking",
+      "space-saving parking",
+      "smart parking technology",
+    ],
+    authors: [{ name: "STELZ MULTIPARKING PVT LTD" }],
+    creator: "STELZ MULTIPARKING PVT LTD",
+    publisher: "STELZ MULTIPARKING PVT LTD",
+    applicationName: "STELZ Multiparking",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "STELZ Multiparking",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-    nocache: false,
-  },
-  alternates: {
-    canonical: content.meta.siteUrl,
-    languages: {
-      "en-IN": `${content.meta.siteUrl}/en`,
-      "hi-IN": `${content.meta.siteUrl}/hi`,
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_IN",
-    url: content.meta.siteUrl,
-    siteName: "STELZ Multiparking",
-    title: content.meta.title,
-    description: content.meta.description,
-    images: [
-      {
-        url: content.meta.ogImage,
-        width: 1200,
-        height: 630,
-        alt: "STELZ Multiparking - Engineering Tomorrow's Parking",
-        type: "image/webp",
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
       },
-      {
-        url: content.meta.ogImage.replace(".webp", ".jpg"),
-        width: 1200,
-        height: 630,
-        alt: "STELZ Multiparking - Engineering Tomorrow's Parking",
-        type: "image/jpeg",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: content.meta.title,
-    description: content.meta.description,
-    images: [content.meta.ogImage],
-    creator: "@stelzparking",
-    site: "@stelzparking",
-  },
-};
+      nocache: false,
+    },
+    alternates: {
+      canonical,
+      languages: alternates,
+    },
+    openGraph: {
+      type: "website",
+      locale: `${locale}_${LOCALE_META[locale].region}`,
+      url: canonical,
+      siteName: "STELZ Multiparking",
+      title: meta.title,
+      description: meta.description,
+      images: [
+        {
+          url: meta.ogImage.startsWith("http") ? meta.ogImage : `${SITE_URL}${meta.ogImage}`,
+          width: 1200,
+          height: 630,
+          alt: "STELZ Multiparking - Engineering Tomorrow's Parking",
+          type: "image/webp",
+        },
+        {
+          url: meta.ogImage.replace(".webp", ".jpg").startsWith("http")
+            ? meta.ogImage.replace(".webp", ".jpg")
+            : `${SITE_URL}${meta.ogImage.replace(".webp", ".jpg")}`,
+          width: 1200,
+          height: 630,
+          alt: "STELZ Multiparking - Engineering Tomorrow's Parking",
+          type: "image/jpeg",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.title,
+      description: meta.description,
+      images: [meta.ogImage.startsWith("http") ? meta.ogImage : `${SITE_URL}${meta.ogImage}`],
+      creator: "@stelzparking",
+      site: "@stelzparking",
+    },
+  };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const locale: Locale = await getRequestLocale();
+  const [navModule, footerModule] = await Promise.all([getNavContent(locale), getFooterContent(locale)]);
+  const navItems = navModule.NAV as NavLink[];
+  const footerContent = footerModule.content;
 
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang={locale} className={poppins.variable}>
       <head>
         {/* ========== PERFORMANCE & OPTIMIZATION ========== */}
 
@@ -156,32 +172,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="STELZ Multiparking" />
 
-        {/* Google Analytics 4 - Deferred to afterInteractive for performance */}
-        {gaId && (
-          <>
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            />
-            <Script
-              id="google-analytics"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                    anonymize_ip: true,
-                    send_page_view: true,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
-
         {/* ========== STRUCTURED DATA ========== */}
 
         {/* Organization schema for Google Knowledge Panel */}
@@ -191,41 +181,41 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": ["Organization", "LocalBusiness"],
-              "@id": content.meta.siteUrl,
+              "@id": footerContent.meta.siteUrl,
               name: "STELZ MULTIPARKING PVT LTD",
               alternateName: "STELZ Multiparking",
-              url: content.meta.siteUrl,
+              url: footerContent.meta.siteUrl,
               logo: {
                 "@type": "ImageObject",
-                url: `${content.meta.siteUrl}/assets/Logo.webp`,
+                url: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
                 width: 250,
                 height: 250,
               },
-              image: `${content.meta.siteUrl}/assets/Logo.webp`,
-              description: content.meta.description,
+              image: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
+              description: footerContent.meta.description,
               slogan: "Engineering Tomorrow's Parking",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Bengaluru",
                 addressRegion: "Karnataka",
                 postalCode: "560098",
-                streetAddress: content.footer.office.address,
+                streetAddress: footerContent.footer.office.address,
                 addressCountry: "IN",
               },
-              telephone: content.footer.contact.phone,
-              email: content.footer.contact.email,
+              telephone: footerContent.footer.contact.phone,
+              email: footerContent.footer.contact.email,
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: content.footer.contact.phone,
+                telephone: footerContent.footer.contact.phone,
                 contactType: "Customer Service",
                 areaServed: "IN",
                 availableLanguage: ["en", "hi"],
               },
               sameAs: [
-                content.footer.contact.socials.linkedin,
-                content.footer.contact.socials.facebook,
-                content.footer.contact.socials.instagram,
-                content.footer.contact.socials.youtube,
+                footerContent.footer.contact.socials.linkedin,
+                footerContent.footer.contact.socials.facebook,
+                footerContent.footer.contact.socials.instagram,
+                footerContent.footer.contact.socials.youtube,
               ].filter(Boolean),
               foundingDate: "2020",
               geo: {
@@ -256,11 +246,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "@id": content.meta.siteUrl,
+              "@id": footerContent.meta.siteUrl,
               name: "STELZ Multiparking",
-              url: content.meta.siteUrl,
-              description: content.meta.description,
-              image: `${content.meta.siteUrl}/assets/Logo.webp`,
+              url: footerContent.meta.siteUrl,
+              description: footerContent.meta.description,
+              image: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
             }),
           }}
         />
@@ -269,9 +259,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-neutral-900 font-sans">
         <NetworkClassProvider />
         <CustomCursor />
-        <Navbar />
+        <Navbar locale={locale} nav={navItems} />
         {children}
-        <Footer />
+        <Footer content={footerContent} />
+        <AnalyticsConsent gaId={gaId} />
         <FixedButtons />
         <ScrollRestore />
       </body>
