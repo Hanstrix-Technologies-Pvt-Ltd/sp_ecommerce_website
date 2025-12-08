@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const alternates = getHreflangAlternates("/");
 
   return {
-    metadataBase: new URL(meta.siteUrl),
+    metadataBase: new URL(SITE_URL),
     title: {
       template: "%s | STELZ Multiparking",
       default: meta.title,
@@ -159,9 +159,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-        {/* Prefetch Google Analytics - will load later */}
-        <link rel="prefetch" href="https://www.googletagmanager.com/gtag/js" as="script" />
-
         {/* ========== SEO & SOCIAL ========== */}
 
         {/* Theme color for browser chrome */}
@@ -181,17 +178,17 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": ["Organization", "LocalBusiness"],
-              "@id": footerContent.meta.siteUrl,
+              "@id": SITE_URL,
               name: "STELZ MULTIPARKING PVT LTD",
               alternateName: "STELZ Multiparking",
-              url: footerContent.meta.siteUrl,
+              url: SITE_URL,
               logo: {
                 "@type": "ImageObject",
-                url: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
+                url: `${SITE_URL}/assets/Logo.webp`,
                 width: 250,
                 height: 250,
               },
-              image: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/Logo.webp`,
               description: footerContent.meta.description,
               slogan: "Engineering Tomorrow's Parking",
               address: {
@@ -246,11 +243,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "@id": footerContent.meta.siteUrl,
+              "@id": SITE_URL,
               name: "STELZ Multiparking",
-              url: footerContent.meta.siteUrl,
+              url: SITE_URL,
               description: footerContent.meta.description,
-              image: `${footerContent.meta.siteUrl}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/Logo.webp`,
             }),
           }}
         />
