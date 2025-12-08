@@ -1,12 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { hasSaveDataEnabled, isSlowNetwork, shouldReduceMotion } from "@/lib/network-aware";
 
 export default function CustomCursor() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [displayPos, setDisplayPos] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    if (shouldReduceMotion() || isSlowNetwork() || hasSaveDataEnabled()) {
+      setDisabled(true);
+    }
+  }, []);
 
   useEffect(() => {
     // Check if device is desktop on mount and resize
@@ -21,6 +29,8 @@ export default function CustomCursor() {
   }, []);
 
   useEffect(() => {
+    if (disabled) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
@@ -41,6 +51,8 @@ export default function CustomCursor() {
 
   // Smooth animation with delay using animation frame
   useEffect(() => {
+    if (disabled) return;
+
     let animationId: number;
 
     const animate = () => {
@@ -56,8 +68,8 @@ export default function CustomCursor() {
     return () => cancelAnimationFrame(animationId);
   }, [mousePos]);
 
-  // Only show on desktop
-  if (!isDesktop) {
+  // Only show on desktop and when not disabled by user/device preference
+  if (!isDesktop || disabled) {
     return null;
   }
 

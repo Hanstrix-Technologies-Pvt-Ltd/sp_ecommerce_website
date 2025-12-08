@@ -1,11 +1,9 @@
 // data/content.ts
+// Home page content and SEO copy
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Your existing "content" object (kept intact for Home page compatibility)
-// ─────────────────────────────────────────────────────────────────────────────
 export const content = {
   meta: {
-    title: "STELZ Multiparking | Engineering Tomorrow’s Parking",
+    title: "STELZ Multiparking | Engineering Tomorrow's Parking",
     description:
       "STELZ Multiparking provides innovative, automated car parking solutions designed for modern cities and smart infrastructure.",
     ogImage: "/assets/home/Logo.webp",
@@ -14,13 +12,13 @@ export const content = {
 
   hero: {
     taglines: [
-      "Engineering Tomorrow’s Parking",
+      "Engineering Tomorrow's Parking",
       "Architects of Parking Excellence",
       "Parking. Redefined by Stelz.",
     ],
     images: ["/assets/home/HeroBg1.webp", "/assets/home/HeroBg2.webp", "/assets/home/HeroBg3.webp"],
     highlights: [
-      "DESINED FOR BOTH INDOOR AND OUTDOOR CAR PARKING APPLICATIONS",
+      "DESIGNED FOR BOTH INDOOR AND OUTDOOR CAR PARKING APPLICATIONS",
       "INNOVATIVE PARKING SYSTEMS",
       "SPACE OPTIMIZATION",
       "ADVANCED TECHNOLOGY INTEGRATION",
@@ -36,16 +34,16 @@ export const content = {
   footprint: {
     title: "STELZ Footprint",
     projects: [
-      { id: 1, image: "/assets/footprint/NCCUrbanPark.webp",  name: "NCC Urban Park View", location: "Bengaluru" },
+      { id: 1, image: "/assets/footprint/NCCUrbanPark.webp", name: "NCC Urban Park View", location: "Bengaluru" },
       { id: 2, image: "/assets/footprint/AragenLifeSciences.webp", name: "Aragen Life Sciences", location: "Bengaluru" },
-      { id: 3, image: "/assets/footprint/SattvaHorizon.webp", name: "Sattva Horizon", spaces: "1270 No’s", location: "Bengaluru" },
-      { id: 4, image: "/assets/footprint/ManipalHospital.webp", name: "Manipal Hospital", spaces: "350 No’s", location: "Bengaluru" },
-      { id: 5, image: "/assets/footprint/JyotiTechPark.webp", name: "Jyoti Tech Park", spaces: "600 No’s", location: "Hyderabad" },
+      { id: 3, image: "/assets/footprint/SattvaHorizon.webp", name: "Sattva Horizon", spaces: "1270 Nos", location: "Bengaluru" },
+      { id: 4, image: "/assets/footprint/ManipalHospital.webp", name: "Manipal Hospital", spaces: "350 Nos", location: "Bengaluru" },
+      { id: 5, image: "/assets/footprint/JyotiTechPark.webp", name: "Jyoti Tech Park", spaces: "600 Nos", location: "Hyderabad" },
       { id: 6, image: "/assets/footprint/SparshHospital.webp", name: "Sparsh Hospital", location: "Bengaluru" },
-      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 No’s", location: "Bengaluru" },
+      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 Nos", location: "Bengaluru" },
       { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru" },
-      { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 No’s", location: "Hyderabad" },
-      { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 No’s", location: "Hyderabad" },
+      { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Nos", location: "Hyderabad" },
+      { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Nos", location: "Hyderabad" },
     ],
   },
 
@@ -68,13 +66,11 @@ export const content = {
   footer: {
     office: {
       title: "Office Address",
-      address:
-        "No. 1955, 2nd Floor, 5th Stage, BEML Layout, Rajarajeshwari Nagar, Bengaluru 560098.",
+      address: "No. 1955, 2nd Floor, 5th Stage, BEML Layout, Rajarajeshwari Nagar, Bengaluru 560098.",
     },
     factory: {
       title: "Factory Address",
-      address:
-        "Sy. No. 56/2, Mr Rama and Sri.M.Maramkrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
+      address: "Sy. No. 56/2, Mr Rama and Sri.M.Maramkrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
     },
     contact: {
       title: "Contact Info",

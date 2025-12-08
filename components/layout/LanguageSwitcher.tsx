@@ -72,11 +72,11 @@ export function LanguageSwitcher() {
         {open && (
           <motion.ul
             role="menu"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 mt-2 w-48 rounded-lg border border-neutral-200 bg-white py-2 shadow-xl focus:outline-none"
+            className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-neutral-200 bg-white py-2 shadow-lg shadow-black/10 ring-1 ring-black/5 focus:outline-none"
           >
             {OPTIONS.map((option) => {
               const isActive = option.value === currentLocale;

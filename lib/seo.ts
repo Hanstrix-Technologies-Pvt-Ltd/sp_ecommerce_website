@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { SITE_URL } from "@/lib/i18n/config";
 import { content } from "@/data/locale/en/HomeFooterContent";
 
-const baseUrl = content.meta.siteUrl;
+const baseUrl = SITE_URL;
 const defaultOgImage = content.meta.ogImage;
 const companyName = "STELZ MULTIPARKING PVT LTD";
 

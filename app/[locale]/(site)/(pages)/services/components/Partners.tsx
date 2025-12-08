@@ -24,7 +24,7 @@ const logos = [
 ] as const;
 
 /* longer ribbon so it always overflows */
-const loopLogos = [...logos, ...logos, ...logos];
+const loopLogos = [...logos, ...logos];
 
 /* blue arrow tag icon (mask) */
 function BlueArrow() {

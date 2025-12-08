@@ -8,6 +8,7 @@ import { translatePath } from "@/lib/i18n/slugMap";
 import { getFooterContent } from "@/lib/i18n/content";
 import type { ProductCategory, ProductRecord } from "@/data/locale/en/Products";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
+import ContactFormCard from "./ContactFormCard";
 
 type Params = { category: string; slug: string };
 
@@ -128,61 +129,14 @@ export default async function PortfolioLayout({
 
               <div className={`${spaceGrotesk.className} mx-auto w-full border border-neutral-900 md:max-w-[360px]`}>
                 <div className="px-6 pt-6">
-                <h3 className="text-[30px] font-medium leading-none tracking-tight text-[#0a1a33]">
-                  {copy.contact.form.title ?? "Contact Now"}
-                </h3>
+                  <h3 className="text-[30px] font-medium leading-none tracking-tight text-[#0a1a33]">
+                    {copy.contact.form.title ?? "Contact Now"}
+                  </h3>
                 </div>
 
                 <div className="mt-4" />
 
-                <form className="space-y-8 px-8 pb-8 md:px-10">
-                  <label className="block">
-                    <span className="mb-2 block text-[15px] font-semibold text-neutral-800">
-                      {copy.contact.form.placeholders.name || "Name"} <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="text"
-                      className="w-full border border-neutral-900 bg-white px-4 py-3 text-[15px] font-[inherit] outline-none focus:border-[#174b92]"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[15px] font-semibold text-neutral-800">
-                      {copy.contact.form.placeholders.phone || "Phone Number"} <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="tel"
-                      className="w-full border border-neutral-900 bg-white px-4 py-3 text-[15px] font-[inherit] outline-none focus:border-[#174b92]"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[15px] font-semibold text-neutral-800">
-                      {copy.contact.form.placeholders.email || "Email"} <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="email"
-                      className="w-full border border-neutral-900 bg-white px-4 py-3 text-[15px] font-[inherit] outline-none focus:border-[#174b92]"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[15px] font-semibold text-neutral-800">
-                      {copy.contact.form.placeholders.message || "Comment or Message"}
-                    </span>
-                    <textarea
-                      rows={5}
-                      className="w-full resize-y border border-neutral-900 bg-white px-4 py-3 text-[15px] font-[inherit] outline-none focus:border-[#174b92]"
-                    />
-                  </label>
-
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center gap-2 bg-[#066AAB] px-6 py-2 text-[20px] font-semibold text-white transition hover:bg-[#0a3a85]"
-                  >
-                    {copy.contact.form.cta || "Submit"}
-                  </button>
-                </form>
+                <ContactFormCard copy={copy.contact.form} />
               </div>
 
               {localizedProduct?.brochureUrl ? (

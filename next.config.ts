@@ -79,20 +79,13 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache HTML pages for 1 day with revalidation
+      // Cache HTML pages for 1 day with revalidation (skip static assets)
       {
-        source: "/:path*",
-        has: [
-          {
-            type: "header",
-            key: "content-type",
-            value: "text/html",
-          },
-        ],
+        source: "/((?!_next/static|_next/image|assets|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=86400, must-revalidate",
+            value: "public, s-maxage=86400, stale-while-revalidate=600",
           },
         ],
       },
