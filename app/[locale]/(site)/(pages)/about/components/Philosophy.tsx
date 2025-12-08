@@ -59,8 +59,8 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
   return (
     <section className={`relative bg-white ${spaceGrotesk.className}`}>
       {/* —— Responsive background with white gutters on xl+ —— */}
-      <div className="relative mx-0 xl:mx-16 2xl:mx-24">
-        <div className="lg:-mx-3 xl:-mx-4">
+      <div className="relative mx-0 desktop:mx-16 wide:mx-24">
+        <div className="laptop:-mx-3 desktop:-mx-4">
           <div
             className="relative w-full bg-no-repeat"
             style={{
@@ -72,7 +72,7 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
             }}
           >
             {/* Title + intro */}
-            <div className="relative z-10 px-5 md:px-10 xl:px-10 py-20 md:py-25">
+            <div className="relative z-10 px-5 tablet:px-10 desktop:px-10 py-20 tablet:py-25">
               <div className={`${CONTENT_W} mx-auto`}>
                 <div className="flex items-center justify-center gap-2 text-[#006DDB]">
                   <BlueArrow />
@@ -94,7 +94,7 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
               </div>
 
               {/* ---------- DESKTOP TABS (lg+) ---------- */}
-              <div className={`${CONTENT_W} mx-auto mt-8 hidden lg:block`}>
+              <div className={`${CONTENT_W} mx-auto mt-8 hidden laptop:block`}>
                 <div className="grid grid-cols-5 bg-white">
                   {steps.map((t, idx) => {
                     const isActive = active === t.id;
@@ -148,7 +148,7 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
               {/* Desktop panel (smaller image) */}
               {activeStep ? (
                 <div
-                  className={`${CONTENT_W} mx-auto mt-8 hidden lg:grid lg:grid-cols-[360px_1fr] lg:gap-6 lg:items-start`}
+                  className={`${CONTENT_W} mx-auto mt-8 hidden laptop:grid laptop:grid-cols-[360px_1fr] laptop:gap-6 laptop:items-start`}
                 >
                   {/* image reduced */}
                   <div className="w-full">
@@ -166,7 +166,7 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
 
                   {/* text */}
                   <div>
-                    <h3 className="text-[22px] md:text-[24px] font-extrabold text-[#1F1F1F]">
+                    <h3 className="text-[22px] tablet:text-[24px] font-extrabold text-[#1F1F1F]">
                       {activeStep.title}
                     </h3>
                     <p className="mt-3 text-[17px] leading-8 text-[#616161]">
@@ -177,7 +177,7 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
               ) : null}
 
               {/* ---------- MOBILE/TABLET ACCORDION (<= lg) ---------- */}
-              <div className={`${CONTENT_W} mx-auto mt-6 lg:hidden`}>
+              <div className={`${CONTENT_W} mx-auto mt-6 laptop:hidden`}>
                 <ul className="w-[95%] mx-auto divide-y divide-black/10 rounded-none bg-white ring-1 ring-black/10">
                   {steps.map((t) => {
                     const open = active === t.id;

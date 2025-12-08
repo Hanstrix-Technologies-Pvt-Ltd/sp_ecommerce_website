@@ -38,14 +38,14 @@ export default function ContactGlobal({ content }: { content: ContactContentType
     <section
       className={`${spaceGrotesk.className} bg-white pt-12 pb-10 sm:pt-16`}
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-5 lg:px-12 text-center">
+      <div className="mx-auto max-w-5xl px-4 sm:px-5 laptop:px-12 text-center">
         <div className="flex items-center justify-center gap-2">
           <BlueArrow />
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] md:text-sm">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] tablet:text-sm">
             {globalSection.eyebrow}
           </span>
         </div>
-        <h2 className="mt-2 text-[32px] md:text-[52px] font-semibold text-[#1F1F1F]">
+        <h2 className="mt-2 text-[32px] tablet:text-[52px] font-semibold text-[#1F1F1F]">
           {globalSection.title}
         </h2>
         <p className="mt-3 text-[17px] text-[#616161]">
@@ -53,7 +53,7 @@ export default function ContactGlobal({ content }: { content: ContactContentType
         </p>
       </div>
 
-      <div className="mx-auto mt-10 px-4 sm:px-5 lg:px-12">
+      <div className="mx-auto mt-10 px-4 sm:px-5 laptop:px-12">
         <LeafletLocationsMap />
       </div>
     </section>

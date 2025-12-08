@@ -20,33 +20,33 @@ export default function Footer({ content }: FooterProps) {
   return (
     <footer className="bg-linear-to-b from-[#0C41AA] to-[#0a0a1a] text-white">
       {/* ADDED horizontal padding so md doesn't hug the edge */}
-      <div className="mx-auto grid max-w-7xl gap-8 py-4 px-4 sm:px-6 md:px-8 lg:px-10 md:grid-cols-3 lg:gap-15">
+      <div className="mx-auto grid max-w-7xl gap-8 py-4 px-4 sm:px-6 tablet:px-8 laptop:px-10 tablet:grid-cols-3 laptop:gap-15">
         {/* Office */}
         <section aria-labelledby="footer-office">
-          <h3 id="footer-office" className="mb-3 text-lg font-bold md:text-2xl">
+          <h3 id="footer-office" className="mb-3 text-lg font-bold tablet:text-2xl">
             {f.office.title}
           </h3>
-          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-[16px]">
+          <address className="not-italic text-gray-400 text-sm leading-relaxed tablet:text-[16px]">
             {f.office.address}
           </address>
         </section>
 
         {/* Factory */}
         <section aria-labelledby="footer-factory">
-          <h3 id="footer-factory" className="mb-3 text-lg font-bold md:text-2xl">
+          <h3 id="footer-factory" className="mb-3 text-lg font-bold tablet:text-2xl">
             {f.factory.title}
           </h3>
-          <address className="not-italic text-gray-400 text-sm leading-relaxed md:text-[16px]">
+          <address className="not-italic text-gray-400 text-sm leading-relaxed tablet:text-[16px]">
             {f.factory.address}
           </address>
         </section>
 
         {/* Contact */}
         <section aria-labelledby="footer-contact">
-          <h3 id="footer-contact" className="mb-1 text-lg font-bold md:text-2xl">
+          <h3 id="footer-contact" className="mb-1 text-lg font-bold tablet:text-2xl">
             {f.contact.phoneLabel || "Phone Number"}
           </h3>
-          <ul className="mb-2 space-y-1 text-sm md:text-base">
+          <ul className="mb-2 space-y-1 text-sm tablet:text-base">
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0" />
               <a className="hover:underline transition-colors text-gray-400" href={`tel:${f.contact.phone}`}>
@@ -61,11 +61,11 @@ export default function Footer({ content }: FooterProps) {
             </li>
           </ul>
 
-          <h3 className="mb-1 text-lg font-bold md:text-2xl">
+          <h3 className="mb-1 text-lg font-bold tablet:text-2xl">
             {f.contact.emailLabel || "Email Address"}
           </h3>
           <a
-            className="mb-2 block text-sm hover:underline transition-colors md:text-base text-gray-400"
+            className="mb-2 block text-sm hover:underline transition-colors tablet:text-base text-gray-400"
             href={`mailto:${f.contact.email}`}
           >
             {f.contact.email}
@@ -73,7 +73,7 @@ export default function Footer({ content }: FooterProps) {
 
           {/* Socials */}
           <div>
-            <h4 className="mb-1 text-base font-bold md:text-2xl">
+            <h4 className="mb-1 text-base font-bold tablet:text-2xl">
               {f.contact.followUs || "Follow Us"}
             </h4>
             <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function Footer({ content }: FooterProps) {
       </div>
 
       {/* Keep bottom bar padding consistent at md and up */}
-      <div className="border-t border-white/20 px-4 sm:px-6 md:px-8 lg:px-10 py-4 text-center text-sm md:text-base">
+      <div className="border-t border-white/20 px-4 sm:px-6 tablet:px-8 laptop:px-10 py-4 text-center text-sm tablet:text-base">
         {f.copyright}
       </div>
     </footer>

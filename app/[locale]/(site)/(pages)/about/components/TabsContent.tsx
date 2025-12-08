@@ -5,7 +5,7 @@ import { AboutSectionBlock } from "./Section";
 
 export function TabsContent({ tab }: { tab: TabContent }) {
   return (
-    <div className="space-y-8 md:space-y-10">
+    <div className="space-y-8 tablet:space-y-10">
       {tab.sections.map((s, i) => (
         <AboutSectionBlock key={i} section={s} />
       ))}

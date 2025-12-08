@@ -20,7 +20,7 @@ export default function ServicesGrid({ items }: { items: typeof ServicesContent.
 
   return (
     <div className="relative p-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-6">
+      <div className="grid grid-cols-1 tablet:grid-cols-2 tablet:gap-x-6">
         {items.map((item, idx) => {
           const isRightCol = idx % 2 === 1;
           const isSecondRow = idx >= 2;
@@ -30,13 +30,13 @@ export default function ServicesGrid({ items }: { items: typeof ServicesContent.
               key={item.title}
               className={[
                 // compact vertical spacing, no global horizontal padding
-                "py-4 md:py-2 lg:py-6",
+                "py-4 tablet:py-2 laptop:py-6",
                 // row divider
                 isSecondRow ? "border-t border-slate-200" : "",
                 // vertical grid line only before right column
-                isRightCol ? "md:border-l md:border-slate-200" : "",
+                isRightCol ? "tablet:border-l tablet:border-slate-200" : "",
                 // 👇 padding from the vertical grid line
-                isRightCol ? "md:pl-6" : "md:pr-6",
+                isRightCol ? "tablet:pl-6" : "tablet:pr-6",
               ]
                 .filter(Boolean)
                 .join(" ")}

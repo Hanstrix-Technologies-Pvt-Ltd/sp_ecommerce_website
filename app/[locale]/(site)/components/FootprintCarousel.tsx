@@ -60,7 +60,7 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
   if (!projects.length) return null;
 
   return (
-    <section className="bg-gray-50 py-3 px-3 md:px-1 lg:px-5">
+    <section className="bg-gray-50 py-3 px-3 tablet:px-1 laptop:px-5">
       <div className="mx-auto max-w-[1500px] px-[5px]">
         <div className="mb-6 text-center">
           <h2 className="text-[30px] tracking-tight">{content.title}</h2>
@@ -79,15 +79,15 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
             setApi={setApi}
             className="w-full"
           >
-            <CarouselContent className="gap-1 md:gap-0">
+            <CarouselContent className="gap-1 tablet:gap-0">
               {projects.map((project) => (
                 <CarouselItem
                   key={project.id}
-                  className="basis-full sm:basis-1/2 md:basis-1/4 xl:basis-1/5 pl-2 md:pl-0"
+                  className="basis-full sm:basis-1/2 tablet:basis-1/4 desktop:basis-1/5 pl-2 tablet:pl-0"
                 >
-                  <div className="relative group pb-[22%] sm:pb-[18%] md:pb-20">
+                  <div className="relative group pb-[22%] sm:pb-[18%] tablet:pb-20">
                     <div className="overflow-hidden rounded-[20px] shadow-sm">
-                      <div className="relative w-full md:h-60" style={{ aspectRatio: "4 / 3" }}>
+                      <div className="relative w-full tablet:h-60" style={{ aspectRatio: "4 / 3" }}>
                         <Image
                           src={project.image}
                           alt={project.name}
@@ -107,9 +107,9 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
 
                     <div
                       className="
-                        absolute -right-2 md:-right-4 bottom-5 z-10
-                        w-[78%] sm:w-[72%] md:w-[68%]
-                        rounded-2xl bg-[#F7F7F7] p-5 md:p-3
+                        absolute -right-2 tablet:-right-4 bottom-5 z-10
+                        w-[78%] sm:w-[72%] tablet:w-[68%]
+                        rounded-2xl bg-[#F7F7F7] p-5 tablet:p-3
                         shadow-none
                         transition-transform duration-300 ease-out will-change-transform
                         group-hover:-translate-y-2
@@ -132,8 +132,8 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
               ))}
             </CarouselContent>
 
-            <CarouselPrevious className="left-1 md:left-0" />
-            <CarouselNext className="right-1 md:right-0" />
+            <CarouselPrevious className="left-1 tablet:left-0" />
+            <CarouselNext className="right-1 tablet:right-0" />
           </Carousel>
 
           <div className="pointer-events-auto mt-4 flex items-center justify-center gap-2">

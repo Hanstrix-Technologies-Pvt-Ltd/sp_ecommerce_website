@@ -86,12 +86,12 @@ export default async function PortfolioLayout({
       <PageHeader title={headerTitle} breadcrumbLabel={headerTitle} />
 
       <main className="bg-white">
-        <section className="mx-auto max-w-[1450px] px-4 md:px-10 py-15 md:py-25">
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_420px]">
+        <section className="mx-auto max-w-[1450px] px-4 tablet:px-10 py-15 tablet:py-25">
+          <div className="grid grid-cols-1 gap-10 tablet:grid-cols-[1fr_420px]">
             <div>{children}</div>
 
             <aside className="space-y-8">
-              <div className="mx-auto w-full py-5 md:max-w-[300px]">
+              <div className="mx-auto w-full py-5 tablet:max-w-[300px]">
                 <h3 className="mb-6 text-center text-[25px] font-extrabold leading-none tracking-tight text-[#006DDB]">
                   {copy.products.sidebar?.heading ?? "Our Parking Systems"}
                 </h3>
@@ -127,7 +127,7 @@ export default async function PortfolioLayout({
                 </ul>
               </div>
 
-              <div className={`${spaceGrotesk.className} mx-auto w-full border border-neutral-900 md:max-w-[360px]`}>
+              <div className={`${spaceGrotesk.className} mx-auto w-full border border-neutral-900 tablet:max-w-[360px]`}>
                 <div className="px-6 pt-6">
                   <h3 className="text-[30px] font-medium leading-none tracking-tight text-[#0a1a33]">
                     {copy.contact.form.title ?? "Contact Now"}
@@ -140,7 +140,7 @@ export default async function PortfolioLayout({
               </div>
 
               {localizedProduct?.brochureUrl ? (
-                <div className={`${spaceGrotesk.className} mx-auto w-full px-0 py-6 md:max-w-[260px]`}>
+                <div className={`${spaceGrotesk.className} mx-auto w-full px-0 py-6 tablet:max-w-[260px]`}>
                   <a
                     href={localizedProduct.brochureUrl}
                     download
@@ -152,7 +152,7 @@ export default async function PortfolioLayout({
                 </div>
               ) : null}
 
-              <div className="mx-auto w-full bg-[#EBEBEB] p-[40px] md:max-w-[360px]">
+              <div className="mx-auto w-full bg-[#EBEBEB] p-[40px] tablet:max-w-[360px]">
                 <h3 className="text-[30px] font-extrabold leading-none tracking-tight text-[#0a1a33]">
                   {copy.products.sidebar?.followUs ?? "Follow Us On"}
                 </h3>

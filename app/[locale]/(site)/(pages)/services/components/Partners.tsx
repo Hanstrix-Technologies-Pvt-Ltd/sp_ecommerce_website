@@ -52,7 +52,7 @@ function Logo({ name }: { name: string }) {
   const IMG_CLASSES =
     "object-contain pointer-events-none select-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:scale-110 will-change-transform";
   return (
-    <div className="relative w-full h-24 sm:h-28 md:h-32 lg:h-36 xl:h-40">
+    <div className="relative w-full h-24 sm:h-28 tablet:h-32 laptop:h-36 desktop:h-40">
       <Image
         src={src}
         alt={`${name} logo`}
@@ -84,22 +84,22 @@ export default function PartnersCarousel() {
   }, []);
 
   return (
-    <section className={`${spaceGrotesk.className} bg-white py-8 px-3 md:px-10`}>
+    <section className={`${spaceGrotesk.className} bg-white py-8 px-3 tablet:px-10`}>
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* header: blue arrow + tag + title */}
-        <div className="w-full text-center mb-8 md:mb-10">
+        <div className="w-full text-center mb-8 tablet:mb-10">
           <div className="flex items-center justify-center gap-2">
             <BlueArrow />
-            <span className="text-xs md:text-sm tracking-[0.18em] text-[#006DDB] font-semibold uppercase">
+            <span className="text-xs tablet:text-sm tracking-[0.18em] text-[#006DDB] font-semibold uppercase">
               Partners
             </span>
           </div>
 
-          <h2 className="mt-2 md:mt-3 text-[26px] md:text-[34px] font-extrabold tracking-tight text-gray-900">
+          <h2 className="mt-2 tablet:mt-3 text-[26px] tablet:text-[34px] font-extrabold tracking-tight text-gray-900">
             Partners Who Trust STELZ
           </h2>
 
-          <p className="mt-3 md:mt-4 w-full text-base md:text-lg leading-7 md:leading-8 text-neutral-600 md:hover:text-red-500">
+          <p className="mt-3 tablet:mt-4 w-full text-base tablet:text-lg leading-7 tablet:leading-8 text-neutral-600 tablet:hover:text-red-500">
             We take pride in collaborating with industry leaders who trust Stelz Parking for innovative and
             reliable car parking solutions. Our partnerships reflect a shared commitment to quality, efficiency,
             and long-term value across every project.
@@ -121,13 +121,13 @@ export default function PartnersCarousel() {
             className="w-full"
           >
             {/* pair track -ml with slide pl so gutters don't force single-slide view */}
-            <CarouselContent className="-ml-2 md:-ml-3">
+            <CarouselContent className="-ml-2 tablet:-ml-3">
               {loopLogos.map((name, i) => (
                 <CarouselItem
                   key={`${name}-${i}`}
-                  className="!basis-1/2 md:!basis-1/4 lg:!basis-1/6 pl-2 md:pl-3"
+                  className="!basis-1/2 tablet:!basis-1/4 laptop:!basis-1/6 pl-2 tablet:pl-3"
                 >
-                  <div className="group flex items-center justify-center py-4 md:py-6">
+                  <div className="group flex items-center justify-center py-4 tablet:py-6">
                     <Logo name={name} />
                   </div>
                 </CarouselItem>

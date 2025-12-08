@@ -77,35 +77,35 @@ export default async function BlogPage() {
       <main className={`${spaceGrotesk.className} bg-white`}>
         <section
           className="
-            mx-auto max-w-6xl px-4 md:px-10 pt-40 pb-40
+            mx-auto max-w-6xl px-4 tablet:px-10 pt-40 pb-40
             [@media(min-width:1280px)_and_(max-width:1536px)]:px-0
           "
         >
           <figure
             className="
               relative isolate overflow-hidden rounded-2xl bg-[#F7F7F7]
-              px-[18px] md:px-10 py-[30px] shadow-sm text-[#616161]
+              px-[18px] tablet:px-10 py-[30px] shadow-sm text-[#616161]
               [@media(min-width:1280px)_and_(max-width:1536px)]:px-10
               after:content-[''] after:absolute after:inset-y-0 after:left-0
               after:w-1.5 after:bg-[#174b92] after:rounded-full after:z-10
               before:content-['\201C'] font-extrabold before:absolute before:top-16 before:right-8
-              before:text-[260px] md:before:text-[300px] lg:before:text-[320px]
+              before:text-[260px] tablet:before:text-[300px] laptop:before:text-[320px]
               before:leading-none before:text-zinc-400/20 before:font-serif
               before:pointer-events-none before:select-none before:z-0
             "
           >
             <div className="relative z-10 pt-5">
-              <figcaption className="mb-4 text-xl text-[18px] md:text-[18px] font-semibold tracking-normal text-zinc-900">
+              <figcaption className="mb-4 text-xl text-[18px] tablet:text-[18px] font-semibold tracking-normal text-zinc-900">
                 {blog.title}
               </figcaption>
 
-              <blockquote className="pr-3 font-semibold text-[22px] md:text-[20px] leading-[1.6]">
+              <blockquote className="pr-3 font-semibold text-[22px] tablet:text-[20px] leading-[1.6]">
                 <p className="mb-2.5">{renderWithItalics(blog.blockquote.lead)}</p>
 
                 <div className="space-y-2.5">
-                  <p className="font-bold text-[20px] md:text-[18px] text-zinc-800">{blog.blockquote.pillars[0]}</p>
+                  <p className="font-bold text-[20px] tablet:text-[18px] text-zinc-800">{blog.blockquote.pillars[0]}</p>
                   <p className="text-[20px]">and</p>
-                  <p className="font-bold text-[20px] md:text-[18px] text-zinc-800">{blog.blockquote.pillars[1]}</p>
+                  <p className="font-bold text-[20px] tablet:text-[18px] text-zinc-800">{blog.blockquote.pillars[1]}</p>
                 </div>
 
                 <p className="mt-[10px]">{blog.blockquote.closing}</p>
@@ -142,10 +142,10 @@ export default async function BlogPage() {
                             className={[
                               "leading-[1.6]",
                               isEmphasis
-                                ? "font-bold text-zinc-800 text-[20px] md:text-[18px]"
+                                ? "font-bold text-zinc-800 text-[20px] tablet:text-[18px]"
                                 : isConnector
-                                ? "text-[20px] md:text-[18px]"
-                                : "text-[22px] md:text-[20px]",
+                                ? "text-[20px] tablet:text-[18px]"
+                                : "text-[22px] tablet:text-[20px]",
                             ].join(" ")}
                           >
                             {content}

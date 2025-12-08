@@ -23,14 +23,14 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
 
   return (
     <section className="bg-white pb-15 pt-25">
-      <div className="mx-auto max-w-8xl px-5 lg:px-12">
+      <div className="mx-auto max-w-8xl px-5 laptop:px-12">
         {/* Page title */}
-        <h1 className="text-center text-[40px] md:text-[52px] font-medium text-[#1F1F1F]">
+        <h1 className="text-center text-[40px] tablet:text-[52px] font-medium text-[#1F1F1F]">
           {pageTitle}
         </h1>
 
         {/* Desktop Tabs */}
-        <div className="mt-6 hidden justify-center md:flex">
+        <div className="mt-6 hidden justify-center tablet:flex">
           <div className="flex gap-5">
             {tabs.map((tab) => {
               const isActive = tab.key === activeRegion;
@@ -58,7 +58,7 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
         </div>
 
         {/* Mobile / Tablet Accordion (Custom) */}
-        <div className="mt-5 md:hidden">
+        <div className="mt-5 tablet:hidden">
           <div className="mx-auto w-full max-w-md space-y-3">
             {tabs.map((tab) => {
               const isActive = activeRegion === tab.key;
@@ -106,7 +106,7 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
         </div>
 
         {/* Contacts layout (desktop / large) */}
-        <div className="mt-10 hidden flex-wrap justify-center gap-x-20 gap-y-12 md:flex">
+        <div className="mt-10 hidden flex-wrap justify-center gap-x-20 gap-y-12 tablet:flex">
           {activeTab.contacts.map((person) => (
             <ContactCard key={person.id} person={person} />
           ))}

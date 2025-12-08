@@ -53,7 +53,7 @@ export default function ConceptCarousel({ content }: { content: GalleryContent }
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* Title (smaller & font-medium) */}
         <div className="mb-4 text-center">
-          <h2 className="text-[35px] lg:text-[38px] font-medium tracking-tight text-neutral-900">
+          <h2 className="text-[35px] laptop:text-[38px] font-medium tracking-tight text-neutral-900">
             {title}
           </h2>
         </div>
@@ -65,22 +65,22 @@ export default function ConceptCarousel({ content }: { content: GalleryContent }
             setApi={setApi}
             className="w-full"
           >
-            <CarouselContent className="gap-1 md:gap-1">
+            <CarouselContent className="gap-1 tablet:gap-1">
               {items.map((m) => (
                 <CarouselItem
                   key={`${m.id}-${m.image}`}
-                  className="basis-full sm:basis-1/2 lg:basis-1/3 pl-2 md:pl-0"
+                  className="basis-full sm:basis-1/2 laptop:basis-1/3 pl-2 tablet:pl-0"
                 >
                   <div className="relative group">
                     {/* Rounded, no shadow, slightly smaller height */}
                     <div className="overflow-hidden rounded-2xl bg-white">
-                      <div className="relative h-[300px] md:h-[380px] lg:h-[420px]">
+                      <div className="relative h-[300px] tablet:h-[380px] laptop:h-[420px]">
                         <Image
                           src={m.image}
                           alt={m.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-contain p-2 md:p-3"
+                          className="object-contain p-2 tablet:p-3"
                           loading="lazy"
                         />
                       </div>
@@ -97,8 +97,8 @@ export default function ConceptCarousel({ content }: { content: GalleryContent }
               ))}
             </CarouselContent>
 
-            <CarouselPrevious className="left-1 md:left-1.5" />
-            <CarouselNext className="right-1 md:right-1.5" />
+            <CarouselPrevious className="left-1 tablet:left-1.5" />
+            <CarouselNext className="right-1 tablet:right-1.5" />
           </Carousel>
 
           <div className="pointer-events-auto mt-8 flex items-center justify-center gap-2">

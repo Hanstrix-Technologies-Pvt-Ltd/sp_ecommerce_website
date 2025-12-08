@@ -37,9 +37,9 @@ export default function Tabs({ content }: { content: RAndDContent["sections"] })
   return (
     <section className="relative bg-white pb-16 pt-4 sm:pt-6">
       {/* desktop & mobile share the same horizontal padding; lg uses px-10 */}
-      <div className="relative mx-auto max-w-8xl px-4 lg:px-6">
+      <div className="relative mx-auto max-w-8xl px-4 laptop:px-6">
         {/* ---------- DESKTOP TABS (lg+) ---------- */}
-        <div className="hidden lg:block">
+        <div className="hidden laptop:block">
           <div
             role="tablist"
             aria-label="R&D focus areas"
@@ -111,7 +111,7 @@ export default function Tabs({ content }: { content: RAndDContent["sections"] })
         </div>
 
         {/* ---------- MOBILE/TABLET ACCORDION (<= lg) ---------- */}
-        <div className="mt-6 lg:hidden">
+        <div className="mt-6 laptop:hidden">
           <ul className="mx-auto w-[95%] divide-y divide-black/10 rounded-none bg-white ring-1 ring-black/10">
             {TAB_INDEXES.map((idx) => {
               const section = sections[idx];

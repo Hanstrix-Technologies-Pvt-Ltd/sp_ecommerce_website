@@ -44,8 +44,8 @@ const logos = [
 ] as const;
 
 const GUTTERS = {
-  partnersGrid: "px-6 md:px-12 lg:px-16 xl:px-24",
-  testimonials: "px-4 md:px-8 lg:px-12 xl:px-16",
+  partnersGrid: "px-6 tablet:px-12 laptop:px-16 desktop:px-24",
+  testimonials: "px-4 tablet:px-8 laptop:px-12 desktop:px-16",
 };
 
 function BlueArrow() {
@@ -73,7 +73,7 @@ function DocLogo({ name }: { name: string }) {
 
   return (
     <div
-      className="relative aspect-square bg-white ring-1 ring-gray-200 shadow-sm transition md:hover:shadow-md"
+      className="relative aspect-square bg-white ring-1 ring-gray-200 shadow-sm transition tablet:hover:shadow-md"
       style={{
         clipPath: `polygon(
           0 0,
@@ -85,7 +85,7 @@ function DocLogo({ name }: { name: string }) {
         borderRadius: "18px",
       }}
     >
-      <div className="absolute inset-0 flex items-center justify-center p-6 md:p-7">
+      <div className="absolute inset-0 flex items-center justify-center p-6 tablet:p-7">
         <Image
           src={src}
           alt={`${name} logo`}
@@ -120,26 +120,26 @@ export default async function ClientsPage() {
     <>
       <PageHeader title={c.header.title} breadcrumbLabel={c.header.breadcrumb} homeLabel={copy.common.homeLabel} />
 
-      <section className="relative bg-cover bg-center py-6 md:py-10" style={{ backgroundImage: "url(/assets/backgrounds/clients.webp)" }}>
+      <section className="relative bg-cover bg-center py-6 tablet:py-10" style={{ backgroundImage: "url(/assets/backgrounds/clients.webp)" }}>
         <div className="w-full px-5 text-center">
           <div className="flex items-center justify-center gap-2">
             <BlueArrow />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] md:text-sm">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] tablet:text-sm">
               {c.partners.label}
             </span>
           </div>
 
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 md:mt-3 md:text-[55px]">
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 tablet:mt-3 tablet:text-[55px]">
             {c.partners.title}
           </h2>
 
-          <p className="mt-3 w-full text-base leading-7 text-neutral-600 hover:text-red-500 md:mt-4 md:text-lg md:leading-8">
+          <p className="mt-3 w-full text-base leading-7 text-neutral-600 hover:text-red-500 tablet:mt-4 tablet:text-lg tablet:leading-8">
             {c.partners.body}
           </p>
         </div>
 
         <div className={`mx-auto w-full max-w-[1600px] ${GUTTERS.partnersGrid}`}>
-          <div className="mx-auto mt-8 grid grid-cols-2 gap-y-0 gap-x-5 sm:grid-cols-3 md:mt-10 md:grid-cols-4 md:gap-x-6 lg:grid-cols-5 xl:grid-cols-6">
+          <div className="mx-auto mt-8 grid grid-cols-2 gap-y-0 gap-x-5 sm:grid-cols-3 tablet:mt-10 tablet:grid-cols-4 tablet:gap-x-6 laptop:grid-cols-5 desktop:grid-cols-6">
             {logos.map((name) => (
               <DocLogo key={name} name={name} />
             ))}
@@ -147,17 +147,17 @@ export default async function ClientsPage() {
         </div>
       </section>
 
-      <section className="bg-white py-10 md:py-12">
+      <section className="bg-white py-10 tablet:py-12">
         <div className={`mx-auto w-full max-w-[1500px] ${GUTTERS.testimonials}`}>
           <div className="flex items-center gap-2">
             <BlueArrow />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] md:text-[15px]">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB] tablet:text-[15px]">
               {c.testimonials.label}
             </span>
           </div>
 
-          <div className="mt-4 flex flex-col gap-6 md:mt-6 md:flex-row md:items-center md:justify-between">
-            <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 md:text-5xl">
+          <div className="mt-4 flex flex-col gap-6 tablet:mt-6 tablet:flex-row tablet:items-center tablet:justify-between">
+            <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 tablet:text-5xl">
               {c.testimonials.title}
             </h2>
 
@@ -165,14 +165,14 @@ export default async function ClientsPage() {
               href="https://google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-4 self-start rounded-sm bg-[#006DDB] px-9 py-5 font-medium text-white transition hover:bg-[#0a3a85] md:self-auto md:gap-5"
+              className="inline-flex items-center justify-center gap-4 self-start rounded-sm bg-[#006DDB] px-9 py-5 font-medium text-white transition hover:bg-[#0a3a85] tablet:self-auto tablet:gap-5"
             >
               {c.testimonials.ctaLabel}
               <ArrowRight className="h-6 w-6" strokeWidth={2.25} />
             </Link>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-6 tablet:grid-cols-3">
             {[
               "https://www.youtube.com/embed/hp3cmrW7xsM",
               "https://www.youtube.com/embed/njkMD_fyX-I",
