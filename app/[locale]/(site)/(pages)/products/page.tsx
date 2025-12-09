@@ -56,16 +56,16 @@ export default async function ProductsPage() {
       </Script>
 
       <main className="flex flex-col bg-white">
-        <section className="px-3 py-8 md:px-1 md:py-26 xl:px-35">
+        <section className="px-3 py-8 tablet:px-1 tablet:py-26 desktop:px-35">
           <div className="mx-auto max-w-[1500px] px-[5px]">
-            <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 sm:gap-8 tablet:grid-cols-3 laptop:grid-cols-2">
               {items.map((item) => {
                 const href = `/portfolios/${item.link}`;
                 return (
                   <article key={item.id} className="group relative overflow-hidden bg-white">
                     <Link href={href} aria-label={`${item.title} image`} className="block">
                       <div className="relative overflow-hidden">
-                        <div className="relative w-full md:h-80 lg:h-[440px]" style={{ aspectRatio: "16 / 9" }}>
+                        <div className="relative w-full tablet:h-80 laptop:h-[440px]" style={{ aspectRatio: "16 / 9" }}>
                           <Image
                             src={item.image}
                             alt={item.title}

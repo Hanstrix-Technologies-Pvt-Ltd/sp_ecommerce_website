@@ -33,7 +33,7 @@ function MaskIcon({ src, className = "" }: { src: string; className?: string }) 
   );
 }
 
-const WRAP = "mx-auto max-w-[1450px] px-4 md:px-6 lg:px-10";
+const WRAP = "mx-auto max-w-[1450px] px-4 tablet:px-6 laptop:px-10";
 
 export default function WhyStelz({
   why,
@@ -53,16 +53,16 @@ export default function WhyStelz({
 
       <div className={`relative ${WRAP} py-10`}>
         <header className="text-center">
-          <h2 className="text-[30px] md:text-[36px] font-bold tracking-1 text-white">
+          <h2 className="text-[30px] tablet:text-[36px] font-bold tracking-1 text-white">
             {why.title}
           </h2>
-          <p className="mt-3 text-[16px] md:text-[17px] text-white/85">
+          <p className="mt-3 text-[16px] tablet:text-[17px] text-white/85">
             {why.body ||
               "At Stelz, we go beyond just building parking systems — we create smart, space-efficient, and future-ready solutions tailored to modern infrastructure needs."}
           </p>
         </header>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 items-stretch md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-6 items-stretch tablet:grid-cols-2 laptop:grid-cols-3">
           {why.cards.map((card) => (
             <article
               key={card.id}

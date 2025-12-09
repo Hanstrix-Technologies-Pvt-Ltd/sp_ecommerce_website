@@ -23,13 +23,13 @@ export default function ContactSidebar({ copy }: { copy: ContactCopy }) {
     "w-full rounded-md border bg-[#F7F7F7] px-4 py-3 text-[16px] placeholder:text-slate-500 outline-none focus:border-[#174b92]";
 
   return (
-    <aside aria-labelledby="contact-title" className="relative lg:flex lg:flex-col lg:h-full">
-      <div className="relative flex flex-col rounded-md bg-white shadow-sm ring-1 ring-slate-200 lg:h-full">
+    <aside aria-labelledby="contact-title" className="relative laptop:flex laptop:flex-col laptop:h-full">
+      <div className="relative flex flex-col rounded-md bg-white shadow-sm ring-1 ring-slate-200 laptop:h-full">
         {/* Blue top bar */}
         <div className="h-1 w-full bg-[#174b92] rounded-t-md" />
 
         {/* MOBILE padding only added (kept sm/md exactly the same) */}
-        <div className="flex-1 p-4 sm:p-7 md:p-8">
+        <div className="flex-1 p-4 sm:p-7 tablet:p-8">
           {/* add pb-16 sm:pb-0 if a floating CTA overlaps */}
           {/* 24px title to match grid titles */}
           <h3 id="contact-title" className="text-[24px] leading-snug font-extrabold text-[#111]">

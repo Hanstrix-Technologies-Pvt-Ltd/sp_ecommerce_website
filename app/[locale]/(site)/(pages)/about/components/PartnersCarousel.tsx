@@ -34,14 +34,14 @@ function DocLogo({
       className={[
         "relative w-full aspect-square max-w-[180px] mx-auto",
         "bg-white ring-1 ring-gray-200 shadow-sm transition",
-        "md:hover:shadow-md",
+        "tablet:hover:shadow-md",
         className,
       ].join(" ")}
       style={{
         clipPath: `polygon(0 0, calc(100% - ${CUT}px) 0, 100% ${CUT}px, 100% 100%, 0 100%)`,
       }}
     >
-      <div className="absolute inset-0 flex items-center justify-center p-4 md:p-5">
+      <div className="absolute inset-0 flex items-center justify-center p-4 tablet:p-5">
         <Image
           src={src}
           alt={`${name} logo`}
@@ -82,7 +82,7 @@ export default function Clients(): JSX.Element {
         backgroundSize: "cover",
       }}
     >
-      <div className="mx-auto max-w-[1500px] px-4 md:px-8">
+      <div className="mx-auto max-w-[1500px] px-4 tablet:px-8">
         
         {/* Header & Text Wrapper: Centered to match the image */}
         <div className="w-full mb-12 text-center">
@@ -111,12 +111,12 @@ export default function Clients(): JSX.Element {
           plugins={autoplay ? [autoplay] : []}
           className="w-full"
         >
-          <CarouselContent className="-ml-2 md:-ml-3">
+          <CarouselContent className="-ml-2 tablet:-ml-3">
             {logos.map((name, i) => (
               <CarouselItem
                 key={`${name}-${i}`}
                 // Mobile: 2 items (!basis-1/2), MD: 4 items, LG: 6 items
-                className="!basis-1/2 md:!basis-1/4 lg:!basis-1/6 pl-2 md:pl-3"
+                className="!basis-1/2 tablet:!basis-1/4 laptop:!basis-1/6 pl-2 tablet:pl-3"
               >
                 <div className="flex items-center justify-center py-2 group h-full">
                   <DocLogo name={name} />

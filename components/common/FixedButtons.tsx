@@ -96,7 +96,7 @@ export default function FixedButtons() {
             whileHover={{ scale: 1.06 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-lg bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85] md:right-6"
+            className="fixed bottom-8 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-lg bg-[#006DDB] text-white shadow-[0_12px_28px_rgba(23,75,146,0.30)] ring-1 ring-black/5 transition-colors hover:bg-[#0e3e85] tablet:right-6"
             aria-label="Scroll to top"
           >
             <HiChevronUp className="h-6 w-6" />

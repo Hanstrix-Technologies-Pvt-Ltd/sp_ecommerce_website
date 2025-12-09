@@ -29,11 +29,11 @@ export default function ContactForm({ copy }: { copy: FormCopy }) {
 
   return (
     <section className="bg-white py-10">
-      <div className="mx-0 xl:mx-20">
+      <div className="mx-0 desktop:mx-20">
         <div className={`${spaceGrotesk.className} bg-[#F5F5F5]`}>
           <div className="h-[4px] w-full rounded-t-full bg-[#006DDB]" />
 
-          <div className="mx-auto max-w-5xl px-10 pt-10 pb-10 lg:px-12">
+          <div className="mx-auto max-w-5xl px-10 pt-10 pb-10 laptop:px-12">
             <h2 className="text-center text-[52px] font-semibold text-[#1F1F1F]">
               {copy.title}
             </h2>
@@ -50,7 +50,7 @@ export default function ContactForm({ copy }: { copy: FormCopy }) {
                 onChange={(e) => setHoneypotValue(e.target.value)}
               />
 
-              <div className="grid gap-5 md:grid-cols-3">
+              <div className="grid gap-5 tablet:grid-cols-3">
                 <input
                   type="text"
                   name="name"

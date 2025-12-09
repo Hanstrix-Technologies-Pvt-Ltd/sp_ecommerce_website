@@ -11,7 +11,7 @@ interface PageHeaderProps {
   homeHref?: string;
   locale?: Locale;
   imageSrc?: string;
-  heightClass?: string; // e.g. "h-40 md:h-52"
+  heightClass?: string; // e.g. "h-40 tablet:h-52"
 }
 
 export default function PageHeader({
@@ -21,7 +21,7 @@ export default function PageHeader({
   homeHref,
   locale,
   imageSrc = "/assets/pageTemplate/template_top.webp",
-  heightClass = "h-27 md:h-31",
+  heightClass = "h-27 tablet:h-31",
 }: PageHeaderProps) {
   const resolvedHomeHref =
     homeHref ??
@@ -63,9 +63,9 @@ export default function PageHeader({
 
         {/* content */}
         <div className="absolute inset-0 flex items-end">
-          <div className="mx-auto w-full max-w-7xl px-4 md:px-8 pb-5 md:pb-6">
+          <div className="mx-auto w-full max-w-7xl px-4 tablet:px-8 pb-5 tablet:pb-6">
             {/* breadcrumb — size +1 and weight +1; arrow matches text */}
-            <nav aria-label="Breadcrumb" className="text-[15px] md:text-[16px]">
+            <nav aria-label="Breadcrumb" className="text-[15px] tablet:text-[16px]">
               <ol className="flex items-center gap-2 text-[#174b92] font-medium">
                 <li>
                   <Link href={resolvedHomeHref} className="transition-colors hover:text-[#0C41AA]" aria-label="Go to homepage" prefetch>
@@ -77,7 +77,7 @@ export default function PageHeader({
               </ol>
             </nav>
 
-            <h1 className="mt-1 text-[28px] md:text-[40px] font-extrabold leading-tight tracking-tight text-[#174b92]">
+            <h1 className="mt-1 text-[28px] tablet:text-[40px] font-extrabold leading-tight tracking-tight text-[#174b92]">
               {title}
             </h1>
           </div>

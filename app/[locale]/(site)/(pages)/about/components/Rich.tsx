@@ -6,7 +6,7 @@ export function RichParagraphs({ paragraphs }: { paragraphs: RichParagraph[] }) 
   return (
     <>
       {paragraphs.map((para, i) => (
-        <p key={i} className="text-[15px] md:text-[16px] leading-7 md:leading-8 text-neutral-700">
+        <p key={i} className="text-[15px] tablet:text-[16px] leading-7 tablet:leading-8 text-neutral-700">
           {para.map((seg, j) =>
             seg.type === "bold" ? (
               <strong key={j} className="font-semibold">

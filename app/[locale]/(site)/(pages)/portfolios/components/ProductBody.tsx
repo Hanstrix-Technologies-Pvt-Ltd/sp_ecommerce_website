@@ -34,7 +34,7 @@ type Labels = {
 
 export default function ProductBody({ p, labels }: { p: ProductRecord; labels: Labels }) {
   return (
-    <div className="space-y-10 md:space-y-12">
+    <div className="space-y-10 tablet:space-y-12">
       {/* HERO — square, much larger, scales with screen, never cropped */}
       <div className="relative mx-auto w-full max-w-[1200px]">
         <div className="relative w-full aspect-square">
@@ -50,7 +50,7 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
       </div>
 
       {/* SUBTITLE */}
-      <h2 className="text-[28px] md:text-[36px] leading-tight tracking-tight text-[#111]">
+      <h2 className="text-[28px] tablet:text-[36px] leading-tight tracking-tight text-[#111]">
         {p.subtitle}
       </h2>
 
@@ -71,8 +71,8 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
             // Tailwind v4 doesn't ship opacity-15; use inline opacity
           />
 
-          <div className="p-5 md:px-10 md:py-12">
-            <p className=" text-[18px] md:text-[20px] leading-8 text-[#616161]">{p.summary}</p>
+          <div className="p-5 tablet:px-10 tablet:py-12">
+            <p className=" text-[18px] tablet:text-[20px] leading-8 text-[#616161]">{p.summary}</p>
           </div>
         </div>
       </section>
@@ -119,7 +119,7 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
           {labels.applications}
         </h3>
         <div className="mt-8 border-t border-r border-b border-gray-300 bg-white">
-          <ul className="p-5 md:p-6 space-y-4">
+          <ul className="p-5 tablet:p-6 space-y-4">
             {p.applications.map((a, i) => (
               <li key={i} className="flex items-start gap-3 text-[18px] leading-7 text-[#1F1F1F]">
                 <span className="mt-0.5 shrink-0"><Bullseye /></span>

@@ -48,7 +48,7 @@ export default function GalleryCarousel({ content }: { content: GalleryContent }
   const handleDotClick = (index: number) => api?.scrollTo(index);
 
   return (
-    <section className="bg-white py-8 px-3 md:px-10">
+    <section className="bg-white py-8 px-3 tablet:px-10">
       {/* +5px LR padding at the edges */}
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* Title (smaller & font-medium) */}
@@ -70,11 +70,11 @@ export default function GalleryCarousel({ content }: { content: GalleryContent }
               {items.map((it) => (
                 <CarouselItem
                   key={it.id}
-                  className="basis-full sm:basis-1/2 lg:basis-1/3 pl-2 md:pl-0"
+                  className="basis-full sm:basis-1/2 laptop:basis-1/3 pl-2 tablet:pl-0"
                 >
                   {/* Rounded, no shadow, slightly smaller height */}
                   <div className="group overflow-hidden ">
-                    <div className="relative h-[220px] md:h-[280px] lg:h-70">
+                    <div className="relative h-[220px] tablet:h-[280px] laptop:h-70">
                       <Image
                         src={it.image}
                         alt="STELZ gallery image"
@@ -90,8 +90,8 @@ export default function GalleryCarousel({ content }: { content: GalleryContent }
             </CarouselContent>
 
             {/* Arrows tucked slightly inside */}
-            <CarouselPrevious className="left-1 md:left-0" />
-            <CarouselNext className="right-1 md:right-0" />
+            <CarouselPrevious className="left-1 tablet:left-0" />
+            <CarouselNext className="right-1 tablet:right-0" />
           </Carousel>
 
           {/* Dots */}

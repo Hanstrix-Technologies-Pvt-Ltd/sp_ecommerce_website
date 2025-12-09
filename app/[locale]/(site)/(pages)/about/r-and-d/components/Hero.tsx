@@ -79,7 +79,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
   return (
     <section
       aria-labelledby="r-and-d-hero-title"
-      className={`${spaceGrotesk.className} relative overflow-hidden bg-[#F5F5F5] pb-14 pt-10 sm:pb-16 sm:pt-12 lg:pb-18 lg:pt-14`}
+      className={`${spaceGrotesk.className} relative overflow-hidden bg-[#F5F5F5] pb-14 pt-10 sm:pb-16 sm:pt-12 laptop:pb-18 laptop:pt-14`}
     >
       {/* ---------------- Background watermarks (gear + microscope) ---------------- */}
       <div
@@ -91,7 +91,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
           alt=""
           width={360}
           height={360}
-          className="absolute left-0 md:bottom-0 w-65"
+          className="absolute left-0 tablet:bottom-0 w-65"
           priority
         />
         <Image
@@ -105,16 +105,16 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
       </div>
 
       {/* ---------------- Foreground content ---------------- */}
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-5 lg:px-12">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-5 laptop:px-12">
         {/* Top title */}
-        <h1 className="text-center text-[26px] md:text-[40px] font-bold text-[#1F1F1F] py-15">
+        <h1 className="text-center text-[26px] tablet:text-[40px] font-bold text-[#1F1F1F] py-15">
           Research &amp; Development
         </h1>
 
         {/* Hero row: image + text as separate containers */}
-        <div className="mt-[15px] md:pb-10 flex flex-col items-start md:flex-row md:items-center gap-4 lg:gap-6">
+        <div className="mt-[15px] tablet:pb-10 flex flex-col items-start tablet:flex-row tablet:items-center gap-4 laptop:gap-6">
           {/* ---------- Image container ---------- */}
-          <div className="order-2 w-full md:order-1 md:w-[34%] lg:w-[38%]">
+          <div className="order-2 w-full tablet:order-1 tablet:w-[34%] laptop:w-[38%]">
             <div className="overflow-hidden">
               <Image
                 src="/assets/r&d/hero.webp"
@@ -128,7 +128,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
           </div>
 
           {/* ---------- Text container ---------- */}
-          <div className="order-1 w-full md:order-2 md:flex-1">
+          <div className="order-1 w-full tablet:order-2 tablet:flex-1">
             {/* R & D label + thin divider line */}
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-[17px] font-medium tracking-[0.26em] text-[#006DDB]">
@@ -143,7 +143,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
             {/* Character-animated heading */}
             <motion.h2
               id="r-and-d-hero-title"
-              className="mt-4 text-[26px] md:text-[40px] font-bold leading-tight text-[#111111] md:text-[52px]"
+              className="mt-4 text-[26px] tablet:text-[40px] font-bold leading-tight text-[#111111] tablet:text-[52px]"
               initial="hidden"
               animate="visible"
             >

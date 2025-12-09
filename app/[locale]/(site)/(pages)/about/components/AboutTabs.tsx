@@ -89,9 +89,9 @@ export default function AboutTabs({
     /* full-bleed white bg to remove black gutters */
     <section className="relative py-0">
       <span aria-hidden className="absolute inset-0 bg-white" />
-      <div className="relative mx-auto max-w-[1450px] px-4 md:px-10 pb-15">
+      <div className="relative mx-auto max-w-[1450px] px-4 tablet:px-10 pb-15">
         {/* ---------- Desktop tabs ---------- */}
-        <div className="hidden md:block">
+        <div className="hidden tablet:block">
           <div
             role="tablist"
             aria-label="About sections"
@@ -159,7 +159,7 @@ export default function AboutTabs({
         </div>
 
         {/* ---------- Mobile/Tablet accordions ---------- */}
-        <div className="md:hidden">
+        <div className="tablet:hidden">
           <ul className="divide-y divide-black/10 bg-[#F5F5F5]">
             {TAB_KEYS.map((key) => {
               const open = active === key;

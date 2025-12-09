@@ -52,10 +52,10 @@ export default function ParkingModelsCarousel({
   const handleDotClick = (index: number): void => api?.scrollTo(index);
 
   return (
-    <section className="bg-white py-8 md:py-12 px-3 md:px-1 lg:px-5 overscroll-contain">
+    <section className="bg-white py-8 tablet:py-12 px-3 tablet:px-1 laptop:px-5 overscroll-contain">
       <div className="mx-auto max-w-[1500px] px-[5px]">
         {/* Title */}
-        <div className="mb-8 md:mb-12 text-center">
+        <div className="mb-8 tablet:mb-12 text-center">
           <h2 className="mb-3 text-[30px] text-[#1F1F1F] font-medium">{title}</h2>
           <div className="mt-3 flex items-center justify-center gap-1.5">
             <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#1976D2" }} />
@@ -75,22 +75,22 @@ export default function ParkingModelsCarousel({
             style={{ touchAction: "pan-y" }}
           >
             {/* Match Footprint track spacing */}
-            <CarouselContent className="gap-1 md:gap-0">
+            <CarouselContent className="gap-1 tablet:gap-0">
               {items.map((item: ModelItem) => (
                 <CarouselItem
                   key={item.id}
-                  /* 1 / 2 / 3 / 3 / 4 across at base/sm/md/lg+xl/2xl */
-                  className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/3 2xl:basis-1/4 px-2 md:px-0"
+                  /* 1 / 2 / 3 / 3 / 4 across at base/sm/tablet/laptop+desktop/wide */
+                  className="basis-full sm:basis-1/2 tablet:basis-1/3 laptop:basis-1/3 desktop:basis-1/3 wide:basis-1/4 px-2 tablet:px-0"
                 >
                   {/* Card */}
                   <div className="group relative overflow-hidden rounded-[20px] bg-linear-to-br from-gray-800 to-gray-900 shadow-lg transition hover:shadow-2xl">
                     {/* Image wrapper:
-                        - < md: height follows width (aspect ratio)
-                        - ≥ md: fixed height (tablet+) */}
+                        - below tablet: height follows width (aspect ratio)
+                        - tablet and up: fixed height */}
                     <div className="relative overflow-hidden">
                       <div
-                        className="relative w-full md:h-80"
-                        style={{ aspectRatio: "4 / 3" }} /* applies below md */
+                        className="relative w-full tablet:h-80"
+                        style={{ aspectRatio: "4 / 3" }} /* applies below tablet */
                       >
                         <Image
                           src={item.image}
@@ -113,7 +113,7 @@ export default function ParkingModelsCarousel({
 
                       {/* Title */}
                       <div className="absolute left-5 top-12 -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 ease-out">
-                        <h3 className="mx-6 text-lg md:text-2xl font-bold text-white drop-shadow-md">
+                        <h3 className="mx-6 text-lg tablet:text-2xl font-bold text-white drop-shadow-md">
                           {item.title}
                         </h3>
                       </div>
@@ -129,13 +129,13 @@ export default function ParkingModelsCarousel({
             </CarouselContent>
 
             {/* Arrows aligned like Footprint */}
-            <CarouselPrevious className="left-1 md:left-0" />
-            <CarouselNext className="right-1 md:right-0" />
+            <CarouselPrevious className="left-1 tablet:left-0" />
+            <CarouselNext className="right-1 tablet:right-0" />
           </Carousel>
         </div>
 
         {/* Dots (same look) */}
-        <div className="mt-6 md:mt-8 flex items-center justify-center gap-2">
+        <div className="mt-6 tablet:mt-8 flex items-center justify-center gap-2">
           {items.map((_: ModelItem, idx: number) => (
             <button
               key={idx}

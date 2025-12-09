@@ -22,7 +22,7 @@ export default function ContactFormCard({ copy }: { copy: ContactCopy }) {
   const inputClass = "w-full border bg-white px-4 py-3 text-[15px] font-[inherit] outline-none";
 
   return (
-    <form className="space-y-8 px-8 pb-8 md:px-10" onSubmit={handleSubmit} noValidate>
+    <form className="space-y-8 px-8 pb-8 tablet:px-10" onSubmit={handleSubmit} noValidate>
       <input
         type="text"
         name={honeypotName}

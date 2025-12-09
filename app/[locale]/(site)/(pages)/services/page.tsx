@@ -41,10 +41,10 @@ export default async function ServicesPage() {
 
       <main className="flex flex-col bg-white">
         <section className="relative my-0 overflow-x-hidden">
-          <div className="relative mx-0 xl:mx-16 2xl:mx-24">
-            <div className="lg:-mx-3 xl:-mx-4">
+          <div className="relative mx-0 desktop:mx-16 wide:mx-24">
+            <div className="laptop:-mx-3 desktop:-mx-4">
               <div
-                className="relative w-full rounded-none bg-no-repeat md:rounded-md"
+                className="relative w-full rounded-none bg-no-repeat tablet:rounded-md"
                 style={{
                   backgroundImage: `url(${c.header.background})`,
                   backgroundSize: "100% 100%",
@@ -74,8 +74,8 @@ export default async function ServicesPage() {
                   </span>
                 </span>
 
-                <div className="relative z-10 px-5 pt-6 pb-8 md:px-10 md:pt-8 md:pb-10 lg:pt-20 lg:pb-14 xl:px-10">
-                  <div className="mb-8 md:mb-10">
+                <div className="relative z-10 px-5 pt-6 pb-8 tablet:px-10 tablet:pt-8 tablet:pb-10 laptop:pt-20 laptop:pb-14 desktop:px-10">
+                  <div className="mb-8 tablet:mb-10">
                     <div className="flex items-center gap-2 text-[#006DDB]">
                       <span
                         className="inline-block h-4 w-4 bg-[#006DDB]"
@@ -94,16 +94,16 @@ export default async function ServicesPage() {
                       <span className="text-[17px] font-medium uppercase tracking-wide">{c.header.label}</span>
                     </div>
 
-                    <h2 className="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-[#111] md:text-[44px]">
+                    <h2 className="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-[#111] tablet:text-[44px]">
                       {c.header.headline}
                     </h2>
                   </div>
 
-                  <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
+                  <div className="flex flex-col gap-6 laptop:flex-row laptop:items-stretch">
                     <div className="flex-1">
                       <ServicesGrid items={servicesContent.content} />
                     </div>
-                    <aside className="lg:w-[420px] xl:w-[460px] lg:flex lg:flex-col lg:h-auto">
+                    <aside className="laptop:w-[420px] desktop:w-[460px] laptop:flex laptop:flex-col laptop:h-auto">
                       <ContactSidebar copy={c.contactSidebar} />
                     </aside>
                   </div>

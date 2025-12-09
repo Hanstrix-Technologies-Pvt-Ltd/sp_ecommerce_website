@@ -137,12 +137,12 @@ function CarouselContent({
   return (
     <div
       ref={carouselRef}
-      className="overflow-hidden px-1 md:px-2"
+      className="overflow-hidden px-1 tablet:px-2"
       data-slot="carousel-content"
     >
       <div
         className={`flex ${
-          orientation === "horizontal" ? "-ml-2 md:-ml-3 lg:-ml-4" : "-mt-4 flex-col"
+          orientation === "horizontal" ? "-ml-2 tablet:-ml-3 laptop:-ml-4" : "-mt-4 flex-col"
         } ${className || ""}`}
         {...props}
       />
@@ -162,7 +162,7 @@ function CarouselItem({
       aria-roledescription="slide"
       data-slot="carousel-item"
       className={`min-w-0 shrink-0 grow-0 basis-full ${
-        orientation === "horizontal" ? "pl-2 md:pl-3 lg:pl-4" : "pt-4"
+        orientation === "horizontal" ? "pl-2 tablet:pl-3 laptop:pl-4" : "pt-4"
       } ${className || ""}`}
       {...props}
     />
@@ -196,9 +196,9 @@ function CarouselPrevious({
       data-slot="carousel-previous"
       className={`absolute size-12 rounded-full bg-gray-300 shadow-lg transition-all flex items-center justify-center cursor-pointer ${
         orientation === "horizontal"
-          ? "top-1/2 -left-6 md:-left-8 -translate-y-1/2"
+          ? "top-1/2 -left-6 tablet:-left-8 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90"
-      } md:hover:scale-110 ${className || ""}`}
+      } laptop-ui:hover:scale-110 ${className || ""}`}
       disabled={!canScrollPrev}
       style={{
         color: "#0C41AA",
@@ -212,7 +212,7 @@ function CarouselPrevious({
       {...props}
     >
       <svg
-        className="h-6 w-6 md:h-8 md:w-8"
+        className="h-6 w-6 tablet:h-8 tablet:w-8"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -256,9 +256,9 @@ function CarouselNext({
       data-slot="carousel-next"
       className={`absolute size-12 rounded-full bg-gray-300 shadow-lg transition-all flex items-center justify-center cursor-pointer ${
         orientation === "horizontal"
-          ? "top-1/2 -right-6 md:-right-8 -translate-y-1/2"
+          ? "top-1/2 -right-6 tablet:-right-8 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90"
-      } md:hover:scale-110 ${className || ""}`}
+      } laptop-ui:hover:scale-110 ${className || ""}`}
       disabled={!canScrollNext}
       style={{
         color: "#0C41AA",
@@ -272,7 +272,7 @@ function CarouselNext({
       {...props}
     >
       <svg
-        className="h-6 w-6 md:h-8 md:w-8"
+        className="h-6 w-6 tablet:h-8 tablet:w-8"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
