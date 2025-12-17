@@ -271,7 +271,7 @@ export const PRODUCTS: ProductRecord[] = [
     category: "puzzle",
     slug: "3-level-pit-puzzle",
     title: "3-level Pit Puzzle",
-    subtitle: "Enhance Parking Capacity with Puzzle Parking Systems",
+    subtitle: "Double Efficiency with Space-Saving Pit Puzzle Parking",
     hero: { src: "/assets/products/3-level-pit-puzzle/hero.webp" },
     summary:
       "The 3-Level Pit Puzzle Parking System is an advanced, fully automatic solution designed to maximize parking capacity in tight spaces. It allows cars to be parked on three vertical levels, with one at ground level and two below in the pit, while the horizontal puzzle movement enables flexible car retrieval without disturbing other vehicles. This makes it highly efficient for residential complexes, commercial projects, hotels, and urban developments where space is at a premium. The system combines safety, convenience, and smooth hydraulic operation with minimal maintenance requirements. It is a modern, high-density parking solution for developers and users seeking smarter, space-saving alternatives to traditional parking.",

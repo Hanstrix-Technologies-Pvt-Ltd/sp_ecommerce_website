@@ -9,6 +9,7 @@ import { getFooterContent } from "@/lib/i18n/content";
 import type { ProductCategory, ProductRecord } from "@/data/locale/en/Products";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import ContactFormCard from "./ContactFormCard";
+import type { Metadata } from "next";
 
 type Params = { category: string; slug: string };
 
@@ -24,6 +25,38 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
 });
 
+const isValidCategory = (value: string): value is ProductCategory =>
+  ["stack", "puzzle", "automatic"].includes(value);
+
+async function getProductTitle(locale: string, category: string, slug: string): Promise<string> {
+  const [productsModule, enProducts] = await Promise.all([
+    loadProducts(locale),
+    import("@/data/locale/en/Products"),
+  ]);
+
+  if (!isValidCategory(category)) return "Product";
+
+  const baseProduct = enProducts.getProduct(category, slug);
+  const localizedProduct =
+    locale === "en"
+      ? baseProduct
+      : (productsModule.getProduct?.(category, slug) as ProductRecord | null) ||
+        (baseProduct
+          ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProduct.id) ?? null
+          : null);
+
+  return localizedProduct?.title ?? baseProduct?.title ?? "Product";
+}
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const { category, slug } = await params;
+  const title = await getProductTitle(locale, category, slug);
+  return {
+    title,
+  };
+}
+
 const RIGHT_BUTTONS = [
   { key: "stack", label: { en: "Stack parking", de: "Stack-Parken" }, href: "/portfolios/stack/stack-parking" },
   { key: "puzzle", label: { en: "Puzzle parking", de: "Puzzle-Parken" }, href: "/portfolios/puzzle/puzzle-parking" },
@@ -34,6 +67,16 @@ const RIGHT_BUTTONS = [
   { key: "cantilever", label: { en: "Cantilever parking", de: "Kragarm-Parken" }, href: "/portfolios/stack/cantilever-parking" },
   { key: "pit-stacker", label: { en: "Pit Stacker", de: "Gruben-Stacker" }, href: "/portfolios/stack/pit-stacker" },
 ] as const;
+
+const VIDEO_MAP: Record<string, string> = {
+  "stack-parking": "https://www.youtube.com/embed/G7oSn3dupYE?autoplay=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-stack-parking":
+    "https://www.youtube.com/embed/QIK5me0_vWE?autoplay=1&rel=0&modestbranding=1&playsinline=1",
+  "pit-stacker":
+    "https://www.youtube.com/embed/rVev3ghL2Kg?autoplay=1&rel=0&modestbranding=1&playsinline=1",
+  "puzzle-parking":
+    "https://www.youtube.com/embed/9spsJ1HbD0o?autoplay=1&rel=0&modestbranding=1&playsinline=1",
+};
 
 export default async function PortfolioLayout({
   children,
@@ -50,9 +93,6 @@ export default async function PortfolioLayout({
     getPageCopy(locale),
   ]);
 
-  const isValidCategory = (value: string): value is ProductCategory =>
-    ["stack", "puzzle", "automatic"].includes(value);
-
   if (!isValidCategory(category)) {
     notFound();
   }
@@ -67,6 +107,7 @@ export default async function PortfolioLayout({
           ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProduct.id) ?? null
           : null);
   const headerTitle = localizedProduct?.title ?? baseProduct?.title ?? "Product";
+  const videoUrl = baseProduct?.slug ? VIDEO_MAP[baseProduct.slug] : undefined;
 
   const footer = footerModule.content.footer;
   const socials = [
@@ -126,6 +167,20 @@ export default async function PortfolioLayout({
                   ))}
                 </ul>
               </div>
+
+              {videoUrl ? (
+                <div className="mx-auto w-full overflow-hidden bg-white shadow-sm ring-1 ring-slate-200 tablet:max-w-[360px]">
+                  <div className="relative aspect-video w-full bg-black">
+                    <iframe
+                      src={videoUrl}
+                      title={`${headerTitle} video`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="absolute inset-0 h-full w-full border-0"
+                    />
+                  </div>
+                </div>
+              ) : null}
 
               <div className={`${spaceGrotesk.className} mx-auto w-full border border-neutral-900 tablet:max-w-[360px]`}>
                 <div className="px-6 pt-6">

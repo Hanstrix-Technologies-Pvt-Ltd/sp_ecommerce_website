@@ -77,8 +77,8 @@ export const content = {
       phoneLabel: "Phone Number",
       emailLabel: "Email Address",
       followUs: "Follow Us",
-      phone: "080-50056701",
-      mobile: "+91 90365 81605",
+      phone: "080-50057071",
+      mobile: "+91 90355 61605",
       email: "info@stelzparking.com",
       socials: {
         linkedin: "https://www.linkedin.com/company/stlezparking/?viewAsMember=true",

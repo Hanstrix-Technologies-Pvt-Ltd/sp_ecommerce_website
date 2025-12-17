@@ -91,7 +91,7 @@ export const pageCopy = {
     },
     header: { title: "Kontakt", breadcrumb: "Kontakt" },
     form: {
-      title: "Kontakt aufnehmen",
+      title: "Jetzt Kontaktieren",
       placeholders: {
         name: "Vollständiger Name",
         email: "E-Mail-Adresse",

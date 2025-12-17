@@ -269,7 +269,7 @@ export const PRODUCTS: ProductRecord[] = [
     category: "puzzle",
     slug: "3-level-pit-puzzle",
     title: "3-Ebenen-Gruben-Puzzle",
-    subtitle: "Parkkapazität erhöhen mit Puzzle-Parksystemen",
+    subtitle: "Doppelte Effizienz dank platzsparendem Gruben-Puzzle-Parken",
     hero: { src: "/assets/products/3-level-pit-puzzle/hero.webp" },
     summary:
       "Das 3-Ebenen-Gruben-Puzzle-Parksystem ist eine fortschrittliche, vollautomatische Lösung, die die Parkkapazität auf engstem Raum maximiert. Fahrzeuge können auf drei vertikalen Ebenen geparkt werden – eines auf Bodenniveau und zwei darunter in der Grube – während die horizontale Puzzle-Bewegung ein flexibles Abrufen ermöglicht, ohne andere Fahrzeuge zu stören. Dadurch ist es hocheffizient für Wohnanlagen, Gewerbeprojekte, Hotels und urbane Entwicklungen, bei denen Platz besonders wertvoll ist. Das System vereint Sicherheit, Komfort und eine sanfte hydraulische Bedienung bei minimalem Wartungsbedarf. Eine moderne High-Density-Lösung für Entwickler und Nutzer, die smarte, platzsparende Alternativen zum traditionellen Parken suchen.",
