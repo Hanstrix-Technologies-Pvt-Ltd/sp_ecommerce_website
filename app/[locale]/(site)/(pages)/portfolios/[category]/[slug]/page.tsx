@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   }
 
   const productSeo = product.seo;
-  const title = productSeo?.title || `${product.title} | STELZ Multiparking`;
+  const title = product.title;
   const description = productSeo?.description || product.summary.substring(0, 160);
   const ogImage = productSeo?.image || product.hero.src;
 

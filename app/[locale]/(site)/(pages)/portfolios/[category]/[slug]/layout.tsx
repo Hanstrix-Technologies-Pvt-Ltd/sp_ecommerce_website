@@ -24,16 +24,28 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
 });
 
+const isValidCategory = (value: string): value is ProductCategory =>
+  ["stack", "puzzle", "automatic"].includes(value);
+
 const RIGHT_BUTTONS = [
   { key: "stack", label: { en: "Stack parking", de: "Stack-Parken" }, href: "/portfolios/stack/stack-parking" },
   { key: "puzzle", label: { en: "Puzzle parking", de: "Puzzle-Parken" }, href: "/portfolios/puzzle/puzzle-parking" },
   { key: "pit-puzzle", label: { en: "Pit Puzzle", de: "Gruben-Puzzle" }, href: "/portfolios/puzzle/pit-puzzle" },
   { key: "car-hoist", label: { en: "Car Hoist", de: "Autoaufzug" }, href: "/portfolios/automatic/car-hoist" },
-  { key: "slide", label: { en: "Slide parking", de: "Schiebe-Parken" }, href: "/portfolios/automatic/slide-parking" },
   { key: "turn-table", label: { en: "Turn Table", de: "Drehteller" }, href: "/portfolios/automatic/turn-table" },
   { key: "cantilever", label: { en: "Cantilever parking", de: "Kragarm-Parken" }, href: "/portfolios/stack/cantilever-parking" },
   { key: "pit-stacker", label: { en: "Pit Stacker", de: "Gruben-Stacker" }, href: "/portfolios/stack/pit-stacker" },
 ] as const;
+
+const VIDEO_MAP: Record<string, string> = {
+  "stack-parking": "https://www.youtube.com/embed/G7oSn3dupYE?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-stack-parking":
+    "https://www.youtube.com/embed/QIK5me0_vWE?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "pit-stacker":
+    "https://www.youtube.com/embed/rVev3ghL2Kg?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "puzzle-parking":
+    "https://www.youtube.com/embed/9spsJ1HbD0o?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+};
 
 export default async function PortfolioLayout({
   children,
@@ -50,9 +62,6 @@ export default async function PortfolioLayout({
     getPageCopy(locale),
   ]);
 
-  const isValidCategory = (value: string): value is ProductCategory =>
-    ["stack", "puzzle", "automatic"].includes(value);
-
   if (!isValidCategory(category)) {
     notFound();
   }
@@ -67,6 +76,7 @@ export default async function PortfolioLayout({
           ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProduct.id) ?? null
           : null);
   const headerTitle = localizedProduct?.title ?? baseProduct?.title ?? "Product";
+  const videoUrl = baseProduct?.slug ? VIDEO_MAP[baseProduct.slug] : undefined;
 
   const footer = footerModule.content.footer;
   const socials = [
@@ -126,6 +136,20 @@ export default async function PortfolioLayout({
                   ))}
                 </ul>
               </div>
+
+              {videoUrl ? (
+                <div className="mx-auto w-full overflow-hidden bg-white shadow-sm ring-1 ring-slate-200 tablet:max-w-[360px]">
+                  <div className="relative aspect-video w-full bg-black">
+                    <iframe
+                      src={videoUrl}
+                      title={`${headerTitle} video`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="absolute inset-0 h-full w-full border-0"
+                    />
+                  </div>
+                </div>
+              ) : null}
 
               <div className={`${spaceGrotesk.className} mx-auto w-full border border-neutral-900 tablet:max-w-[360px]`}>
                 <div className="px-6 pt-6">

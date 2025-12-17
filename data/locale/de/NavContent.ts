@@ -50,7 +50,7 @@ export const NAV: NavLink[] = [
         expandable: true,
         children: [
           { label: "P-01 ZWEI-EBENEN-PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
-          { label: "PP-01 ZWEI-EBENEN-GRUBEN-PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
+          { label: "PP-01 ZWEI-EBENEN-GRUBEN-PUZZLE", href: "/portfolios/puzzle/pit-puzzle" },
           { label: "PP-02 DREI-EBENEN-GRUBEN-PUZZLE", href: "/portfolios/puzzle/3-level-pit-puzzle" },
           { label: "OP-01 OBERIRDISCHES PUZZLE", href: "/portfolios/puzzle/op-01" },
         ],

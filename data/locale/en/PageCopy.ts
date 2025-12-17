@@ -75,7 +75,7 @@ export const pageCopy = {
       features: "Product Features",
       gallery: "Gallery",
       applications: "Applications",
-      brochure: "Download datasheet",
+      brochure: "Download S-01 datasheet",
     },
   },
   contact: {
@@ -89,7 +89,7 @@ export const pageCopy = {
     },
     header: { title: "Contact Us", breadcrumb: "Contact" },
     form: {
-      title: "Get in Touch",
+      title: "Contact Now",
       placeholders: {
         name: "Full Name",
         email: "Email Address",

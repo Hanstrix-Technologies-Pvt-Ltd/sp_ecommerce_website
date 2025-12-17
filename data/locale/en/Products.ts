@@ -20,7 +20,6 @@ export interface ProductRecord {
   gallery: { src: string; alt?: string }[]; // usually 2 images
   brochureUrl?: string;                        // ONLY the one page that has a brochure
   seo?: {
-    title?: string;
     description?: string;
     keywords?: string[];
     image?: string;                   // og:image fallback to hero
@@ -70,8 +69,7 @@ export const PRODUCTS: ProductRecord[] = [
     // ONLY the one product that has a brochure should include this
     brochureUrl: "/assets/stack-parking-brochure.pdf",
         seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Two-level hydraulic stacker that doubles capacity for homes, offices, and compact sites.",
         keywords: ["stack parking", "mechanical parking", "two-post stacker"],
         image: "/assets/products/stack-parking/hero.webp",
     },
@@ -108,8 +106,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-stack-parking/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Three-level vertical stacker that triples capacity for high-density residential and commercial parking.",
         keywords: ["3 level stack parking", "mechanical parking", "three-post stacker"],
         image: "/assets/products/3-level-stack-parking/hero.webp",
     },
@@ -146,8 +143,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/pit-stacker/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Two-level pit stacker with one platform below grade to save height and keep the surface clear.",
         keywords: ["pit stacker", "mechanical parking", "two-post pit stacker"],
         image: "/assets/products/pit-stacker/hero.webp",
     },
@@ -184,8 +180,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-pit-stacker/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Three-level pit stacker combining a surface space with two below grade for maximum density.",
         keywords: ["3 level pit stacker", "mechanical parking", "three-post pit stacker"],
         image: "/assets/products/3-level-pit-stacker/hero.webp",
     },
@@ -220,8 +215,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/cantilever-parking/hero.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Cantilever system with column-free space below for clean access and compact footprints.",
         keywords: ["cantilever parking", "mechanical parking", "two-post cantilever"],
         image: "/assets/products/cantilever-parking/hero.webp",
     },
@@ -259,8 +253,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Two-level puzzle system with horizontal shifting platforms for independent access in tight plots.",
         keywords: ["puzzle parking", "mechanical parking", "two-post puzzle"],
         image: "/assets/products/puzzle-parking/hero.webp",
     },
@@ -269,9 +262,46 @@ export const PRODUCTS: ProductRecord[] = [
   make({
     id: 7,
     category: "puzzle",
+    slug: "pit-puzzle",
+    title: "Pit Puzzle",
+    subtitle: "Double Efficiency with Space-Saving Pit Puzzle Parking",
+    hero: { src: "/assets/products/pit-puzzle/hero.webp" },
+    summary:
+      "Pit Puzzle Parking Systems are innovative semi-automatic underground parking solutions that combine the benefits of vertical stacking and horizontal shifting, utilizing space both above and below ground level. Designed for properties with limited surface area, these systems enable efficient parking without altering the building’s visible architecture. Ideal for premium residential buildings, office complexes, and commercial properties, Pit Puzzle Parking ensures secure, space-optimized vehicle management.",
+    features: [
+        "Underground Space Utilization – Uses basement levels to add parking capacity without occupying visible land.",
+        "Independent Access – Allows each vehicle to be parked and retrieved independently, without shifting others.",
+        "Smart Automation – Semi-automated operation ensures quick, convenient, and reliable parking.",
+        "Aesthetic Advantage – Maintains surface-level aesthetics by keeping the system hidden underground.",
+        "Customizable Layouts – Can be configured for various depth levels and site constraints.",
+    ],
+    applications: [
+        "Premium Residential Apartments & High-Rises",
+        "Urban Office Buildings & IT Parks",
+        "Shopping Complexes & Mixed-Use Developments",
+        "Hospitals & Institutional Campuses",
+        "Luxury Hotels & Commercial Towers",
+        "Basement and Subterranean Public Parking Facilities",
+        "Space-Constrained Urban Plots",
+        "Showrooms & Corporate Headquarters",
+    ],
+    gallery: [
+        { src: "/assets/products/pit-puzzle/gallery1.webp" },
+        { src: "/assets/products/pit-puzzle/hero.webp" },
+    ],
+    seo: {
+        description: "Two-level pit puzzle with one platform below grade and horizontal shifting for independent access.",
+        keywords: ["pit puzzle", "mechanical parking", "two-post pit puzzle"],
+        image: "/assets/products/pit-puzzle/hero.webp",
+    },
+  }),
+
+  make({
+    id: 8,
+    category: "puzzle",
     slug: "3-level-pit-puzzle",
     title: "3-level Pit Puzzle",
-    subtitle: "Enhance Parking Capacity with Puzzle Parking Systems",
+    subtitle: "Double Efficiency with Space-Saving Pit Puzzle Parking",
     hero: { src: "/assets/products/3-level-pit-puzzle/hero.webp" },
     summary:
       "The 3-Level Pit Puzzle Parking System is an advanced, fully automatic solution designed to maximize parking capacity in tight spaces. It allows cars to be parked on three vertical levels, with one at ground level and two below in the pit, while the horizontal puzzle movement enables flexible car retrieval without disturbing other vehicles. This makes it highly efficient for residential complexes, commercial projects, hotels, and urban developments where space is at a premium. The system combines safety, convenience, and smooth hydraulic operation with minimal maintenance requirements. It is a modern, high-density parking solution for developers and users seeking smarter, space-saving alternatives to traditional parking.",
@@ -297,15 +327,14 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-pit-puzzle/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Three-level pit puzzle system that hides two levels below grade with automatic horizontal moves.",
         keywords: ["3-level pit puzzle", "mechanical parking", "three-post pit puzzle"],
         image: "/assets/products/3-level-pit-puzzle/hero.webp",
     },
   }),
 
   make({
-    id: 8,
+    id: 9,
     category: "puzzle",
     slug: "op-01",
     title: "OP -01",
@@ -335,15 +364,14 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/op-01/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Semi-automatic puzzle platform with flexible layouts for urban apartments and mixed-use projects.",
         keywords: ["op-01", "mechanical parking", "op-01 puzzle"],
         image: "/assets/products/op-01/hero.webp",
     },
   }),
 
   make({
-    id: 9,
+    id: 10,
     category: "automatic",
     slug: "car-hoist",
     title: "Car Hoist",
@@ -373,15 +401,14 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/car-hoist/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Vertical car hoist for moving vehicles between floors without ramps in compact buildings.",
         keywords: ["car hoist", "mechanical parking", "automatic"],
         image: "/assets/products/car-hoist/hero.webp",
     },
   }),
 
   make({
-    id: 10,
+    id: 11,
     category: "automatic",
     slug: "rotary",
     title: "Rotary",
@@ -410,15 +437,14 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/rotary/gallery2.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Rotary parking carousel storing multiple cars vertically in a small footprint for high-turnover sites.",
         keywords: ["rotary", "mechanical parking", "automatic"],
         image: "/assets/products/rotary/hero.webp",
     },
   }),
 
   make({
-    id: 11,
+    id: 12,
     category: "automatic",
     slug: "turn-table",
     title: "Turn Table",
@@ -447,8 +473,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/turn-table/hero.webp" },
     ],
     seo: {
-        title: "Stack Parking | STELZ Multiparking",
-        description: "Double capacity with a compact, reliable stacker system.",
+        description: "Turntable platform rotates vehicles 180/360 degrees for tight driveways and showrooms.",
         keywords: ["turn table", "mechanical parking", "automatic"],
         image: "/assets/products/turn-table/hero.webp",
     },

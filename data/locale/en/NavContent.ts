@@ -42,7 +42,7 @@ export const NAV: NavLink[] = [
         expandable: true,
         children: [
           { label: "P-01 TWO LEVEL PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
-          { label: "PP-01 TWO LEVEL PIT PUZZLE", href: "/portfolios/puzzle/puzzle-parking" },
+          { label: "PP-01 TWO LEVEL PIT PUZZLE", href: "/portfolios/puzzle/pit-puzzle" },
           { label: "PP-02 THREE LEVEL PIT PUZZLE", href: "/portfolios/puzzle/3-level-pit-puzzle" },
           { label: "OP-01 OVER GROUND PUZZLE", href: "/portfolios/puzzle/op-01" },
         ],
