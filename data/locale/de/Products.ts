@@ -20,7 +20,6 @@ export interface ProductRecord {
   gallery: { src: string; alt?: string }[]; // usually 2 images
   brochureUrl?: string;                        // ONLY the one page that has a brochure
   seo?: {
-    title?: string;
     description?: string;
     keywords?: string[];
     image?: string;                   // og:image fallback to hero
@@ -70,8 +69,7 @@ export const PRODUCTS: ProductRecord[] = [
     // ONLY the one product that has a brochure should include this
     brochureUrl: "/assets/stack-parking-brochure.pdf",
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Zwei-Ebenen-Stacker mit hydraulischem Hub, verdoppelt die Stellplaetze fuer Wohn- und Gewerbeobjekte.",
       keywords: ["stack parking", "mechanical parking", "two-post stacker"],
       image: "/assets/products/stack-parking/hero.webp",
     },
@@ -108,8 +106,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-stack-parking/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Drei-Ebenen-Stacker fuer hohe Dichte, verdreifacht die Kapazitaet auf gleicher Flaeche.",
       keywords: ["3 level stack parking", "mechanical parking", "three-post stacker"],
       image: "/assets/products/3-level-stack-parking/hero.webp",
     },
@@ -146,8 +143,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/pit-stacker/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Zwei-Ebenen-Pit-Stacker mit unterirdischer Ebene, spart Bauhoehe und haelt die Oberflaeche frei.",
       keywords: ["pit stacker", "mechanical parking", "two-post pit stacker"],
       image: "/assets/products/pit-stacker/hero.webp",
     },
@@ -184,8 +180,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-pit-stacker/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Drei-Ebenen-Pit-Stacker mit zwei Ebenen im Grubenbereich fuer maximale Dichte.",
       keywords: ["3 level pit stacker", "mechanical parking", "three-post pit stacker"],
       image: "/assets/products/3-level-pit-stacker/hero.webp",
     },
@@ -219,8 +214,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/cantilever-parking/hero.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Kragarm-Parken ohne Stuetzen unter der Plattform, ideal fuer schlanke, saubere Grundrisse.",
       keywords: ["cantilever parking", "mechanical parking", "two-post cantilever"],
       image: "/assets/products/cantilever-parking/hero.webp",
     },
@@ -257,8 +251,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Zwei-Ebenen-Puzzle-System mit horizontal beweglichen Plattformen fuer unabhaengigen Zugriff.",
       keywords: ["puzzle parking", "mechanical parking", "two-post puzzle"],
       image: "/assets/products/puzzle-parking/hero.webp",
     },
@@ -266,6 +259,44 @@ export const PRODUCTS: ProductRecord[] = [
 
   make({
     id: 7,
+    category: "puzzle",
+    slug: "pit-puzzle",
+    title: "Pit Puzzle",
+    subtitle: "Doppelte Effizienz mit platzsparendem Pit-Puzzle-Parken",
+    hero: { src: "/assets/products/pit-puzzle/hero.webp" },
+    summary:
+      "Pit-Puzzle-Parks ysteme sind innovative, halbautomatische unterirdische Parklösungen, die die Vorteile des vertikalen Stapelns und des horizontalen Verschiebens kombinieren und so den Raum sowohl über als auch unter der Geländeoberkante nutzen. Entwickelt für Grundstücke mit begrenzter Oberfläche, ermöglichen diese Systeme effizientes Parken, ohne die sichtbare Architektur des Gebäudes zu verändern. Ideal für hochwertige Wohngebäude, Bürokomplexe und Gewerbeimmobilien – Pit-Puzzle-Parken sorgt für eine sichere, flächenoptimierte Fahrzeugverwaltung.",
+    features: [
+      "Nutzung unterirdischer Flächen – Erhöht die Parkkapazität durch die Nutzung von Untergeschossen, ohne sichtbare Flächen zu belegen.",
+      "Unabhängiger Zugriff – Jedes Fahrzeug kann unabhängig geparkt und abgerufen werden, ohne andere verschieben zu müssen.",
+      "Intelligente Automatisierung – Halbautomatischer Betrieb für schnelles, komfortables und zuverlässiges Parken.",
+      "Ästhetischer Vorteil – Erhält die Optik auf Geländeebene, da das System unterirdisch verborgen bleibt.",
+      "Anpassbare Layouts – Konfigurierbar für unterschiedliche Tiefenstufen und standortspezifische Einschränkungen.",
+    ],
+    applications: [
+      "Hochwertige Wohnanlagen & Hochhäuser",
+      "Städtische Bürogebäude & IT-Parks",
+      "Einkaufszentren & Mixed-Use-Entwicklungen",
+      "Krankenhäuser & Institutionelle Campusgelände",
+      "Luxushotels & Gewerbetürme",
+      "Untergeschoss- und unterirdische öffentliche Parkanlagen",
+      "Platzbeschränkte innerstädtische Grundstücke",
+      "Showrooms & Unternehmenszentralen",
+    ],
+    gallery: [
+      { src: "/assets/products/pit-puzzle/gallery1.webp" },
+      { src: "/assets/products/pit-puzzle/hero.webp" },
+    ],
+    seo: {
+      description: "Zwei-Ebenen-Pit-Puzzle mit einer Ebene im Untergrund und horizontaler Verschiebung fuer unabhaengigen Zugriff.",
+      keywords: ["Pit Puzzle", "mechanisches Parken", "Zwei-Säulen-Pit-Puzzle"],
+      image: "/assets/products/pit-puzzle/hero.webp",
+    },
+  }),
+
+
+  make({
+    id: 8,
     category: "puzzle",
     slug: "3-level-pit-puzzle",
     title: "3-Ebenen-Gruben-Puzzle",
@@ -295,15 +326,14 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-pit-puzzle/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Drei-Ebenen-Pit-Puzzle mit zwei Ebenen im Untergrund und automatischen Verschiebungen.",
       keywords: ["3-level pit puzzle", "mechanical parking", "three-post pit puzzle"],
       image: "/assets/products/3-level-pit-puzzle/hero.webp",
     },
   }),
 
   make({
-    id: 8,
+    id: 9,
     category: "puzzle",
     slug: "op-01",
     title: "OP -01",
@@ -333,15 +363,14 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/op-01/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Semi-automatische Puzzle-Plattform mit flexiblen Layouts fuer urbane Projekte.",
       keywords: ["op-01", "mechanical parking", "op-01 puzzle"],
       image: "/assets/products/op-01/hero.webp",
     },
   }),
 
   make({
-    id: 9,
+    id: 10,
     category: "automatic",
     slug: "car-hoist",
     title: "Autoaufzug",
@@ -371,15 +400,14 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/car-hoist/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Autoaufzug fuer vertikalen Fahrzeugtransport zwischen Ebenen ohne Rampen.",
       keywords: ["car hoist", "mechanical parking", "automatic"],
       image: "/assets/products/car-hoist/hero.webp",
     },
   }),
 
   make({
-    id: 10,
+    id: 11,
     category: "automatic",
     slug: "rotary",
     title: "Rotary",
@@ -408,15 +436,14 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/rotary/gallery2.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Rotationssystem zur vertikalen Speicherung vieler Fahrzeuge auf kleiner Grundflaeche.",
       keywords: ["rotary", "mechanical parking", "automatic"],
       image: "/assets/products/rotary/hero.webp",
     },
   }),
 
   make({
-    id: 11,
+    id: 12,
     category: "automatic",
     slug: "turn-table",
     title: "Drehteller",
@@ -445,8 +472,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/turn-table/hero.webp" },
     ],
     seo: {
-      title: "Stack-Parken | STELZ Multiparking",
-      description: "Doppelte Kapazität mit einem kompakten, zuverlässigen Stacker-System.",
+      description: "Drehteller rotiert Fahrzeuge um 180/360 Grad fuer enge Zufahrten und Showrooms.",
       keywords: ["turn table", "mechanical parking", "automatic"],
       image: "/assets/products/turn-table/hero.webp",
     },
