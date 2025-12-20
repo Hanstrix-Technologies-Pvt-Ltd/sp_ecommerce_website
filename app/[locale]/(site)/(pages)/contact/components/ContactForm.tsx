@@ -22,7 +22,7 @@ type FormCopy = {
 
 export default function ContactForm({ copy }: { copy: FormCopy }) {
   const { values, errors, status, feedback, onFieldChange, handleSubmit, honeypotName, setHoneypotValue } =
-    useContactForm(copy.title || "Contact");
+    useContactForm();
 
   const inputBase =
     "h-13 w-full bg-white px-3 text-[17px] text-[#616161] outline-none focus:border-[#006DDB]";

@@ -94,12 +94,6 @@ export default function Navbar({ locale, nav }: NavbarProps): JSX.Element {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (isLaptopUI && mobileOpen) {
-      setMobileOpen(false);
-    }
-  }, [isLaptopUI, mobileOpen]);
-
   return (
     <>
       <motion.header
@@ -169,7 +163,7 @@ export default function Navbar({ locale, nav }: NavbarProps): JSX.Element {
 
       {/* MOBILE/TABLET: overlay + drawer */}
       <AnimatePresence>
-        {mobileOpen && (
+        {!isLaptopUI && mobileOpen && (
           <>
             <motion.div
               key="overlay"
@@ -247,12 +241,6 @@ function DesktopTopItem({
     if (!enableHover) return;
     setOpen(false);
   };
-
-  useEffect(() => {
-    if (!isLaptopUI && open) {
-      setOpen(false);
-    }
-  }, [isLaptopUI, open]);
 
   return (
     <li
@@ -499,4 +487,3 @@ function MobileMenu({
     </div>
   );
 }
-

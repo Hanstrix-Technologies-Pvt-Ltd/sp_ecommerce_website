@@ -26,6 +26,12 @@ html {
 
 /* ------------------------------------------------------------CUSTOM DESIGNS------------------------------------------------ */
 
+/* Network-aware softening: when NetworkClassProvider marks slow networks */
+html.slow-network [data-network="slow"] {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
 /* Improved focus states for accessibility */
 *:focus-visible {
   outline: 2px solid #0C41AA;

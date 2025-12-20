@@ -7,22 +7,15 @@ export default function CustomCursor() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [displayPos, setDisplayPos] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [disabled, setDisabled] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => (typeof window === "undefined" ? true : window.innerWidth >= 768));
+  const [disabled] = useState(
+    () => shouldReduceMotion() || isSlowNetwork() || hasSaveDataEnabled()
+  );
 
   useEffect(() => {
-    if (shouldReduceMotion() || isSlowNetwork() || hasSaveDataEnabled()) {
-      setDisabled(true);
-    }
-  }, []);
+    // Check if device is desktop on resize
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 768);
 
-  useEffect(() => {
-    // Check if device is desktop on mount and resize
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
-
-    checkIsDesktop();
     window.addEventListener("resize", checkIsDesktop);
 
     return () => window.removeEventListener("resize", checkIsDesktop);
@@ -47,7 +40,7 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, []);
+  }, [disabled]);
 
   // Smooth animation with delay using animation frame
   useEffect(() => {
@@ -66,7 +59,7 @@ export default function CustomCursor() {
     animationId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationId);
-  }, [mousePos]);
+  }, [mousePos, disabled]);
 
   // Only show on desktop and when not disabled by user/device preference
   if (!isDesktop || disabled) {

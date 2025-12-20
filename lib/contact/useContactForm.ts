@@ -3,7 +3,6 @@
 import { useCallback, useRef, useState } from "react";
 import {
   CONTACT_HONEYPOT_FIELD,
-  MIN_FILL_TIME_MS,
   ContactFormValues,
   ContactFormErrors,
   hasContactFormErrors,
@@ -13,7 +12,7 @@ import {
 
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
-export function useContactForm(initialFormName?: string) {
+export function useContactForm() {
   const [values, setValues] = useState<ContactFormValues>({
     name: "",
     email: "",
@@ -55,7 +54,7 @@ export function useContactForm(initialFormName?: string) {
     setErrors({});
     startedAtRef.current = Date.now();
     honeypotRef.current = "";
-  }, [initialFormName]);
+  }, []);
 
   const handleSubmit = useCallback(
     async (event?: React.FormEvent<HTMLFormElement>) => {
@@ -99,7 +98,7 @@ export function useContactForm(initialFormName?: string) {
         setStatus("success");
         setFeedback("Thanks! We received your request.");
         resetForm();
-      } catch (error) {
+      } catch {
         setStatus("error");
         setFeedback("Unable to submit right now. Please try again later.");
       } finally {

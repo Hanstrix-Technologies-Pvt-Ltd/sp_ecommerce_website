@@ -17,7 +17,7 @@ type ContactCopy = {
 
 export default function ContactSidebar({ copy }: { copy: ContactCopy }) {
   const { values, errors, status, feedback, onFieldChange, handleSubmit, honeypotName, setHoneypotValue } =
-    useContactForm(copy.title || "Services Contact");
+    useContactForm();
 
   const inputBase =
     "w-full rounded-md border bg-[#F7F7F7] px-4 py-3 text-[16px] placeholder:text-slate-500 outline-none focus:border-[#174b92]";
