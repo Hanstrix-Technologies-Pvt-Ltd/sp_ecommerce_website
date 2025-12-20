@@ -16,7 +16,7 @@ type ContactCopy = {
 
 export default function ContactFormCard({ copy }: { copy: ContactCopy }) {
   const { values, errors, status, feedback, onFieldChange, handleSubmit, honeypotName, setHoneypotValue } =
-    useContactForm(copy.title || "Portfolio Contact");
+    useContactForm();
 
   const labelClass = "mb-2 block text-[15px] font-semibold text-neutral-800";
   const inputClass = "w-full border bg-white px-4 py-3 text-[15px] font-[inherit] outline-none";
