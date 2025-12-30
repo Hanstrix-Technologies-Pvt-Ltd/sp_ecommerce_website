@@ -44,6 +44,9 @@ export const content = {
       { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru" },
       { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Nos", location: "Hyderabad" },
       { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Nos", location: "Hyderabad" },
+      { id: 11, image: "/assets/footprint/BrigadeDeccan.webp", name: "Brigade Deccan Heights", spaces: "350 Nos", location: "Bengaluru" },
+      { id: 12, image: "/assets/footprint/BrigadeUtopia.webp", name: "Brigade Utopia", spaces: "300 Nos", location: "Bengaluru" },
+      { id: 13, image: "/assets/footprint/BrigadeVantage.webp", name: "Brigade Vantage", spaces: "190 Nos", location: "Mysuru" },
     ],
   },
 
