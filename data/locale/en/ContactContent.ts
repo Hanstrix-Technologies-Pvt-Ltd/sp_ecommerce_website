@@ -43,10 +43,10 @@ export const CONTACT_CONTENT: ContactPageContent = {
         },
         {
           id: 2,
-          name: "Ashik Gowda",
+          name: "Ayush Gowda",
           role: "Sales Executive – A.P",
-          phone: "+91 63663 17750",
-          email: "ashikgowda@stelzparking.in",
+          phone: "+91 90355 61061",
+          email: "ayushgowda@stelzparking.in",
         },
         {
           id: 3,
