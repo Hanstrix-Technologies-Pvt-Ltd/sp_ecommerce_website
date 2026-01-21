@@ -37,6 +37,8 @@ export default async function ServicesPage() {
         breadcrumbLabel={c.header.breadcrumb}
         homeLabel={copy.common.homeLabel}
         locale={locale}
+        imageSrc={c.header.background}
+        heightClass="h-32 tablet:h-36"
       />
 
       <main className="flex flex-col bg-white">
@@ -46,9 +48,6 @@ export default async function ServicesPage() {
               <div
                 className="relative w-full rounded-none bg-no-repeat tablet:rounded-md"
                 style={{
-                  backgroundImage: `url(${c.header.background})`,
-                  backgroundSize: "100% 100%",
-                  backgroundPosition: "center",
                   maxWidth: "1440px",
                   marginInline: "auto",
                 }}

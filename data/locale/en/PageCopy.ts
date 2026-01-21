@@ -23,7 +23,7 @@ export const pageCopy = {
       watermark: "SERVICES",
       label: "Services",
       headline: "What We Offer",
-      background: "/assets/backgrounds/services.webp",
+      background: "/assets/backgrounds/services-subheader.jpg",
     },
     contactSidebar: {
       title: "Have any Question?",

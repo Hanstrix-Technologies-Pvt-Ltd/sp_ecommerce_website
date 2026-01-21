@@ -15,7 +15,7 @@ const logos = [
   "purvankara", "vamsiram", "bhartiya", "sparsh", "manipal", "confident", "suvarna",
   "aragen", "brigade", "cmr", "concorde", "divyasree", "dmart", "durga", "esic", "gar",
   "ginger", "indiqube", "kalyani", "lohia", "maavi", "nanik", "pavani", "phoenix",
-  "sattva", "sapra", "shriram", "skav", "supreme", "swojas", "taksh", "ushodaya", "vaishnavi",
+  "sattva", "sapra", "shriram", "skav", "sumadhura", "supreme", "swojas", "taksh", "ushodaya", "vaishnavi",
 ] as const;
 
 /* ---------- Compact cut-corner card (Responsive) ---------- */
@@ -27,6 +27,7 @@ function DocLogo({
   className?: string;
 }): JSX.Element {
   const src = `/assets/clients/${name}.webp`;
+  const srcJpg = `/assets/clients/${name}.jpg`;
   const CUT = 36;
 
   return (
@@ -43,7 +44,7 @@ function DocLogo({
     >
       <div className="absolute inset-0 flex items-center justify-center p-4 tablet:p-5">
         <Image
-          src={src}
+          src={name === "sumadhura" ? srcJpg : src}
           alt={`${name} logo`}
           fill
           className="object-contain transition-colors duration-200 p-2"
