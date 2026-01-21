@@ -36,6 +36,7 @@ const logos = [
   "sapra",
   "shriram",
   "skav",
+  "sumadhura",
   "supreme",
   "swojas",
   "taksh",
@@ -68,7 +69,9 @@ function BlueArrow() {
 }
 
 function DocLogo({ name }: { name: string }) {
+  // Try webp first, fallback to jpg
   const src = `/assets/clients/${name}.webp`;
+  const srcJpg = `/assets/clients/${name}.jpg`;
   const CUT = 45;
 
   return (
@@ -87,7 +90,7 @@ function DocLogo({ name }: { name: string }) {
     >
       <div className="absolute inset-0 flex items-center justify-center p-6 tablet:p-7">
         <Image
-          src={src}
+          src={name === "sumadhura" ? srcJpg : src}
           alt={`${name} logo`}
           fill
           className="object-contain"

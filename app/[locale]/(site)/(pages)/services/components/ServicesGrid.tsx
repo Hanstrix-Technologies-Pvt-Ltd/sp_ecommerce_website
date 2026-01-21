@@ -19,7 +19,7 @@ function StepBadge({ n }: { n: number }) {
 export default function ServicesGrid({ items }: { items: typeof ServicesContent.content }) {
 
   return (
-    <div className="relative p-0">
+    <div className="relative p-0 overflow-visible">
       <div className="grid grid-cols-1 tablet:grid-cols-2 tablet:gap-x-6">
         {items.map((item, idx) => {
           const isRightCol = idx % 2 === 1;
@@ -30,7 +30,8 @@ export default function ServicesGrid({ items }: { items: typeof ServicesContent.
               key={item.title}
               className={[
                 // compact vertical spacing, no global horizontal padding
-                "py-4 tablet:py-2 laptop:py-6",
+                // First row needs more top padding to prevent cutting
+                idx < 2 ? "pt-6 pb-4 tablet:pt-4 tablet:pb-2 laptop:pt-8 laptop:pb-6" : "py-4 tablet:py-2 laptop:py-6",
                 // row divider
                 isSecondRow ? "border-t border-slate-200" : "",
                 // vertical grid line only before right column

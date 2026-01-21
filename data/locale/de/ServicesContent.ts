@@ -22,5 +22,10 @@ export const services = {
       ps:
         "Zuverlässiger Support, damit Ihr System effizient läuft. Wir bieten regelmäßige Wartung, schnelle Reparaturen und langfristige Servicepläne.",
     },
+    {
+      title: "Einmaliger Service",
+      ps:
+        "Einmaliger Service ist ein kostenpflichtiger, auf Abruf verfügbarer Wartungssupport, der von STELZ MULTIPARKING für Kunden ohne aktiven AMC bereitgestellt wird. Dieser Service ist strikt auf die Diagnose und Behebung spezifischer Probleme beschränkt, die zum Zeitpunkt des Besuchs gemeldet wurden.",
+    },
   ],
 };

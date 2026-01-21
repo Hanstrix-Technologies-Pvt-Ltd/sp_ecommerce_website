@@ -25,7 +25,7 @@ export const pageCopy = {
       watermark: "DIENSTLEISTUNGEN",
       label: "Dienstleistungen",
       headline: "Was wir anbieten",
-      background: "/assets/backgrounds/services.webp",
+      background: "/assets/backgrounds/services-subheader.jpg",
     },
     contactSidebar: {
       title: "Haben Sie Fragen?",

@@ -26,5 +26,10 @@ export const services = {
       ps:
       "Reliable support to keep your system running efficiently. We offer routine maintenance, quick repairs, and long-term service plans.",
     },
+    {
+      title: "One-Time Service",
+      ps:
+      "One-Time Service is a paid, on-call maintenance support provided by STELZ MULTIPARKING for customers without an active AMC. This service is strictly limited to diagnosing and rectifying specific issues reported at the time of the visit.",
+    },
   ],
 };
