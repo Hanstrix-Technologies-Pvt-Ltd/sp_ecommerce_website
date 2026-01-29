@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import {
-  CONTACT_HONEYPOT_FIELD,
-  MIN_FILL_TIME_MS,
   ContactFormValues,
   hasContactFormErrors,
   normalizeFormValues,
@@ -12,65 +10,13 @@ import { acknowledgementTemplate, enquiryTemplate } from "@/lib/contact/emailTem
 
 export const runtime = "nodejs";
 
-type ContactRequestBody = ContactFormValues & {
-  honeypot?: string;
-  durationMs?: number;
-};
-
-type RateLimitEntry = { count: number; expiresAt: number };
-
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 5;
-const rateLimitStore = new Map<string, RateLimitEntry>();
-const EMAIL_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour per email
-const EMAIL_RATE_LIMIT_MAX = 3;
-const emailRateLimitStore = new Map<string, RateLimitEntry>();
-
-const MAX_MESSAGE_LENGTH = 1500;
-const MAX_NAME_LENGTH = 120;
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://stelzparking.com";
-const trustedHosts = new Set(
-  [siteUrl, "http://localhost:3000", "http://127.0.0.1:3000"]
-    .map((url) => {
-      try {
-        return new URL(url).host;
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean) as string[]
-);
 
 const invalidResponse = (message: string, status = 400) =>
   NextResponse.json({ success: false, message }, { status });
 
-const getClientIp = (request: Request) => {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim();
-  }
-
-  return request.headers.get("x-real-ip") ?? "unknown";
-};
-
-const applyRateLimit = (key: string, store: Map<string, RateLimitEntry>, max: number, windowMs: number) => {
-  const now = Date.now();
-  const entry = store.get(key);
-
-  if (!entry || entry.expiresAt < now) {
-    store.set(key, { count: 1, expiresAt: now + windowMs });
-    return false;
-  }
-
-  entry.count += 1;
-  store.set(key, entry);
-
-  return entry.count > max;
-};
-
 export async function POST(request: Request) {
-  let body: ContactRequestBody;
+  let body: ContactFormValues;
 
   try {
     body = await request.json();
@@ -82,31 +28,6 @@ export async function POST(request: Request) {
     return invalidResponse("Request missing data");
   }
 
-  const origin = request.headers.get("origin");
-  const referer = request.headers.get("referer");
-  const isTrustedOrigin = (...values: Array<string | null>) =>
-    values.every((value) => {
-      if (!value) return true;
-      if (!/^https?:\/\//i.test(value)) return true; // allow relative refs
-      try {
-        return trustedHosts.has(new URL(value).host);
-      } catch {
-        return false;
-      }
-    });
-
-  if (!isTrustedOrigin(origin, referer)) {
-    return invalidResponse("Unauthorized origin", 403);
-  }
-
-  if ((body as Record<string, unknown>)[CONTACT_HONEYPOT_FIELD] || body.honeypot) {
-    return invalidResponse("Spam detected", 422);
-  }
-
-  if (typeof body.durationMs === "number" && body.durationMs < MIN_FILL_TIME_MS) {
-    return invalidResponse("Submission rejected", 422);
-  }
-
   const normalizedValues = normalizeFormValues({
     name: typeof body.name === "string" ? body.name : "",
     email: typeof body.email === "string" ? body.email : "",
@@ -115,25 +36,8 @@ export async function POST(request: Request) {
   });
   const errors = validateContactForm(normalizedValues);
 
-  if (normalizedValues.message.length > MAX_MESSAGE_LENGTH) {
-    errors.message = `Message is too long (max ${MAX_MESSAGE_LENGTH} characters).`;
-  }
-
-  if (normalizedValues.name.length > MAX_NAME_LENGTH) {
-    errors.name = `Name is too long (max ${MAX_NAME_LENGTH} characters).`;
-  }
-
   if (hasContactFormErrors(errors)) {
     return NextResponse.json({ success: false, errors }, { status: 400 });
-  }
-
-  const clientIp = getClientIp(request);
-  if (applyRateLimit(`ip:${clientIp}`, rateLimitStore, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS)) {
-    return invalidResponse("Too many requests. Please try again later.", 429);
-  }
-
-  if (applyRateLimit(`email:${normalizedValues.email}`, emailRateLimitStore, EMAIL_RATE_LIMIT_MAX, EMAIL_RATE_LIMIT_WINDOW_MS)) {
-    return invalidResponse("Too many requests from this email. Please try again later.", 429);
   }
 
   const smtpUser = process.env.SMTP_USERNAME;
@@ -155,7 +59,6 @@ export async function POST(request: Request) {
     },
   });
 
-  // Use the single company mailbox for sending and receiving.
   const fromEmail = smtpUser;
   const companyRecipient = smtpUser;
 
@@ -180,7 +83,7 @@ export async function POST(request: Request) {
   const companyMail = {
     from: fromEmail,
     to: companyRecipient,
-    replyTo: normalizedValues.email, // company can reply directly to the user
+    replyTo: normalizedValues.email,
     subject: `New enquiry from ${normalizedValues.name}`,
     text: enquiryTpl.text,
     html: enquiryTpl.html,
@@ -188,7 +91,7 @@ export async function POST(request: Request) {
 
   const customerMail = {
     from: fromEmail,
-    to: normalizedValues.email, // dynamic: send acknowledgement to the user's email
+    to: normalizedValues.email,
     subject: "We received your request",
     text: acknowledgementTpl.text,
     html: acknowledgementTpl.html,
