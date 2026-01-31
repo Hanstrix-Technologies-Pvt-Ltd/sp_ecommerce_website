@@ -49,12 +49,13 @@ function BlueArrow() {
 /* logo cell */
 function Logo({ name }: { name: string }) {
   const src = `/assets/clients/${name}.webp`;
+  const srcJpg = `/assets/clients/${name}.jpg`;
   const IMG_CLASSES =
     "object-contain pointer-events-none select-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:scale-110 will-change-transform";
   return (
     <div className="relative w-full h-24 sm:h-28 tablet:h-32 laptop:h-36 desktop:h-40">
       <Image
-        src={src}
+        src={name === "sumadhura" ? srcJpg : src}
         alt={`${name} logo`}
         fill
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"

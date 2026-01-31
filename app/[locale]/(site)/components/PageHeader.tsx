@@ -41,14 +41,14 @@ export default function PageHeader({
   return (
     <header role="banner" className="relative w-full">
 
-      <div className={`relative w-full ${heightClass}`}>
+      <div className={`relative w-full ${heightClass} overflow-hidden`}>
         <Image
           src={imageSrc}
           alt="" // decorative
           fill
           priority
           quality={75}
-          className="object-cover"
+          className={imageSrc.includes("services-subheader") ? "object-cover object-top" : "object-cover"}
           style={{
             filter: `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})`,
           }}
@@ -62,8 +62,8 @@ export default function PageHeader({
         />
 
         {/* content */}
-        <div className="absolute inset-0 flex items-end">
-          <div className="mx-auto w-full max-w-7xl px-4 tablet:px-8 pb-5 tablet:pb-6">
+        <div className="absolute inset-0 flex items-start tablet:items-end">
+          <div className="mx-auto w-full max-w-7xl px-4 tablet:px-8 pt-5 tablet:pt-0 tablet:pb-5 tablet:pb-6">
             {/* breadcrumb — size +1 and weight +1; arrow matches text */}
             <nav aria-label="Breadcrumb" className="text-[15px] tablet:text-[16px]">
               <ol className="flex items-center gap-2 text-[#174b92] font-medium">

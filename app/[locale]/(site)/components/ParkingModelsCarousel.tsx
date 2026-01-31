@@ -118,10 +118,6 @@ export default function ParkingModelsCarousel({
                         </h3>
                       </div>
 
-                      {/* Watermark */}
-                      <div className="absolute bottom-3 right-3 text-xs text-white/70">
-                        This image is only for Representation
-                      </div>
                     </div>
                   </div>
                 </CarouselItem>

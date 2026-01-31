@@ -10,6 +10,11 @@ export const content = {
       { id: 5, image: "/assets/gallery/5.webp" },
       { id: 6, image: "/assets/gallery/6.webp" },
       { id: 7, image: "/assets/gallery/7.webp" },
+      { id: 8, image: "/assets/gallery/8.webp" },
+      { id: 9, image: "/assets/gallery/9.webp" },
+      { id: 10, image: "/assets/gallery/10.webp" },
+      { id: 11, image: "/assets/gallery/11.webp" },
+      { id: 12, image: "/assets/gallery/12.webp" },
     ],
   },
   concepts: {
