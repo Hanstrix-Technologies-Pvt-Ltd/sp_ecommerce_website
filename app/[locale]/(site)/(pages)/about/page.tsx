@@ -37,7 +37,12 @@ export default async function AboutUs() {
 
   return (
     <>
-      <PageHeader title={copy.about.header.title} breadcrumbLabel={copy.about.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.about.header.title}
+        breadcrumbLabel={copy.about.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.about.header.background}
+      />
 
       <Intro intro={aboutContent.intro} youtube="https://youtu.be/KQBZgdnIpLU" />
       <AboutTabs tabs={aboutContent.tabs} labels={copy.about.tabsLabels} />

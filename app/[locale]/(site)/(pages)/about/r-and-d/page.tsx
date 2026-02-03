@@ -34,7 +34,12 @@ export default async function RAndDPage() {
 
   return (
     <>
-      <PageHeader title={copy.aboutRandD.header.title} breadcrumbLabel={copy.aboutRandD.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.aboutRandD.header.title}
+        breadcrumbLabel={copy.aboutRandD.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.aboutRandD.header.background}
+      />
       <main className="bg-white">
         <Hero content={content} />
         <Tabs content={content.sections} />

@@ -50,6 +50,7 @@ export const pageCopy = {
     header: {
       title: "Our Clients",
       breadcrumb: "Our Clients",
+      background: "/assets/backgrounds/services-subheader.jpg",
     },
     partners: {
       label: "Partners",
@@ -87,7 +88,11 @@ export const pageCopy = {
       canonical: "/contact",
       ogImage: "/assets/home/Logo.webp",
     },
-    header: { title: "Contact Us", breadcrumb: "Contact" },
+    header: {
+      title: "Contact Us",
+      breadcrumb: "Contact",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
     form: {
       title: "Contact Now",
       placeholders: {
@@ -108,7 +113,11 @@ export const pageCopy = {
       canonical: "/gallery",
       ogImage: "/assets/home/Logo.webp",
     },
-    header: { title: "Gallery", breadcrumb: "Gallery" },
+    header: {
+      title: "Gallery",
+      breadcrumb: "Gallery",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
   },
   products: {
     metadata: {
@@ -127,7 +136,11 @@ export const pageCopy = {
       canonical: "/products",
       ogImage: "/assets/backgrounds/products.webp",
     },
-    header: { title: "Products", breadcrumb: "Products" },
+    header: {
+      title: "Products",
+      breadcrumb: "Products",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
     sidebar: {
       heading: "Our Parking Systems",
       followUs: "Follow Us On",
@@ -142,7 +155,11 @@ export const pageCopy = {
       canonical: "/about",
       ogImage: "/assets/home/Logo.webp",
     },
-    header: { title: "About Us", breadcrumb: "Who We Are" },
+    header: {
+      title: "About Us",
+      breadcrumb: "Who We Are",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
     tabsLabels: {
       about: "About Us",
       vision: "Our Vision",
@@ -158,7 +175,11 @@ export const pageCopy = {
       canonical: "/about/r-and-d",
       ogImage: "/assets/home/Logo.webp",
     },
-    header: { title: "R & D", breadcrumb: "R & D" },
+    header: {
+      title: "R & D",
+      breadcrumb: "R & D",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
   },
   aboutBlog: {
     metadata: {
@@ -169,7 +190,11 @@ export const pageCopy = {
       canonical: "/about/blog",
       ogImage: "/assets/home/Logo.webp",
     },
-    header: { title: "Blog", breadcrumb: "Blog" },
+    header: {
+      title: "Blog",
+      breadcrumb: "Blog",
+      background: "/assets/backgrounds/services-subheader.jpg",
+    },
   },
 } as const;
 

@@ -72,7 +72,12 @@ export default async function BlogPage() {
 
   return (
     <>
-      <PageHeader title={copy.aboutBlog.header.title} breadcrumbLabel={copy.aboutBlog.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.aboutBlog.header.title}
+        breadcrumbLabel={copy.aboutBlog.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.aboutBlog.header.background}
+      />
 
       <main className={`${spaceGrotesk.className} bg-white`}>
         <section

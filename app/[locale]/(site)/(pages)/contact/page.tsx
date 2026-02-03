@@ -35,7 +35,12 @@ export default async function ContactPage() {
 
   return (
     <>
-      <PageHeader title={copy.contact.header.title} breadcrumbLabel={copy.contact.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.contact.header.title}
+        breadcrumbLabel={copy.contact.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.contact.header.background}
+      />
       <main className="bg-white text-[#616161]">
         <ContactDetails content={contactContent} />
         <ContactForm copy={copy.contact.form} />
