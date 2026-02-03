@@ -121,7 +121,12 @@ export default async function ClientsPage() {
 
   return (
     <>
-      <PageHeader title={c.header.title} breadcrumbLabel={c.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={c.header.title}
+        breadcrumbLabel={c.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={c.header.background}
+      />
 
       <section className="relative bg-cover bg-center py-6 tablet:py-10" style={{ backgroundImage: "url(/assets/backgrounds/clients.webp)" }}>
         <div className="w-full px-5 text-center">

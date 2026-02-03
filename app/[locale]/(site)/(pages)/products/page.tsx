@@ -37,7 +37,12 @@ export default async function ProductsPage() {
 
   return (
     <>
-      <PageHeader title={copy.products.header.title} breadcrumbLabel={copy.products.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.products.header.title}
+        breadcrumbLabel={copy.products.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.products.header.background}
+      />
 
       <Script id="ld-products" type="application/ld+json">
         {JSON.stringify({
