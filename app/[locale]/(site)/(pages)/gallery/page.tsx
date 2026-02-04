@@ -32,7 +32,12 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <PageHeader title={copy.gallery.header.title} breadcrumbLabel={copy.gallery.header.breadcrumb} homeLabel={copy.common.homeLabel} />
+      <PageHeader
+        title={copy.gallery.header.title}
+        breadcrumbLabel={copy.gallery.header.breadcrumb}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.gallery.header.background}
+      />
       <main className="flex flex-col">
         <GalleryCarousel content={{ gallery: galleryContent.gallery }} />
         <ConceptCarousel content={{ concepts: galleryContent.concepts }} />

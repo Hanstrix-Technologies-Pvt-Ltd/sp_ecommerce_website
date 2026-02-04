@@ -93,7 +93,12 @@ export default async function PortfolioLayout({
 
   return (
     <>
-      <PageHeader title={headerTitle} breadcrumbLabel={headerTitle} />
+      <PageHeader
+        title={headerTitle}
+        breadcrumbLabel={headerTitle}
+        homeLabel={copy.common.homeLabel}
+        imageSrc={copy.products.header.background}
+      />
 
       <main className="bg-white">
         <section className="mx-auto max-w-[1450px] px-4 tablet:px-10 py-15 tablet:py-25">
