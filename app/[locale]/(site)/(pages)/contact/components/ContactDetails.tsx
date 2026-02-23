@@ -134,9 +134,12 @@ function ContactCard({ person }: { person: ContactPerson }) {
             height={14}
             className="h-[14px] w-[14px]"
           />
-          <span className="text-[17px] text-[#616161]">
+          <a 
+            href={`tel:${person.phone.replace(/\s/g, '')}`}
+            className="text-[17px] text-[#616161] hover:text-[#006DDB] transition-colors"
+          >
             {person.phone}
-          </span>
+          </a>
         </div>
 
         {/* Email */}
@@ -148,9 +151,12 @@ function ContactCard({ person }: { person: ContactPerson }) {
             height={14}
             className="h-[16px] w-[16px]"
           />
-          <span className="text-[17px] text-[#616161]">
+          <a 
+            href={`mailto:${person.email}`}
+            className="text-[17px] text-[#616161] hover:text-[#006DDB] transition-colors"
+          >
             {person.email}
-          </span>
+          </a>
         </div>
       </div>
     </div>
