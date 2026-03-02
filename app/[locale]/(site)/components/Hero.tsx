@@ -118,7 +118,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
               className="object-cover"
             />
             {/* Dark overlay for contrast */}
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/20" />
           </motion.div>
         </AnimatePresence>
 

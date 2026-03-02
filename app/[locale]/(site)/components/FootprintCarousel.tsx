@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Instagram } from "lucide-react";
 import AutoPlay from "embla-carousel-autoplay";
 import {
   Carousel,
@@ -18,6 +19,7 @@ type Project = {
   image: string;
   location: string;
   spaces?: string | number;
+  instagram?: string;
 };
 
 export type FootprintContent = {
@@ -126,6 +128,17 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
                           <span className="font-medium">{labels.location}</span>: {project.location}
                         </p>
                       </div>
+                      {project.instagram && (
+                        <a
+                          href={project.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute top-3 right-3 inline-flex items-center justify-center p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors duration-200"
+                          aria-label={`View ${project.name} on Instagram`}
+                        >
+                          <Instagram className="h-4 w-4 text-[#E4405F]" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </CarouselItem>
