@@ -13,10 +13,20 @@ export const content = {
   hero: {
     taglines: [
       "Engineering Tomorrow's Parking",
-      "Architects of Parking Excellence",
+      "Architects of Parking Excellence", 
       "Parking. Redefined by Stelz.",
+      "Innovative Parking Solutions",
+      "Smart City Integration",
+      "Space Optimization Technology"
     ],
-    images: ["/assets/home/HeroBg1.webp", "/assets/home/HeroBg2.webp", "/assets/home/HeroBg3.webp"],
+    images: [
+    "/assets/home/Website Images/1.png",
+    "/assets/home/Website Images/2.png", 
+    "/assets/home/Website Images/3.png",
+    "/assets/home/Website Images/4.png",
+    "/assets/home/Website Images/5.png",
+    "/assets/home/Website Images/6.png"
+  ],
     highlights: [
       "DESIGNED FOR BOTH INDOOR AND OUTDOOR CAR PARKING APPLICATIONS",
       "INNOVATIVE PARKING SYSTEMS",
@@ -28,7 +38,7 @@ export const content = {
       "EASY OPERATION",
       "QUICK INSTALLATION, LONG-TERM VALUE",
     ],
-    brochure: "/assets/brochure.pdf",
+    brochure: "/assets/home/STELZ BROCHURE.pdf",
   },
 
   footprint: {
@@ -47,6 +57,7 @@ export const content = {
       { id: 11, image: "/assets/footprint/BrigadeDeccan.webp", name: "Brigade Deccan Heights", spaces: "350 Nos", location: "Bengaluru" },
       { id: 12, image: "/assets/footprint/BrigadeUtopia.webp", name: "Brigade Utopia", spaces: "300 Nos", location: "Bengaluru" },
       { id: 13, image: "/assets/footprint/BrigadeVantage.webp", name: "Brigade Vantage", spaces: "190 Nos", location: "Mysuru" },
+      { id: 14, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Nos", location: "Bengaluru" },
     ],
   },
 

@@ -13,10 +13,20 @@ export const content = {
   hero: {
     taglines: [
       "Parken für morgen entwickeln",
-      "Architekten exzellenter Parklösungen",
+      "Architekten exzellenter Parklösungen", 
       "Parken. Neu definiert von Stelz.",
+      "Innovative Parklösungen",
+      "Smart City Integration",
+      "Platzoptimierungstechnologie"
     ],
-    images: ["/assets/home/HeroBg1.webp", "/assets/home/HeroBg2.webp", "/assets/home/HeroBg3.webp"],
+    images: [
+    "/assets/home/Website Images/1.png",
+    "/assets/home/Website Images/2.png", 
+    "/assets/home/Website Images/3.png",
+    "/assets/home/Website Images/4.png",
+    "/assets/home/Website Images/5.png",
+    "/assets/home/Website Images/6.png"
+  ],
     highlights: [
       "ENTWORFEN FÜR INDOOR- UND OUTDOOR-AUTOPARKANWENDUNGEN",
       "INNOVATIVE PARKSYSTEME",
@@ -28,7 +38,7 @@ export const content = {
       "EINFACHE BEDIENUNG",
       "SCHNELLE INSTALLATION, LANGFRISTIGER MEHRWERT",
     ],
-    brochure: "/assets/brochure.pdf",
+    brochure: "/assets/home/STELZ BROCHURE.pdf",
   },
 
   footprint: {
@@ -44,6 +54,7 @@ export const content = {
       { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru" },
       { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Stellplätze", location: "Hyderabad" },
       { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Stellplätze", location: "Hyderabad" },
+      { id: 11, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Stellplätze", location: "Bengaluru" },
     ],
   },
 

@@ -75,14 +75,20 @@ type NavContent = {
 export const content = {
   hero: {
     images: [
-      "/assets/home/HeroBg1.webp",
-      "/assets/home/HeroBg2.webp",
-      "/assets/home/HeroBg3.webp",
+      "/assets/home/Website Images/1.png",
+      "/assets/home/Website Images/2.png", 
+      "/assets/home/Website Images/3.png",
+      "/assets/home/Website Images/4.png",
+      "/assets/home/Website Images/5.png",
+      "/assets/home/Website Images/6.png"
     ],
     taglines: [
-      "Smarter Parking. Smaller Footprint.",
-      "Precision Engineering. Seamless Mobility.",
-      "Make Every Square Foot Count.",
+      "Engineering Tomorrow's Parking",
+      "Architects of Parking Excellence", 
+      "Parking. Redefined by Stelz.",
+      "Innovative Parking Solutions",
+      "Smart City Integration",
+      "Space Optimization Technology"
     ],
     // brand blue (same family as navbar)
     brand: "#174b92",
