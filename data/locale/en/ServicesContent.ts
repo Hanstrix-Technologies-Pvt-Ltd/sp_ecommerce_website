@@ -4,32 +4,24 @@ export const services = {
 
   content: [
     {
-      title: "End-to-End Parking System Design & Installation",
-      ps:
-      "End-to-End Parking System Design & Installation We deliver tailor-made systems that fit your space, structure, and usage perfectly.",
+      title: "Parking Feasibility & System Planning",
+      ps: "Before equipment comes drawings, calculations, and logic. Space optimization studies, vehicle mix & usage analysis, compliance with local bylaws and fire norms, capacity maximization without compromising safety or circulation.",
     },
     {
-    
+      title: "Design, Manufacturing & Installation",
+      ps: "We handle everything in-house to avoid coordination failures. Mechanical & automated parking systems, hydraulic-based systems for reliability and load safety, precision fabrication and controlled installation, testing, commissioning, and operator training.",
+    },
+    {
       title: "Customized Parking Solutions",
-      ps:
-      "Every project is unique—and so is our approach. We deliver tailor-made systems that fit your space, structure, and usage perfectly.",
+      ps: "No two sites are identical—so we don't push 'standard fits.' Residential apartments & housing societies, commercial buildings & IT parks, hospitals, hotels & mixed-use developments, municipal & public infrastructure projects. Each system is engineered around site constraints, clear heights, vehicle dimensions, and user behavior.",
     },
     {
-    
-      title: "Retrofitting & System Upgradation",
-      ps:
-      "Modernize your old parking system with smarter solutions. We retrofit and upgrade existing setups to improve capacity and performance.",
+      title: "Retrofitting & Parking Expansion",
+      ps: "Already built, but parking is inadequate? We specialize in: Increasing parking capacity in existing basements, replacing inefficient conventional layouts, upgrading outdated mechanical systems. All with minimal civil modification.",
     },
     {
-    
-      title: "Annual Maintenance & Service Contracts (AMC)",
-      ps:
-      "Reliable support to keep your system running efficiently. We offer routine maintenance, quick repairs, and long-term service plans.",
-    },
-    {
-      title: "One-Time Service",
-      ps:
-      "One-Time Service is a paid, on-call maintenance support provided by STELZ MULTIPARKING for customers without an active AMC. This service is strictly limited to diagnosing and rectifying specific issues reported at the time of the visit.",
+      title: "After-Sales Support & AMC",
+      ps: "Parking systems are machines—not décor. Preventive maintenance schedules, breakdown response & spares support, AMC programs focused on uptime, safety, and lifecycle performance.",
     },
   ],
 };
