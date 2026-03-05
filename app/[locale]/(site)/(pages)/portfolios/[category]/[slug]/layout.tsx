@@ -1,19 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import PageHeader from "@/app/[locale]/(site)/components/PageHeader";
 import { notFound } from "next/navigation";
 import { Linkedin, Facebook, Instagram, Youtube, ArrowRight } from "lucide-react";
 import { Space_Grotesk } from "next/font/google";
-import { getRequestLocale } from "@/lib/i18n/locale";
+import { useParams } from "next/navigation";
 import { translatePath } from "@/lib/i18n/slugMap";
+import { normalizeLocale, type Locale } from "@/lib/i18n/config";
 import { getFooterContent } from "@/lib/i18n/content";
 import type { ProductCategory, ProductRecord } from "@/data/locale/en/Products";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import ContactFormCard from "./ContactFormCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LeadCaptureModal from "@/components/LeadCaptureModal";
 import { submitLeadCapture, triggerBrochureDownload } from "@/lib/leadCapture";
 
-type Params = { category: string; slug: string };
+type Params = { category: string; slug: string; locale: string };
 
 async function loadProducts(locale: string) {
   if (locale === "de") {
@@ -50,22 +53,89 @@ const VIDEO_MAP: Record<string, string> = {
     "https://www.youtube.com/embed/9spsJ1HbD0o?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
 };
 
-export default async function PortfolioLayout({
+export default function PortfolioLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<Params>;
 }) {
+  const urlParams = useParams();
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const locale = await getRequestLocale();
-  const [{ category, slug }, productsModule, footerModule, copy] = await Promise.all([
-    params,
-    loadProducts(locale),
-    getFooterContent(locale),
-    getPageCopy(locale),
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [locale, setLocale] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [slug, setSlug] = useState<string>("");
+  const [localizedProduct, setLocalizedProduct] = useState<ProductRecord | null>(null);
+  const [baseProduct, setBaseProduct] = useState<ProductRecord | null>(null);
+  const [headerTitle, setHeaderTitle] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [footer, setFooter] = useState<any>(null);
+  const [socials, setSocials] = useState<any[]>([]);
+  const [localizedButtons, setLocalizedButtons] = useState<any[]>([]);
+  const [copy, setCopy] = useState<any>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const resolvedParams = await params;
+        const currentLocale = normalizeLocale(urlParams.locale as string);
+        const [{ category: cat, slug: slugVal }, productsModule, footerModule, pageCopy] = await Promise.all([
+          resolvedParams,
+          loadProducts(currentLocale),
+          getFooterContent(currentLocale),
+          getPageCopy(currentLocale),
+        ]);
+
+        setLocale(currentLocale);
+        setCategory(cat);
+        setSlug(slugVal);
+        setCopy(pageCopy);
+
+        if (!isValidCategory(cat)) {
+          notFound();
+          return;
+        }
+
+        const enProducts = await import("@/data/locale/en/Products");
+        const baseProd = enProducts.getProduct(cat, slugVal);
+        const localizedProd =
+          currentLocale === "en"
+            ? baseProd
+            : (productsModule.getProduct?.(cat, slugVal) as ProductRecord | null) ||
+              (baseProd
+                ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProd.id) ?? null
+                : null);
+
+        setBaseProduct(baseProd);
+        setLocalizedProduct(localizedProd);
+        setHeaderTitle(localizedProd?.title ?? baseProd?.title ?? "Product");
+        setVideoUrl(baseProd?.slug ? VIDEO_MAP[baseProd.slug] || "" : "");
+        setFooter(footerModule.content.footer);
+
+        const socialsData = [
+          { key: "linkedin", href: footerModule.content.footer.contact.socials.linkedin, label: "LinkedIn", Icon: Linkedin },
+          { key: "instagram", href: footerModule.content.footer.contact.socials.instagram, label: "Instagram", Icon: Instagram },
+          { key: "youtube", href: footerModule.content.footer.contact.socials.youtube, label: "YouTube", Icon: Youtube },
+          { key: "facebook", href: footerModule.content.footer.contact.socials.facebook, label: "Facebook", Icon: Facebook },
+        ].filter((s) => !!s.href);
+        setSocials(socialsData);
+
+        const buttons = RIGHT_BUTTONS.map((b) => ({
+          label: (b.label as any)[currentLocale] ?? b.label.en,
+          href: translatePath(b.href, currentLocale),
+        }));
+        setLocalizedButtons(buttons);
+      } catch (error) {
+        console.error("Error loading portfolio data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [params, urlParams.locale]);
 
   const handleLeadSubmit = async (leadData: any) => {
     setIsSubmitting(true);
@@ -84,34 +154,9 @@ export default async function PortfolioLayout({
     }
   };
 
-  if (!isValidCategory(category)) {
-    notFound();
+  if (loading) {
+    return <div>Loading...</div>;
   }
-
-  const enProducts = await import("@/data/locale/en/Products");
-  const baseProduct = enProducts.getProduct(category, slug);
-  const localizedProduct =
-    locale === "en"
-      ? baseProduct
-      : (productsModule.getProduct?.(category, slug) as ProductRecord | null) ||
-        (baseProduct
-          ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProduct.id) ?? null
-          : null);
-  const headerTitle = localizedProduct?.title ?? baseProduct?.title ?? "Product";
-  const videoUrl = baseProduct?.slug ? VIDEO_MAP[baseProduct.slug] : undefined;
-
-  const footer = footerModule.content.footer;
-  const socials = [
-    { key: "linkedin", href: footer.contact.socials.linkedin, label: "LinkedIn", Icon: Linkedin },
-    { key: "instagram", href: footer.contact.socials.instagram, label: "Instagram", Icon: Instagram },
-    { key: "youtube", href: footer.contact.socials.youtube, label: "YouTube", Icon: Youtube },
-    { key: "facebook", href: footer.contact.socials.facebook, label: "Facebook", Icon: Facebook },
-  ].filter((s) => !!s.href);
-
-  const localizedButtons = RIGHT_BUTTONS.map((b) => ({
-    label: b.label[locale] ?? b.label.en,
-    href: translatePath(b.href, locale),
-  }));
 
   return (
     <>
