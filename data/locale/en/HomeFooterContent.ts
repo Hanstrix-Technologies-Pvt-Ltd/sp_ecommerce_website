@@ -12,13 +12,21 @@ export const content = {
 
   hero: {
     taglines: [
-      "Intelligent Parking Solutions",
-      "Built for Urban Density",
-      "Designed. Built. Parked",
-      "Precision Parking Engineering",
-      "Parking Without Compromise",
+      "Engineering Tomorrow's Parking",
+      "Architects of Parking Excellence", 
+      "Parking. Redefined by Stelz.",
+      "Innovative Parking Solutions",
+      "Smart City Integration",
+      "Space Optimization Technology"
     ],
-    images: ["/assets/home/Images/1.jpeg", "/assets/home/Images/2.jpeg", "/assets/home/Images/3.jpeg", "/assets/home/Images/4.jpeg"],
+    images: [
+    "/assets/home/Website Images/1.png",
+    "/assets/home/Website Images/2.png", 
+    "/assets/home/Website Images/3.png",
+    "/assets/home/Website Images/4.png",
+    "/assets/home/Website Images/5.png",
+    "/assets/home/Website Images/6.png"
+  ],
     highlights: [
       "DESIGNED FOR BOTH INDOOR AND OUTDOOR CAR PARKING APPLICATIONS",
       "INNOVATIVE PARKING SYSTEMS",
@@ -30,7 +38,7 @@ export const content = {
       "EASY OPERATION",
       "QUICK INSTALLATION, LONG-TERM VALUE",
     ],
-    brochure: "/assets/brochure.pdf",
+    brochure: "/assets/home/STELZ BROCHURE.pdf",
   },
 
   footprint: {
@@ -42,8 +50,14 @@ export const content = {
       { id: 4, image: "/assets/footprint/ManipalHospital.webp", name: "Manipal Hospital", spaces: "350 Nos", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
       { id: 5, image: "/assets/footprint/JyotiTechPark.webp", name: "Jyoti Tech Park", spaces: "600 Nos", location: "Hyderabad" },
       { id: 6, image: "/assets/footprint/SparshHospital.webp", name: "Sparsh Hospital", location: "Bengaluru" },
-      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 Nos", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
-      { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
+      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 Nos", location: "Bengaluru" },
+      { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru" },
+      { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Nos", location: "Hyderabad" },
+      { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Nos", location: "Hyderabad" },
+      { id: 11, image: "/assets/footprint/BrigadeDeccan.webp", name: "Brigade Deccan Heights", spaces: "350 Nos", location: "Bengaluru" },
+      { id: 12, image: "/assets/footprint/BrigadeUtopia.webp", name: "Brigade Utopia", spaces: "300 Nos", location: "Bengaluru" },
+      { id: 13, image: "/assets/footprint/BrigadeVantage.webp", name: "Brigade Vantage", spaces: "190 Nos", location: "Mysuru" },
+      { id: 14, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Nos", location: "Bengaluru" },
     ],
   },
 

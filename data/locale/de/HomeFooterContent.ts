@@ -12,13 +12,21 @@ export const content = {
 
   hero: {
     taglines: [
-      "Intelligente Parklösungen",
-      "Entwickelt für urbane Dichte",
-      "Konzipiert. Gebaut. Geparkt",
-      "Präzisions-Parkiertechnik",
-      "Parken ohne Kompromisse",
+      "Parken für morgen entwickeln",
+      "Architekten exzellenter Parklösungen", 
+      "Parken. Neu definiert von Stelz.",
+      "Innovative Parklösungen",
+      "Smart City Integration",
+      "Platzoptimierungstechnologie"
     ],
-    images: ["/assets/home/Images/1.jpeg", "/assets/home/Images/2.jpeg", "/assets/home/Images/3.jpeg", "/assets/home/Images/4.jpeg"],
+    images: [
+    "/assets/home/Website Images/1.png",
+    "/assets/home/Website Images/2.png", 
+    "/assets/home/Website Images/3.png",
+    "/assets/home/Website Images/4.png",
+    "/assets/home/Website Images/5.png",
+    "/assets/home/Website Images/6.png"
+  ],
     highlights: [
       "ENTWORFEN FÜR INDOOR- UND OUTDOOR-AUTOPARKANWENDUNGEN",
       "INNOVATIVE PARKSYSTEME",
@@ -30,7 +38,7 @@ export const content = {
       "EINFACHE BEDIENUNG",
       "SCHNELLE INSTALLATION, LANGFRISTIGER MEHRWERT",
     ],
-    brochure: "/assets/brochure.pdf",
+    brochure: "/assets/home/STELZ BROCHURE.pdf",
   },
 
   footprint: {
@@ -42,8 +50,11 @@ export const content = {
       { id: 4, image: "/assets/footprint/ManipalHospital.webp", name: "Manipal Hospital", spaces: "350 Stellplätze", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
       { id: 5, image: "/assets/footprint/JyotiTechPark.webp", name: "Jyoti Tech Park", spaces: "600 Stellplätze", location: "Hyderabad" },
       { id: 6, image: "/assets/footprint/SparshHospital.webp", name: "Sparsh Hospital", location: "Bengaluru" },
-      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 Stellplätze", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
-      { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru", instagram: "https://www.instagram.com/p/CzXqY2KJvXQ/" },
+      { id: 7, image: "/assets/footprint/IBMIndia.webp", name: "IBM India", spaces: "600 Stellplätze", location: "Bengaluru" },
+      { id: 8, image: "/assets/footprint/ConfidentSquaremall.webp", name: "Confident Square Mall", location: "Bengaluru" },
+      { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Stellplätze", location: "Hyderabad" },
+      { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Stellplätze", location: "Hyderabad" },
+      { id: 11, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Stellplätze", location: "Bengaluru" },
     ],
   },
 

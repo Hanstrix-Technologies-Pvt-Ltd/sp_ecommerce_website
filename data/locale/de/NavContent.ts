@@ -75,14 +75,20 @@ export const NAV: NavLink[] = [
 export const content = {
   hero: {
     images: [
-      "/assets/home/HeroBg1.webp",
-      "/assets/home/HeroBg2.webp",
-      "/assets/home/HeroBg3.webp",
+      "/assets/home/Website Images/1.png",
+      "/assets/home/Website Images/2.png", 
+      "/assets/home/Website Images/3.png",
+      "/assets/home/Website Images/4.png",
+      "/assets/home/Website Images/5.png",
+      "/assets/home/Website Images/6.png"
     ],
     taglines: [
-      "Smarteres Parken. Kleinere Fläche.",
-      "Präzisionsengineering. Nahtlose Mobilität.",
-      "Jeder Quadratfuß zählt.",
+      "Parken für morgen entwickeln",
+      "Architekten  exzellenter Parklösungen", 
+      "Parken. Neu definiert von Stelz.",
+      "Innovative Parklösungen",
+      "Smart City Integration",
+      "Platzoptimierungstechnologie"
     ],
     brand: "#174b92",
   },
