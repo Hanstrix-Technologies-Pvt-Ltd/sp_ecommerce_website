@@ -9,6 +9,8 @@ import { stripLocaleFromPath } from "@/lib/i18n/slugMap";
 import { content as enContent } from "@/data/locale/en/HomeFooterContent";
 import { content as deContent } from "@/data/locale/de/HomeFooterContent";
 import { Space_Grotesk } from "next/font/google";
+import LeadCaptureModal from "@/components/LeadCaptureModal";
+import { submitLeadCapture, triggerBrochureDownload } from "@/lib/leadCapture";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -17,6 +19,8 @@ const spaceGrotesk = Space_Grotesk({
 
 export default function FixedButtons() {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const pathname = usePathname() || "/";
   const { locale } = useMemo(() => stripLocaleFromPath(pathname), [pathname]);
   const localizedContent = locale === "de" ? deContent : enContent;
@@ -29,6 +33,29 @@ export default function FixedButtons() {
   }, []);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const handleBrochureClick = () => {
+    setShowLeadModal(true);
+  };
+
+  const handleLeadSubmit = async (leadData: any) => {
+    setIsSubmitting(true);
+    try {
+      const result = await submitLeadCapture(leadData);
+      if (result.success) {
+        // Close modal
+        setShowLeadModal(false);
+        // Trigger download
+        await triggerBrochureDownload(result.leadId!);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Failed to submit lead. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const cardVariants = {
     rest: { scale: 1, boxShadow: "0 14px 32px rgba(23,75,146,0.35)" },
@@ -57,9 +84,8 @@ export default function FixedButtons() {
         transition={{ delay: 0.35, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         className="fixed right-0 top-1/2 z-30 -translate-y-1/2"
       >
-        <motion.a
-          href={localizedContent.hero.brochure}
-          download
+        <motion.button
+          onClick={handleBrochureClick}
           aria-label={locale === "de" ? "Broschüre herunterladen" : "Download Brochure"}
           variants={cardVariants}
           initial="rest"
@@ -82,7 +108,7 @@ export default function FixedButtons() {
           >
             <HiDownload className="h-5 w-5 text-white" />
           </motion.span>
-        </motion.a>
+        </motion.button>
       </motion.div>
 
       {/* Scroll to top (fixed bottom right) */}
@@ -103,6 +129,14 @@ export default function FixedButtons() {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={showLeadModal}
+        onClose={() => setShowLeadModal(false)}
+        onSubmit={handleLeadSubmit}
+        isLoading={isSubmitting}
+      />
     </>
   );
 }

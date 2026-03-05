@@ -9,6 +9,9 @@ import { getFooterContent } from "@/lib/i18n/content";
 import type { ProductCategory, ProductRecord } from "@/data/locale/en/Products";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import ContactFormCard from "./ContactFormCard";
+import { useState } from "react";
+import LeadCaptureModal from "@/components/LeadCaptureModal";
+import { submitLeadCapture, triggerBrochureDownload } from "@/lib/leadCapture";
 
 type Params = { category: string; slug: string };
 
@@ -54,6 +57,8 @@ export default async function PortfolioLayout({
   children: React.ReactNode;
   params: Promise<Params>;
 }) {
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const locale = await getRequestLocale();
   const [{ category, slug }, productsModule, footerModule, copy] = await Promise.all([
     params,
@@ -61,6 +66,23 @@ export default async function PortfolioLayout({
     getFooterContent(locale),
     getPageCopy(locale),
   ]);
+
+  const handleLeadSubmit = async (leadData: any) => {
+    setIsSubmitting(true);
+    try {
+      const result = await submitLeadCapture(leadData);
+      if (result.success) {
+        setShowLeadModal(false);
+        await triggerBrochureDownload(result.leadId!);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Failed to submit lead. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!isValidCategory(category)) {
     notFound();
@@ -170,14 +192,13 @@ export default async function PortfolioLayout({
 
               {localizedProduct?.brochureUrl ? (
                 <div className={`${spaceGrotesk.className} mx-auto w-full px-0 py-6 tablet:max-w-[260px]`}>
-                  <a
-                    href={localizedProduct.brochureUrl}
-                    download
+                  <button
+                    onClick={() => setShowLeadModal(true)}
                     className="block w-full bg-[#006DDB] p-5 text-center text-[17px] text-white transition hover:bg-[#0a3a85]"
                     aria-label={`${copy.productPage.labels.brochure} - ${localizedProduct?.title ?? baseProduct?.title ?? "Product"}`}
                   >
-                    {copy.productPage.labels.brochure}
-                  </a>
+                    {copy.productPage.labels.downloadBrochure}
+                  </button>
                 </div>
               ) : null}
 
@@ -206,6 +227,14 @@ export default async function PortfolioLayout({
           </div>
         </section>
       </main>
+
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={showLeadModal}
+        onClose={() => setShowLeadModal(false)}
+        onSubmit={handleLeadSubmit}
+        isLoading={isSubmitting}
+      />
     </>
   );
 }

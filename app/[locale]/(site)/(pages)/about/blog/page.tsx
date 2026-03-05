@@ -121,6 +121,17 @@ export default async function BlogPage() {
                   <section key={idx} className="text-[#616161]">
                     <h2 className="mb-5 text-[28px] sm:text-[32px] font-extrabold text-zinc-900">{s.h2}</h2>
 
+                    {s.image && (
+                      <div className="mb-6">
+                        <img
+                          src={s.image}
+                          alt={s.h2}
+                          className="w-full rounded-lg shadow-sm"
+                          style={{ maxHeight: '400px', objectFit: 'cover' }}
+                        />
+                      </div>
+                    )}
+
                     <div className="space-y-[10px]">
                       {s.ps.map((p, i) => {
                         const isEmphasis =

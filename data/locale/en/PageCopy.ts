@@ -183,10 +183,10 @@ export const pageCopy = {
   },
   aboutBlog: {
     metadata: {
-      title: "Blog | STELZ Multiparking | Parking Innovation Insights",
+      title: "Why Mechanical Parking Is Becoming Urban Infrastructure | STELZ Multiparking Blog",
       description:
-        "Read the latest insights, articles, and updates from STELZ Multiparking on smart parking solutions, innovation, and automated parking systems.",
-      keywords: ["parking blog", "parking insights", "smart parking", "parking innovation", "mechanical parking news"],
+        "Discover how mechanical parking systems are transforming urban infrastructure. Learn about space optimization, smart city integration, and the future of urban mobility with STELZ Multiparking.",
+      keywords: ["mechanical parking", "urban infrastructure", "smart city parking", "automated parking systems", "space optimization", "urban mobility"],
       canonical: "/about/blog",
       ogImage: "/assets/home/Logo.webp",
     },
