@@ -38,7 +38,7 @@ export const content = {
       "EASY OPERATION",
       "QUICK INSTALLATION, LONG-TERM VALUE",
     ],
-    brochure: "/assets/home/STELZ BROCHURE.pdf",
+    brochure: "/assets/home/brochure.pdf",
   },
 
   footprint: {

@@ -38,7 +38,7 @@ export const content = {
       "EINFACHE BEDIENUNG",
       "SCHNELLE INSTALLATION, LANGFRISTIGER MEHRWERT",
     ],
-    brochure: "/assets/home/STELZ BROCHURE.pdf",
+    brochure: "/assets/brochure.pdf",
   },
 
   footprint: {
