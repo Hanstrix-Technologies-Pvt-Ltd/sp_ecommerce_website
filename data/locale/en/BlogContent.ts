@@ -14,7 +14,7 @@ export const blog = {
         "Yet many projects still treat parking as an afterthought—until it becomes a bottleneck.",
         "At STELZ MultiParking, we solve this problem at engineering level, not with generic layouts or sales-driven recommendations.",
       ],
-      image: "/assets/Images/1.png",
+      image: "/assets/home/Website Images/1.png",
     },
     {
       h2: "What We Do (End-to-End, No Gaps)",
@@ -54,7 +54,7 @@ export const blog = {
         "Breakdown response & spares support",
         "AMC programs focused on uptime, safety, and lifecycle performance",
       ],
-      image: "/assets/Images/2.png",
+      image: "/assets/home/Website Images/2.png",
     },
     {
       h2: "Why Developers & Consultants Work With Us",
@@ -67,7 +67,7 @@ export const blog = {
         "Clear communication with architects, consultants, and site teams",
         "Focus on long-term reliability, not just initial cost",
       ],
-      image: "/assets/Images/3.png",
+      image: "/assets/home/Website Images/3.png",
     },
     {
       h2: "The Bigger Picture",
@@ -80,7 +80,7 @@ export const blog = {
         "",
         "The smartest decisions are made early in design stage, not during firefighting.",
       ],
-      image: "/assets/Images/4.png",
+      image: "/assets/home/Website Images/4.png",
     },
   ],
 };
