@@ -14,7 +14,7 @@ export const blog = {
         "Viele Projekte behandeln Parken immer noch als Nachgedanke—bis es zu einem Engpass wird.",
         "Bei STELZ MultiParking lösen wir dieses Problem auf Engineering-Ebene, nicht mit generischen Layouts oder vertriebsgetriebenen Empfehlungen.",
       ],
-      image: "/assets/Images/1.png",
+      image: "/assets/home/Website Images/1.png",
     },
     {
       h2: "Was wir tun (End-to-End, keine Lücken)",
@@ -54,7 +54,7 @@ export const blog = {
         "Störungsreaktion & Ersatzteil-Support",
         "AMC-Programme mit Fokus auf Betriebszeit, Sicherheit und Lebenszyklus-Leistung",
       ],
-      image: "/assets/Images/2.png",
+      image: "/assets/home/Website Images/2.png",
     },
     {
       h2: "Warum Entwickler & Berater mit uns arbeiten",
@@ -67,7 +67,7 @@ export const blog = {
         "Klare Kommunikation mit Architekten, Beratern und Baustellenteams",
         "Fokus auf langfristige Zuverlässigkeit, nicht nur Anfangskosten",
       ],
-      image: "/assets/Images/3.png",
+      image: "/assets/home/Website Images/3.png",
     },
     {
       h2: "Das große Ganze",
@@ -80,7 +80,7 @@ export const blog = {
         "",
         "Die klügsten Entscheidungen werden früh im Entwurfsstadium getroffen, nicht während der Brandbekämpfung.",
       ],
-      image: "/assets/Images/4.png",
+      image: "/assets/home/Website Images/4.png",
     },
   ],
 };
