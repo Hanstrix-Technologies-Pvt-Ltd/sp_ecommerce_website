@@ -5,7 +5,7 @@ export interface LeadData {
   projectName: string;
   projectLocation: string;
   timestamp: string;
-  source: 'brochure_download';
+  source: 'brochure_download' | 'datasheet_download';
 }
 
 export interface LeadCaptureResponse {
@@ -24,7 +24,6 @@ export async function submitLeadCapture(data: LeadData): Promise<LeadCaptureResp
       body: JSON.stringify({
         ...data,
         timestamp: new Date().toISOString(),
-        source: 'brochure_download',
       }),
     });
 
@@ -68,6 +67,37 @@ export async function triggerBrochureDownload(leadId: string): Promise<void> {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Brochure download error:', error);
+    throw error;
+  }
+}
+
+export async function triggerDatasheetDownload(leadId: string, datasheetUrl: string): Promise<void> {
+  try {
+    const response = await fetch('/api/datasheet-download', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ leadId, datasheetUrl }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to trigger download: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    // Extract filename from the URL
+    const filename = datasheetUrl.split('/').pop() || 'STELZ-Datasheet.pdf';
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Datasheet download error:', error);
     throw error;
   }
 }

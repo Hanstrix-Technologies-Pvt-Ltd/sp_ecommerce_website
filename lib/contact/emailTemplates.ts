@@ -412,3 +412,95 @@ export function brochureDownloadTemplate(input: BrochureLeadInput) {
 
   return { html, text };
 }
+
+/* ---------------- Datasheet Download Lead Notification ---------------- */
+export function datasheetDownloadTemplate(input: BrochureLeadInput) {
+  const formattedDate = new Date(input.timestamp).toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'medium',
+    timeZone: 'Asia/Kolkata'
+  });
+
+  const text = [
+    "New Datasheet Download Request – STELZ Website",
+    "",
+    `Name: ${input.name}`,
+    `Contact Number: ${input.contactNumber}`,
+    `Project Name: ${input.projectName}`,
+    `Project Location: ${input.projectLocation}`,
+    `Submitted On: ${formattedDate}`,
+  ].join("\n");
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#ffffff;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:16px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+          style="width:100%;max-width:640px;font-family:'Times New Roman', Times, serif;color:${baseStyles.text};">
+          <tr>
+            <td style="padding:0 0 10px 0;">
+              <div style="font-size:18px;font-weight:700;color:${baseStyles.primary};">
+                New Datasheet Download Request – STELZ Website
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                style="width:100%;background:#ffffff;border-radius:12px;border:1px solid ${baseStyles.softBorder};">
+                <tr>
+                  <td style="padding:14px 16px;">
+                    <div style="color:${baseStyles.primary};font-weight:700;font-size:14px;margin-bottom:10px;">
+                      Lead Details
+                    </div>
+
+                    <div style="font-size:14px;line-height:1.6;margin-bottom:6px;">
+                      <strong>Name:</strong> ${escapeHtml(input.name)}
+                    </div>
+
+                    <div style="font-size:14px;line-height:1.6;margin-bottom:6px;">
+                      <strong>Contact Number:</strong>
+                      <a href="tel:${escapeHtml(input.contactNumber)}" style="color:${baseStyles.primary};text-decoration:underline;">
+                        ${escapeHtml(input.contactNumber)}
+                      </a>
+                    </div>
+
+                    <div style="font-size:14px;line-height:1.6;margin-bottom:6px;">
+                      <strong>Project Name:</strong> ${escapeHtml(input.projectName)}
+                    </div>
+
+                    <div style="font-size:14px;line-height:1.6;margin-bottom:6px;">
+                      <strong>Project Location:</strong> ${escapeHtml(input.projectLocation)}
+                    </div>
+
+                    <div style="font-size:14px;line-height:1.6;margin-bottom:12px;">
+                      <strong>Submitted On:</strong> ${formattedDate}
+                    </div>
+
+                    <div style="background:#f3f4f6;padding:12px;border-radius:8px;margin-top:16px;">
+                      <div style="font-size:13px;color:#6b7280;margin-bottom:4px;">
+                        <strong>Source:</strong> Datasheet Download Request
+                      </div>
+                      <div style="font-size:13px;color:#6b7280;">
+                        This lead requested the STELZ product datasheet download.
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return { html, text };
+}
