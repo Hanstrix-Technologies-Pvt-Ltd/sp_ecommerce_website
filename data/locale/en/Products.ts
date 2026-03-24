@@ -66,8 +66,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/stack-parking/gallery1.webp" },
         { src: "/assets/products/stack-parking/gallery2.webp" },
     ],
-    // ONLY the one product that has a brochure should include this
-    brochureUrl: "/assets/stack-parking-brochure.pdf",
+    brochureUrl: "/assets/datasheet/STELZ-S-01-Data Sheet.pdf",
         seo: {
         description: "Two-level hydraulic stacker that doubles capacity for homes, offices, and compact sites.",
         keywords: ["stack parking", "mechanical parking", "two-post stacker"],
@@ -105,6 +104,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-stack-parking/gallery1.webp" },
         { src: "/assets/products/3-level-stack-parking/gallery2.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-S-011-Data Sheet.pdf",
     seo: {
         description: "Three-level vertical stacker that triples capacity for high-density residential and commercial parking.",
         keywords: ["3 level stack parking", "mechanical parking", "three-post stacker"],
@@ -142,6 +142,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/pit-stacker/gallery1.webp" },
         { src: "/assets/products/pit-stacker/gallery2.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-PS-11-Data Sheet.pdf",
     seo: {
         description: "Two-level pit stacker with one platform below grade to save height and keep the surface clear.",
         keywords: ["pit stacker", "mechanical parking", "two-post pit stacker"],
@@ -179,6 +180,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-pit-stacker/gallery1.webp" },
         { src: "/assets/products/3-level-pit-stacker/gallery2.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-PS-111-Data Sheet.pdf",
     seo: {
         description: "Three-level pit stacker combining a surface space with two below grade for maximum density.",
         keywords: ["3 level pit stacker", "mechanical parking", "three-post pit stacker"],
@@ -252,6 +254,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/puzzle-parking/gallery1.webp" },
         { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
     seo: {
         description: "Two-level puzzle system with horizontal shifting platforms for independent access in tight plots.",
         keywords: ["puzzle parking", "mechanical parking", "two-post puzzle"],
@@ -289,6 +292,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/pit-puzzle/gallery1.webp" },
         { src: "/assets/products/pit-puzzle/hero.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-PP-01-Data Sheet.pdf",
     seo: {
         description: "Two-level pit puzzle with one platform below grade and horizontal shifting for independent access.",
         keywords: ["pit puzzle", "mechanical parking", "two-post pit puzzle"],
@@ -326,6 +330,7 @@ export const PRODUCTS: ProductRecord[] = [
         { src: "/assets/products/3-level-pit-puzzle/gallery1.webp" },
         { src: "/assets/products/3-level-pit-puzzle/gallery2.webp" },
     ],
+    brochureUrl: "/assets/datasheet/STELZ-PP-02-Data Sheet.pdf",
     seo: {
         description: "Three-level pit puzzle system that hides two levels below grade with automatic horizontal moves.",
         keywords: ["3-level pit puzzle", "mechanical parking", "three-post pit puzzle"],

@@ -76,7 +76,8 @@ export const pageCopy = {
       features: "Product Features",
       gallery: "Gallery",
       applications: "Applications",
-      brochure: "Download S-01 datasheet",
+      brochure: "Download datasheet",
+      downloadBrochure: "Download Datasheet",
     },
   },
   contact: {

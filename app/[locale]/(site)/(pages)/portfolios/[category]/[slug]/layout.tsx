@@ -51,6 +51,16 @@ const VIDEO_MAP: Record<string, string> = {
     "https://www.youtube.com/embed/rVev3ghL2Kg?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
   "puzzle-parking":
     "https://www.youtube.com/embed/9spsJ1HbD0o?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "pit-puzzle":
+    "https://www.youtube.com/embed/mFpquv9DAMc?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-pit-stacker":
+    "https://www.youtube.com/embed/SHDX6QaORPo?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "cantilever-parking":
+    "https://www.youtube.com/embed/0q-Mwte5S60?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-pit-puzzle":
+    "https://www.youtube.com/embed/NQSZZy6WHJ0?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "turn-table":
+    "https://www.youtube.com/embed/lmXFDIltkCE?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
 };
 
 export default function PortfolioLayout({
