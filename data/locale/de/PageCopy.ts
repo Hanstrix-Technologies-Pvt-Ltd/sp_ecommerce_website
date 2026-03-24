@@ -79,6 +79,7 @@ export const pageCopy = {
       gallery: "Galerie",
       applications: "Anwendungen",
       brochure: "Datenblatt herunterladen",
+      downloadBrochure: "Datenblatt herunterladen",
     },
   },
   contact: {
