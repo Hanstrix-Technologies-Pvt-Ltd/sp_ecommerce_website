@@ -78,8 +78,9 @@ export const pageCopy = {
       features: "Produktmerkmale",
       gallery: "Galerie",
       applications: "Anwendungen",
-      brochure: "Datenblatt herunterladen",
-      downloadBrochure: "Datenblatt herunterladen",
+      brochure: "Broschüre herunterladen",
+      downloadBrochure: "Broschüre herunterladen",
+      downloadDatasheet: "Datenblatt herunterladen",
     },
   },
   contact: {

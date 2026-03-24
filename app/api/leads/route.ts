@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LeadData, LeadCaptureResponse } from '@/lib/leadCapture';
-import { brochureDownloadTemplate } from '@/lib/contact/emailTemplates';
+import { brochureDownloadTemplate, datasheetDownloadTemplate } from '@/lib/contact/emailTemplates';
 import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
@@ -58,19 +58,31 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        const emailTemplate = brochureDownloadTemplate({
-          name: leadData.name,
-          contactNumber: leadData.contactNumber,
-          projectName: leadData.projectName,
-          projectLocation: leadData.projectLocation,
-          timestamp: new Date().toISOString(),
-          companyEmail: smtpUser,
-        });
+        const isDatasheet = leadData.source === 'datasheet_download';
+        const emailTemplate = isDatasheet
+          ? datasheetDownloadTemplate({
+              name: leadData.name,
+              contactNumber: leadData.contactNumber,
+              projectName: leadData.projectName,
+              projectLocation: leadData.projectLocation,
+              timestamp: new Date().toISOString(),
+              companyEmail: smtpUser,
+            })
+          : brochureDownloadTemplate({
+              name: leadData.name,
+              contactNumber: leadData.contactNumber,
+              projectName: leadData.projectName,
+              projectLocation: leadData.projectLocation,
+              timestamp: new Date().toISOString(),
+              companyEmail: smtpUser,
+            });
 
         const mailOptions = {
           from: smtpUser,
           to: 'info@stelzparking.com',
-          subject: 'New Brochure Download Request – STELZ Website',
+          subject: isDatasheet
+            ? 'New Datasheet Download Request – STELZ Website'
+            : 'New Brochure Download Request – STELZ Website',
           text: emailTemplate.text,
           html: emailTemplate.html,
         };

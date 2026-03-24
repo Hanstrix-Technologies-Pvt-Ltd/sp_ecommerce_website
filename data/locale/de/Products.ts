@@ -18,7 +18,8 @@ export interface ProductRecord {
   features: string[];                 // bullets
   applications: string[];             // bullets
   gallery: { src: string; alt?: string }[]; // usually 2 images
-  brochureUrl?: string;                        // ONLY the one page that has a brochure
+  brochureUrl?: string;                        // PDF brochure download
+  datasheetUrl?: string;                       // PDF datasheet download
   seo?: {
     description?: string;
     keywords?: string[];
@@ -66,7 +67,8 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/stack-parking/gallery1.webp" },
       { src: "/assets/products/stack-parking/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-S-01-Data Sheet.pdf",
+    brochureUrl: "/assets/stack-parking-brochure.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-S-01-Data Sheet.pdf",
     seo: {
       description: "Zwei-Ebenen-Stacker mit hydraulischem Hub, verdoppelt die Stellplaetze fuer Wohn- und Gewerbeobjekte.",
       keywords: ["stack parking", "mechanical parking", "two-post stacker"],
@@ -104,7 +106,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-stack-parking/gallery1.webp" },
       { src: "/assets/products/3-level-stack-parking/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-S-011-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-S-011-Data Sheet.pdf",
     seo: {
       description: "Drei-Ebenen-Stacker fuer hohe Dichte, verdreifacht die Kapazitaet auf gleicher Flaeche.",
       keywords: ["3 level stack parking", "mechanical parking", "three-post stacker"],
@@ -142,7 +144,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/pit-stacker/gallery1.webp" },
       { src: "/assets/products/pit-stacker/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-PS-11-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-PS-11-Data Sheet.pdf",
     seo: {
       description: "Zwei-Ebenen-Pit-Stacker mit unterirdischer Ebene, spart Bauhoehe und haelt die Oberflaeche frei.",
       keywords: ["pit stacker", "mechanical parking", "two-post pit stacker"],
@@ -180,7 +182,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-pit-stacker/gallery1.webp" },
       { src: "/assets/products/3-level-pit-stacker/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-PS-111-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-PS-111-Data Sheet.pdf",
     seo: {
       description: "Drei-Ebenen-Pit-Stacker mit zwei Ebenen im Grubenbereich fuer maximale Dichte.",
       keywords: ["3 level pit stacker", "mechanical parking", "three-post pit stacker"],
@@ -212,8 +214,8 @@ export const PRODUCTS: ProductRecord[] = [
       "Urbane Revitalisierungsprojekte mit kreativen Parklayouts",
     ],
     gallery: [
-      { src: "/assets/products/cantilever-parking/gallery1.webp" },
-      { src: "/assets/products/cantilever-parking/hero.webp" },
+      { src: "/assets/new-product images/Image (3).jpg" },
+      { src: "/assets/new-product images/Image (6).jpg" },
     ],
     seo: {
       description: "Kragarm-Parken ohne Stuetzen unter der Plattform, ideal fuer schlanke, saubere Grundrisse.",
@@ -249,10 +251,10 @@ export const PRODUCTS: ProductRecord[] = [
       "Autohäuser & Premium-Garagen",
     ],
     gallery: [
-      { src: "/assets/products/puzzle-parking/gallery1.webp" },
+      { src: "/assets/new-product images/Image (5).jpg" },
       { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
     seo: {
       description: "Zwei-Ebenen-Puzzle-System mit horizontal beweglichen Plattformen fuer unabhaengigen Zugriff.",
       keywords: ["puzzle parking", "mechanical parking", "two-post puzzle"],
@@ -287,10 +289,10 @@ export const PRODUCTS: ProductRecord[] = [
       "Showrooms & Unternehmenszentralen",
     ],
     gallery: [
-      { src: "/assets/products/pit-puzzle/gallery1.webp" },
-      { src: "/assets/products/pit-puzzle/hero.webp" },
+      { src: "/assets/new-product images/Image (2).jpg" },
+      { src: "/assets/new-product images/Image (4).jpg" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-PP-01-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-PP-01-Data Sheet.pdf",
     seo: {
       description: "Zwei-Ebenen-Pit-Puzzle mit einer Ebene im Untergrund und horizontaler Verschiebung fuer unabhaengigen Zugriff.",
       keywords: ["Pit Puzzle", "mechanisches Parken", "Zwei-Säulen-Pit-Puzzle"],
@@ -329,7 +331,7 @@ export const PRODUCTS: ProductRecord[] = [
       { src: "/assets/products/3-level-pit-puzzle/gallery1.webp" },
       { src: "/assets/products/3-level-pit-puzzle/gallery2.webp" },
     ],
-    brochureUrl: "/assets/datasheet/STELZ-PP-02-Data Sheet.pdf",
+    datasheetUrl: "/assets/datasheet/STELZ-PP-02-Data Sheet.pdf",
     seo: {
       description: "Drei-Ebenen-Pit-Puzzle mit zwei Ebenen im Untergrund und automatischen Verschiebungen.",
       keywords: ["3-level pit puzzle", "mechanical parking", "three-post pit puzzle"],

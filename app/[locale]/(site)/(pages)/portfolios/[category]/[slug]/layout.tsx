@@ -14,7 +14,7 @@ import { getPageCopy } from "@/lib/i18n/pageCopy";
 import ContactFormCard from "./ContactFormCard";
 import { useState, useEffect } from "react";
 import LeadCaptureModal from "@/components/LeadCaptureModal";
-import { submitLeadCapture, triggerBrochureDownload } from "@/lib/leadCapture";
+import { submitLeadCapture, triggerBrochureDownload, triggerDatasheetDownload } from "@/lib/leadCapture";
 
 type Params = { category: string; slug: string; locale: string };
 
@@ -72,6 +72,7 @@ export default function PortfolioLayout({
 }) {
   const urlParams = useParams();
   const [showLeadModal, setShowLeadModal] = useState(false);
+  const [downloadType, setDownloadType] = useState<'brochure' | 'datasheet'>('brochure');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [locale, setLocale] = useState<string>("");
@@ -150,10 +151,18 @@ export default function PortfolioLayout({
   const handleLeadSubmit = async (leadData: any) => {
     setIsSubmitting(true);
     try {
-      const result = await submitLeadCapture(leadData);
+      const dataWithSource = {
+        ...leadData,
+        source: downloadType === 'brochure' ? 'brochure_download' : 'datasheet_download'
+      };
+      const result = await submitLeadCapture(dataWithSource);
       if (result.success) {
         setShowLeadModal(false);
-        await triggerBrochureDownload(result.leadId!);
+        if (downloadType === 'brochure') {
+          await triggerBrochureDownload(result.leadId!);
+        } else {
+          await triggerDatasheetDownload(result.leadId!, localizedProduct?.datasheetUrl || '');
+        }
       } else {
         alert(result.message);
       }
@@ -245,14 +254,17 @@ export default function PortfolioLayout({
                 <ContactFormCard copy={copy.contact.form} />
               </div>
 
-              {localizedProduct?.brochureUrl ? (
+              {localizedProduct?.datasheetUrl ? (
                 <div className={`${spaceGrotesk.className} mx-auto w-full px-0 py-6 tablet:max-w-[260px]`}>
                   <button
-                    onClick={() => setShowLeadModal(true)}
+                    onClick={() => {
+                      setDownloadType('datasheet');
+                      setShowLeadModal(true);
+                    }}
                     className="block w-full bg-[#006DDB] p-5 text-center text-[17px] text-white transition hover:bg-[#0a3a85]"
-                    aria-label={`${copy.productPage.labels.brochure} - ${localizedProduct?.title ?? baseProduct?.title ?? "Product"}`}
+                    aria-label={`${copy.productPage.labels.downloadDatasheet} - ${localizedProduct?.title ?? baseProduct?.title ?? "Product"}`}
                   >
-                    {copy.productPage.labels.downloadBrochure}
+                    {copy.productPage.labels.downloadDatasheet}
                   </button>
                 </div>
               ) : null}
