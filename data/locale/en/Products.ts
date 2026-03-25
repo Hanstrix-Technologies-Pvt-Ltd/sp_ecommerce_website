@@ -254,7 +254,6 @@ export const PRODUCTS: ProductRecord[] = [
     ],
     gallery: [
         { src: "/assets/new-product images/Image (5).jpg" },
-        { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
     datasheetUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
     seo: {
@@ -270,7 +269,7 @@ export const PRODUCTS: ProductRecord[] = [
     slug: "pit-puzzle",
     title: "Pit Puzzle",
     subtitle: "Double Efficiency with Space-Saving Pit Puzzle Parking",
-    hero: { src: "/assets/products/pit-puzzle/hero.webp" },
+    hero: { src: "/assets/new-product images/Image (2).jpg" },
     summary:
       "Pit Puzzle Parking Systems are innovative semi-automatic underground parking solutions that combine the benefits of vertical stacking and horizontal shifting, utilizing space both above and below ground level. Designed for properties with limited surface area, these systems enable efficient parking without altering the building’s visible architecture. Ideal for premium residential buildings, office complexes, and commercial properties, Pit Puzzle Parking ensures secure, space-optimized vehicle management.",
     features: [
@@ -298,7 +297,7 @@ export const PRODUCTS: ProductRecord[] = [
     seo: {
         description: "Two-level pit puzzle with one platform below grade and horizontal shifting for independent access.",
         keywords: ["pit puzzle", "mechanical parking", "two-post pit puzzle"],
-        image: "/assets/products/pit-puzzle/hero.webp",
+        image: "/assets/new-product images/Image (2).jpg",
     },
   }),
 
