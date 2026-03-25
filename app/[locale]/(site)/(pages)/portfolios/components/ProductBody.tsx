@@ -33,14 +33,18 @@ type Labels = {
 };
 
 export default function ProductBody({ p, labels }: { p: ProductRecord; labels: Labels }) {
+  // For cantilever parking, use first gallery image as hero
+  const isCantilever = p.slug === "cantilever-parking";
+  const heroImage = isCantilever && p.gallery[0] ? p.gallery[0] : p.hero;
+
   return (
     <div className="space-y-10 tablet:space-y-12">
       {/* HERO — square, much larger, scales with screen, never cropped */}
       <div className="relative mx-auto w-full max-w-[1200px]">
         <div className="relative w-full aspect-square">
           <Image
-            src={p.hero.src}
-            alt={p.hero.alt ?? p.title}
+            src={heroImage.src}
+            alt={heroImage.alt ?? p.title}
             fill
             priority
             className="object-contain"
@@ -96,7 +100,7 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
       <section aria-labelledby="gallery-title">
         <h3 id="gallery-title" className="sr-only">{labels.gallery}</h3>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {p.gallery.slice(0, 2).map((g, i) => (
+          {p.gallery.slice(isCantilever ? 1 : 0, 2).map((g, i) => (
             <div key={i}>
               <div className="relative w-full aspect-square">
                 <Image
