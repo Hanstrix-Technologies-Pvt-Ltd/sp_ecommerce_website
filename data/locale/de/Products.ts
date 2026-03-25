@@ -252,7 +252,6 @@ export const PRODUCTS: ProductRecord[] = [
     ],
     gallery: [
       { src: "/assets/new-product images/Image (5).jpg" },
-      { src: "/assets/products/puzzle-parking/gallery2.webp" },
     ],
     datasheetUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
     seo: {
@@ -268,7 +267,7 @@ export const PRODUCTS: ProductRecord[] = [
     slug: "pit-puzzle",
     title: "Pit Puzzle",
     subtitle: "Doppelte Effizienz mit platzsparendem Pit-Puzzle-Parken",
-    hero: { src: "/assets/products/pit-puzzle/hero.webp" },
+    hero: { src: "/assets/new-product images/Image (2).jpg" },
     summary:
       "Pit-Puzzle-Parks ysteme sind innovative, halbautomatische unterirdische Parklösungen, die die Vorteile des vertikalen Stapelns und des horizontalen Verschiebens kombinieren und so den Raum sowohl über als auch unter der Geländeoberkante nutzen. Entwickelt für Grundstücke mit begrenzter Oberfläche, ermöglichen diese Systeme effizientes Parken, ohne die sichtbare Architektur des Gebäudes zu verändern. Ideal für hochwertige Wohngebäude, Bürokomplexe und Gewerbeimmobilien – Pit-Puzzle-Parken sorgt für eine sichere, flächenoptimierte Fahrzeugverwaltung.",
     features: [
@@ -296,7 +295,7 @@ export const PRODUCTS: ProductRecord[] = [
     seo: {
       description: "Zwei-Ebenen-Pit-Puzzle mit einer Ebene im Untergrund und horizontaler Verschiebung fuer unabhaengigen Zugriff.",
       keywords: ["Pit Puzzle", "mechanisches Parken", "Zwei-Säulen-Pit-Puzzle"],
-      image: "/assets/products/pit-puzzle/hero.webp",
+      image: "/assets/new-product images/Image (2).jpg",
     },
   }),
 
