@@ -100,7 +100,7 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
       <section aria-labelledby="gallery-title">
         <h3 id="gallery-title" className="sr-only">{labels.gallery}</h3>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {p.gallery.slice(useGalleryAsHero ? 1 : 0, 2).map((g, i) => (
+          {p.gallery.slice(useGalleryAsHero ? 1 : 0, useGalleryAsHero ? 3 : 2).map((g, i) => (
             <div key={i}>
               <div className="relative w-full aspect-square">
                 <Image
