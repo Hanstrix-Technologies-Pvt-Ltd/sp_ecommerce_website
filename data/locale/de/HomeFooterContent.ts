@@ -46,7 +46,7 @@ export const content = {
     projects: [
       { id: 1, image: "/assets/footprint/NCCUrbanPark.webp", name: "NCC Urban Park View", location: "Bengaluru", instagram: "https://www.instagram.com/reel/DFuD9wRt5-A/" },
       { id: 2, image: "/assets/footprint/AragenLifeSciences.webp", name: "Aragen Life Sciences", location: "Bengaluru", instagram: "https://www.instagram.com/reel/DHnFe1qMFaX/" },
-      { id: 3, image: "/assets/footprint/SattvaHorizon.webp", name: "Sattva Horizon", spaces: "1270 Stellplätze", location: "Bengaluru", instagram: "https://www.instagram.com/p/DE4qTomvNEf/" },
+      { id: 3, image: "/assets/footprint/SattvaHorizon.webp", name: "Sattva Horizon", spaces: "1270 Stellplätze", location: "Bengaluru", instagram: "https://www.instagram.com/reel/DWRIGvLgvSM/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==" },
       { id: 4, image: "/assets/footprint/ManipalHospital.webp", name: "Manipal Hospital", spaces: "350 Stellplätze", location: "Bengaluru", instagram: "https://www.instagram.com/reel/DC0-IYIND-I/" },
       { id: 5, image: "/assets/footprint/JyotiTechPark.webp", name: "Jyoti Tech Park", spaces: "600 Stellplätze", location: "Hyderabad" },
       { id: 6, image: "/assets/footprint/SparshHospital.webp", name: "Sparsh Hospital", location: "Bengaluru" },
