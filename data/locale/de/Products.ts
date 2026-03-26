@@ -251,7 +251,7 @@ export const PRODUCTS: ProductRecord[] = [
       "Autohäuser & Premium-Garagen",
     ],
     gallery: [
-      { src: "/assets/new-product images/Image (5).jpg" },
+      { src: "/assets/products/puzzle-parking/gallery1.webp" },
     ],
     datasheetUrl: "/assets/datasheet/STELZ-P-01-Data Sheet.pdf",
     seo: {
@@ -290,6 +290,7 @@ export const PRODUCTS: ProductRecord[] = [
     gallery: [
       { src: "/assets/new-product images/Image (2).jpg" },
       { src: "/assets/new-product images/Image (4).jpg" },
+      { src: "/assets/new-product images/Image (5).jpg" },
     ],
     datasheetUrl: "/assets/datasheet/STELZ-PP-01-Data Sheet.pdf",
     seo: {
