@@ -101,6 +101,6 @@ export const content = {
         facebook: "https://www.facebook.com/people/STELZ-Parking/61553166070631/",
       },
     },
-    copyright: "© 2025 Published by STELZ MULTIPARKING PVT LTD. All rights reserved.",
+    copyright: "© 2026 Published by STELZ MULTIPARKING PVT LTD. All rights reserved.",
   },
 };
