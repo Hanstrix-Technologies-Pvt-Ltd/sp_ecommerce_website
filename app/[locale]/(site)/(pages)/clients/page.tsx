@@ -24,6 +24,8 @@ const logos = [
   "manipal",
   "concorde",
   "pavani",
+  "tamara",
+  
   "ginger",
   "supreme",
   "divyasree",
@@ -37,6 +39,7 @@ const logos = [
   "durga",
   "sparsh",
   "aragen",
+  "apurupadeco",
   "taksh",
   "esic",
   "ushodaya",
@@ -90,7 +93,7 @@ function DocLogo({ name }: { name: string }) {
     >
       <div className="absolute inset-0 flex items-center justify-center p-6 tablet:p-7">
         <Image
-          src={name === "sumadhura" ? srcJpg : src}
+          src={["sumadhura", "tamara", "apurupadeco"].includes(name) ? srcJpg : src}
           alt={`${name} logo`}
           fill
           className="object-contain"
