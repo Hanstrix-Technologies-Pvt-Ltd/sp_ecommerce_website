@@ -383,7 +383,7 @@ export const PRODUCTS: ProductRecord[] = [
     slug: "car-hoist",
     title: "Car Hoist",
     subtitle: "Elevate Vehicle Movement with Smart Car Hoist Solutions",
-    hero: { src: "/assets/products/car-hoist/hero.webp" },
+    hero: { src: "/assets/products/car-hoist-main.jpg" },
     summary:
       "Car Hoist Systems are vertical lifting mechanisms designed to transport vehicles between different floor levels, commonly used in multi-level buildings with limited ramp space. These systems provide a safe, space-efficient alternative to traditional ramps, enabling seamless vehicle movement in residential, commercial, and industrial applications. Ideal for basements, rooftops, or mezzanine-level parking, Car Hoists ensure smooth and reliable car transfer in compact footprints.",
     features: [
@@ -404,13 +404,12 @@ export const PRODUCTS: ProductRecord[] = [
         "Real Estate Projects with Rooftop or Subterranean Parking",
     ],
     gallery: [
-        { src: "/assets/products/car-hoist/gallery1.webp" },
-        { src: "/assets/products/car-hoist/gallery2.webp" },
+        { src: "/assets/products/car-hoist.jpg" },
     ],
     seo: {
         description: "Vertical car hoist for moving vehicles between floors without ramps in compact buildings.",
         keywords: ["car hoist", "mechanical parking", "automatic"],
-        image: "/assets/products/car-hoist/hero.webp",
+        image: "/assets/products/car-hoist-main.jpg",
     },
   }),
 
