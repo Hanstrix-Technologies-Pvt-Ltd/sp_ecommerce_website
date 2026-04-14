@@ -8,40 +8,43 @@ import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
 
 const logos = [
-  "purvankara",
-  "vamsiram",
-  "bhartiya",
-  "sparsh",
-  "manipal",
-  "confident",
-  "suvarna",
-  "aragen",
-  "brigade",
-  "cmr",
-  "concorde",
-  "divyasree",
-  "dmart",
-  "durga",
-  "esic",
-  "gar",
-  "ginger",
-  "indiqube",
-  "kalyani",
-  "lohia",
-  "maavi",
-  "nanik",
-  "pavani",
-  "phoenix",
   "sattva",
-  "sapra",
+  "brigade",
   "shriram",
-  "skav",
-  "sumadhura",
-  "supreme",
-  "swojas",
-  "taksh",
-  "ushodaya",
+  "purvankara",
+  "phoenix",
+  "kalyani",
+  "sumadura",
   "vaishnavi",
+  "confident",
+  "bhartiya",
+  "vamsiram",
+  "suvarna",
+  "indiqube",
+  "manipal",
+  "concorde",
+  "pavani",
+  "tamara",
+  
+  "ginger",
+  "supreme",
+  "divyasree",
+  "gar",
+  "swojas",
+  "sapra",
+  "cmr",
+  "skav",
+  "dmart",
+  "lohia",
+  "durga",
+  "sparsh",
+  "aragen",
+  "apurupadeco",
+  "taksh",
+  "esic",
+  "ushodaya",
+  "nanik",
+  "maavi",
 ] as const;
 
 const GUTTERS = {
@@ -74,6 +77,9 @@ function DocLogo({ name }: { name: string }) {
   const srcJpg = `/assets/clients/${name}.jpg`;
   const CUT = 45;
 
+  // Logos that need extra padding to appear smaller with more white border
+  const needsExtraPadding = name === "sumadura";
+
   return (
     <div
       className="relative aspect-square bg-white ring-1 ring-gray-200 shadow-sm transition tablet:hover:shadow-md"
@@ -89,13 +95,15 @@ function DocLogo({ name }: { name: string }) {
       }}
     >
       <div className="absolute inset-0 flex items-center justify-center p-6 tablet:p-7">
-        <Image
-          src={name === "sumadhura" ? srcJpg : src}
-          alt={`${name} logo`}
-          fill
-          className="object-contain"
-          sizes="(max-width: 640px) 44vw, (max-width: 1024px) 22vw, 12vw"
-        />
+        <div className={`relative ${needsExtraPadding ? 'w-[60%] h-[60%]' : 'w-full h-full'}`}>
+          <Image
+            src={["sumadura", "tamara", "apurupadeco"].includes(name) ? srcJpg : src}
+            alt={`${name} logo`}
+            fill
+            className="object-contain"
+            sizes="(max-width: 640px) 44vw, (max-width: 1024px) 22vw, 12vw"
+          />
+        </div>
       </div>
     </div>
   );
@@ -170,7 +178,7 @@ export default async function ClientsPage() {
             </h2>
 
             <Link
-              href="https://google.com"
+              href="https://www.google.com/maps/place/STELZ+Multiparking+-+Manufacturer+of+Multi+Level+Car+Parking+Systems/@13.0035729,77.4623786,17z/data=!4m8!3m7!1s0x3bae3b00384a6735:0xaf079752fd6e8573!8m2!3d13.0035677!4d77.4649589!9m1!1b1!16s%2Fg%2F11w95qqm8l?authuser=0&entry=ttu&g_ep=EgoyMDI2MDQwOC4wIKXMDSoASAFQAw%3D%3D"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-4 self-start rounded-sm bg-[#006DDB] px-9 py-5 font-medium text-white transition hover:bg-[#0a3a85] tablet:self-auto tablet:gap-5"

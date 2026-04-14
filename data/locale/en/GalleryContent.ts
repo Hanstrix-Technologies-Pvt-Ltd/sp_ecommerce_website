@@ -3,12 +3,12 @@ export const content = {
     gallery: {
         title: "Gallery of Smart Parking Success",
         items: [
-        { id: 1, image: "/assets/gallery/1.webp" },
+        // { id: 1, image: "/assets/gallery/1.webp" },
         { id: 2, image: "/assets/gallery/2.webp" },
         { id: 3, image: "/assets/gallery/3.webp" },
         { id: 4, image: "/assets/gallery/4.webp" },
         { id: 5, image: "/assets/gallery/5.webp" },
-        { id: 6, image: "/assets/gallery/6.webp" },
+        // { id: 6, image: "/assets/gallery/6.webp" },
         { id: 7, image: "/assets/gallery/7.webp" },
         { id: 8, image: "/assets/gallery/8.webp" },
         { id: 9, image: "/assets/gallery/9.webp" },

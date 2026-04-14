@@ -1,16 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import PageHeader from "@/app/[locale]/(site)/components/PageHeader";
 import { notFound } from "next/navigation";
 import { Linkedin, Facebook, Instagram, Youtube, ArrowRight } from "lucide-react";
 import { Space_Grotesk } from "next/font/google";
-import { getRequestLocale } from "@/lib/i18n/locale";
+import { useParams } from "next/navigation";
 import { translatePath } from "@/lib/i18n/slugMap";
+import { normalizeLocale, type Locale } from "@/lib/i18n/config";
 import { getFooterContent } from "@/lib/i18n/content";
 import type { ProductCategory, ProductRecord } from "@/data/locale/en/Products";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import ContactFormCard from "./ContactFormCard";
+import { useState, useEffect } from "react";
+import LeadCaptureModal from "@/components/LeadCaptureModal";
+import { submitLeadCapture, triggerBrochureDownload, triggerDatasheetDownload } from "@/lib/leadCapture";
 
-type Params = { category: string; slug: string };
+type Params = { category: string; slug: string; locale: string };
 
 async function loadProducts(locale: string) {
   if (locale === "de") {
@@ -45,51 +51,131 @@ const VIDEO_MAP: Record<string, string> = {
     "https://www.youtube.com/embed/rVev3ghL2Kg?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
   "puzzle-parking":
     "https://www.youtube.com/embed/9spsJ1HbD0o?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "pit-puzzle":
+    "https://www.youtube.com/embed/mFpquv9DAMc?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-pit-stacker":
+    "https://www.youtube.com/embed/SHDX6QaORPo?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "cantilever-parking":
+    "https://www.youtube.com/embed/0q-Mwte5S60?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "3-level-pit-puzzle":
+    "https://www.youtube.com/embed/NQSZZy6WHJ0?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
+  "turn-table":
+    "https://www.youtube.com/embed/lmXFDIltkCE?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1",
 };
 
-export default async function PortfolioLayout({
+export default function PortfolioLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<Params>;
 }) {
-  const locale = await getRequestLocale();
-  const [{ category, slug }, productsModule, footerModule, copy] = await Promise.all([
-    params,
-    loadProducts(locale),
-    getFooterContent(locale),
-    getPageCopy(locale),
-  ]);
+  const urlParams = useParams();
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [downloadType, setDownloadType] = useState<'brochure' | 'datasheet'>('brochure');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [locale, setLocale] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [slug, setSlug] = useState<string>("");
+  const [localizedProduct, setLocalizedProduct] = useState<ProductRecord | null>(null);
+  const [baseProduct, setBaseProduct] = useState<ProductRecord | null>(null);
+  const [headerTitle, setHeaderTitle] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [footer, setFooter] = useState<any>(null);
+  const [socials, setSocials] = useState<any[]>([]);
+  const [localizedButtons, setLocalizedButtons] = useState<any[]>([]);
+  const [copy, setCopy] = useState<any>(null);
 
-  if (!isValidCategory(category)) {
-    notFound();
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const resolvedParams = await params;
+        const currentLocale = normalizeLocale(urlParams.locale as string);
+        const [{ category: cat, slug: slugVal }, productsModule, footerModule, pageCopy] = await Promise.all([
+          resolvedParams,
+          loadProducts(currentLocale),
+          getFooterContent(currentLocale),
+          getPageCopy(currentLocale),
+        ]);
+
+        setLocale(currentLocale);
+        setCategory(cat);
+        setSlug(slugVal);
+        setCopy(pageCopy);
+
+        if (!isValidCategory(cat)) {
+          notFound();
+          return;
+        }
+
+        const enProducts = await import("@/data/locale/en/Products");
+        const baseProd = enProducts.getProduct(cat, slugVal);
+        const localizedProd =
+          currentLocale === "en"
+            ? baseProd
+            : (productsModule.getProduct?.(cat, slugVal) as ProductRecord | null) ||
+              (baseProd
+                ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProd.id) ?? null
+                : null);
+
+        setBaseProduct(baseProd);
+        setLocalizedProduct(localizedProd);
+        setHeaderTitle(localizedProd?.title ?? baseProd?.title ?? "Product");
+        setVideoUrl(baseProd?.slug ? VIDEO_MAP[baseProd.slug] || "" : "");
+        setFooter(footerModule.content.footer);
+
+        const socialsData = [
+          { key: "linkedin", href: footerModule.content.footer.contact.socials.linkedin, label: "LinkedIn", Icon: Linkedin },
+          { key: "instagram", href: footerModule.content.footer.contact.socials.instagram, label: "Instagram", Icon: Instagram },
+          { key: "youtube", href: footerModule.content.footer.contact.socials.youtube, label: "YouTube", Icon: Youtube },
+          { key: "facebook", href: footerModule.content.footer.contact.socials.facebook, label: "Facebook", Icon: Facebook },
+        ].filter((s) => !!s.href);
+        setSocials(socialsData);
+
+        const buttons = RIGHT_BUTTONS.map((b) => ({
+          label: (b.label as any)[currentLocale] ?? b.label.en,
+          href: translatePath(b.href, currentLocale),
+        }));
+        setLocalizedButtons(buttons);
+      } catch (error) {
+        console.error("Error loading portfolio data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [params, urlParams.locale]);
+
+  const handleLeadSubmit = async (leadData: any) => {
+    setIsSubmitting(true);
+    try {
+      const dataWithSource = {
+        ...leadData,
+        source: downloadType === 'brochure' ? 'brochure_download' : 'datasheet_download'
+      };
+      const result = await submitLeadCapture(dataWithSource);
+      if (result.success) {
+        setShowLeadModal(false);
+        if (downloadType === 'brochure') {
+          await triggerBrochureDownload(result.leadId!);
+        } else {
+          await triggerDatasheetDownload(result.leadId!, localizedProduct?.datasheetUrl || '');
+        }
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Failed to submit lead. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
-
-  const enProducts = await import("@/data/locale/en/Products");
-  const baseProduct = enProducts.getProduct(category, slug);
-  const localizedProduct =
-    locale === "en"
-      ? baseProduct
-      : (productsModule.getProduct?.(category, slug) as ProductRecord | null) ||
-        (baseProduct
-          ? (productsModule.PRODUCTS as ProductRecord[]).find((p) => p.id === baseProduct.id) ?? null
-          : null);
-  const headerTitle = localizedProduct?.title ?? baseProduct?.title ?? "Product";
-  const videoUrl = baseProduct?.slug ? VIDEO_MAP[baseProduct.slug] : undefined;
-
-  const footer = footerModule.content.footer;
-  const socials = [
-    { key: "linkedin", href: footer.contact.socials.linkedin, label: "LinkedIn", Icon: Linkedin },
-    { key: "instagram", href: footer.contact.socials.instagram, label: "Instagram", Icon: Instagram },
-    { key: "youtube", href: footer.contact.socials.youtube, label: "YouTube", Icon: Youtube },
-    { key: "facebook", href: footer.contact.socials.facebook, label: "Facebook", Icon: Facebook },
-  ].filter((s) => !!s.href);
-
-  const localizedButtons = RIGHT_BUTTONS.map((b) => ({
-    label: b.label[locale] ?? b.label.en,
-    href: translatePath(b.href, locale),
-  }));
 
   return (
     <>
@@ -168,16 +254,18 @@ export default async function PortfolioLayout({
                 <ContactFormCard copy={copy.contact.form} />
               </div>
 
-              {localizedProduct?.brochureUrl ? (
+              {localizedProduct?.datasheetUrl ? (
                 <div className={`${spaceGrotesk.className} mx-auto w-full px-0 py-6 tablet:max-w-[260px]`}>
-                  <a
-                    href={localizedProduct.brochureUrl}
-                    download
+                  <button
+                    onClick={() => {
+                      setDownloadType('datasheet');
+                      setShowLeadModal(true);
+                    }}
                     className="block w-full bg-[#006DDB] p-5 text-center text-[17px] text-white transition hover:bg-[#0a3a85]"
-                    aria-label={`${copy.productPage.labels.brochure} - ${localizedProduct?.title ?? baseProduct?.title ?? "Product"}`}
+                    aria-label={`${copy.productPage.labels.downloadDatasheet} - ${localizedProduct?.title ?? baseProduct?.title ?? "Product"}`}
                   >
-                    {copy.productPage.labels.brochure}
-                  </a>
+                    {copy.productPage.labels.downloadDatasheet}
+                  </button>
                 </div>
               ) : null}
 
@@ -206,6 +294,14 @@ export default async function PortfolioLayout({
           </div>
         </section>
       </main>
+
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={showLeadModal}
+        onClose={() => setShowLeadModal(false)}
+        onSubmit={handleLeadSubmit}
+        isLoading={isSubmitting}
+      />
     </>
   );
 }

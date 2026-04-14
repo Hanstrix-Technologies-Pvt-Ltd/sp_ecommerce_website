@@ -3,29 +3,24 @@ export const services = {
 
   content: [
     {
-      title: "End-to-End-Planung & Installation von Parksystemen",
-      ps:
-        "End-to-End-Planung & Installation von Parksystemen – wir liefern maßgeschneiderte Systeme, die perfekt zu Ihrem Raum, Ihrer Struktur und Ihrer Nutzung passen.",
+      title: "Parkmachbarkeits- & Systemplanung",
+      ps: "Bevor Ausrüstung kommt Zeichnungen, Berechnungen und Logik. Flächenoptimierungsstudien, Fahrzeugmix & Nutzungsanalyse, Einhaltung lokaler Vorschriften und Brandschutznormen, Kapazitätsmaximierung ohne Kompromiss bei Sicherheit oder Zirkulation.",
+    },
+    {
+      title: "Design, Fertigung & Installation",
+      ps: "Wir erledigen alles intern, um Koordinationsfehler zu vermeiden. Mechanische & automatisierte Parksysteme, hydraulikbasierte Systeme für Zuverlässigkeit und Lastsicherheit, Präzisionsfertigung und kontrollierte Installation, Test, Inbetriebnahme und Operator-Schulung.",
     },
     {
       title: "Maßgeschneiderte Parklösungen",
-      ps:
-        "Jedes Projekt ist einzigartig – und so ist auch unser Ansatz. Wir liefern maßgeschneiderte Systeme, die perfekt zu Ihrem Raum, Ihrer Struktur und Ihrer Nutzung passen.",
+      ps: "Keine zwei Standorte sind identisch—also drängen wir keine 'Standardanpassungen.' Wohnungen & Wohnungsbaugesellschaften, Gewerbegebäude & IT-Parks, Krankenhäuser, Hotels & Mixed-Use-Entwicklungen, Kommunale & öffentliche Infrastrukturprojekte. Jedes System wird um Standortbeschränkungen, lichte Höhen, Fahrzeugabmessungen und Nutzerverhalten herum konstruiert.",
     },
     {
-      title: "Nachrüstung & Systemmodernisierung",
-      ps:
-        "Modernisieren Sie Ihr bestehendes Parksystem mit intelligenteren Lösungen. Wir rüsten bestehende Anlagen nach und upgraden sie, um Kapazität und Leistung zu verbessern.",
+      title: "Nachrüstung & Park-Erweiterung",
+      ps: "Bereits gebaut, aber Parken unzureichend? Wir spezialisieren uns auf: Erhöhung der Parkkapazität in bestehenden Kellern, Ersetzen ineffizienter konventioneller Layouts, Modernisierung veralteter mechanischer Systeme. Alles mit minimalen baulichen Änderungen.",
     },
     {
-      title: "Jährliche Wartung & Serviceverträge (AMC)",
-      ps:
-        "Zuverlässiger Support, damit Ihr System effizient läuft. Wir bieten regelmäßige Wartung, schnelle Reparaturen und langfristige Servicepläne.",
-    },
-    {
-      title: "Einmaliger Service",
-      ps:
-        "Einmaliger Service ist ein kostenpflichtiger, auf Abruf verfügbarer Wartungssupport, der von STELZ MULTIPARKING für Kunden ohne aktiven AMC bereitgestellt wird. Dieser Service ist strikt auf die Diagnose und Behebung spezifischer Probleme beschränkt, die zum Zeitpunkt des Besuchs gemeldet wurden.",
+      title: "After-Sales-Support & AMC",
+      ps: "Parksysteme sind Maschinen—kein Dekor. Präventive Wartungspläne, Störungsreaktion & Ersatzteil-Support, AMC-Programme mit Fokus auf Betriebszeit, Sicherheit und Lebenszyklus-Leistung.",
     },
   ],
 };

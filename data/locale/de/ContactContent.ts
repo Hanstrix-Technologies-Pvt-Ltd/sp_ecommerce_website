@@ -37,44 +37,30 @@ export const CONTACT_CONTENT: ContactPageContent = {
         {
           id: 1,
           name: "Abhishek Gowda",
-          role: "Sales Manager – Region Süd",
+          role: "Sales Manager",
           phone: "+91 90355 61065",
           email: "abhishek@stelzparking.com",
         },
         {
           id: 2,
           name: "Ayush Gowda",
-          role: "Sales Executive – A.P",
+          role: "Sales Executive (Bengaluru)",
           phone: "+91 90355 61061",
           email: "ayush@stelzparking.com",
         },
         {
           id: 3,
-          name: "Bijju Krishnan",
-          role: "Sales Manager – Kerala",
+          name: "Biju Krishnan",
+          role: "Sales Manager (Kerala)",
           phone: "+91 90355 61062",
-          email: "bijju@stelzparking.com",
+          email: "biju@stelzparking.com",
         },
         {
           id: 4,
           name: "Premnath",
-          role: "Assistant Manager – TN & KL",
+          role: "Assistant Manager (TN & KL)",
           phone: "+91 88837 07029",
           email: "prem@stelzparking.com",
-        },
-      ],
-    },
-
-    {
-      key: "north",
-      label: "Region Nord",
-      contacts: [
-        {
-          id: 1,
-          name: "Sudarshan",
-          role: "Sales Executive – Region Nord",
-          phone: "+91 99539 43114",
-          email: "sudarshan@stelzparking.com",
         },
       ],
     },
@@ -86,9 +72,23 @@ export const CONTACT_CONTENT: ContactPageContent = {
         {
           id: 1,
           name: "Saurabh Mahajan",
-          role: "Channel Partner – Region West",
+          role: "Channel Partner",
           phone: "+91 72492 84399",
           email: "saurabh@stelzparking.com",
+        },
+      ],
+    },
+
+    {
+      key: "north",
+      label: "Region Nord",
+      contacts: [
+        {
+          id: 1,
+          name: "Sudarshan",
+          role: "Sales Executive",
+          phone: "+91 99539 43114",
+          email: "sudarshan@stelzparking.com",
         },
       ],
     },

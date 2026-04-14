@@ -12,7 +12,7 @@ import {
   type CarouselApi,
 } from "@/components/carousel/carousel-context";
 
-export type ModelItem = { id: string | number; title: string; image: string };
+export type ModelItem = { id: string | number; title: string; image: string; path?: string };
 
 export default function ParkingModelsCarousel({
   items,
@@ -51,6 +51,12 @@ export default function ParkingModelsCarousel({
 
   const handleDotClick = (index: number): void => api?.scrollTo(index);
 
+  const handleModelClick = (item: ModelItem): void => {
+    if (item.path) {
+      window.location.href = item.path;
+    }
+  };
+
   return (
     <section className="bg-white py-8 tablet:py-12 px-3 tablet:px-1 laptop:px-5 overscroll-contain">
       <div className="mx-auto max-w-[1500px] px-[5px]">
@@ -83,7 +89,10 @@ export default function ParkingModelsCarousel({
                   className="basis-full sm:basis-1/2 tablet:basis-1/3 laptop:basis-1/3 desktop:basis-1/3 wide:basis-1/4 px-2 tablet:px-0"
                 >
                   {/* Card */}
-                  <div className="group relative overflow-hidden rounded-[20px] bg-linear-to-br from-gray-800 to-gray-900 shadow-lg transition hover:shadow-2xl">
+                  <div 
+                    className={`group relative overflow-hidden rounded-[20px] bg-linear-to-br from-gray-800 to-gray-900 shadow-lg transition hover:shadow-2xl ${item.path ? 'cursor-pointer' : ''}`}
+                    onClick={() => handleModelClick(item)}
+                  >
                     {/* Image wrapper:
                         - below tablet: height follows width (aspect ratio)
                         - tablet and up: fixed height */}
@@ -116,6 +125,9 @@ export default function ParkingModelsCarousel({
                         <h3 className="mx-6 text-lg tablet:text-2xl font-bold text-white drop-shadow-md">
                           {item.title}
                         </h3>
+                        {item.path && (
+                          <p className="mx-6 text-sm text-white/80 mt-2">Click to view details →</p>
+                        )}
                       </div>
 
                     </div>
