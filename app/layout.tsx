@@ -133,8 +133,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  console.log("\n\n\n\ngaId", gaId, "\n\n\n\n");
   const locale: Locale = await getRequestLocale();
-  const [navModule, footerModule] = await Promise.all([getNavContent(locale), getFooterContent(locale)]);
+  const [navModule, footerModule] = await Promise.all([
+    getNavContent(locale),
+    getFooterContent(locale),
+  ]);
   const navItems = navModule.NAV as NavLink[];
   const footerContent = footerModule.content;
 
