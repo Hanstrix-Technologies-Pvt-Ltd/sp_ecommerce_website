@@ -31,7 +31,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const isValidCategory = (value: string): value is ProductCategory =>
-  ["stack", "puzzle", "automatic"].includes(value);
+  ["stack", "puzzle", "automatic", "bike"].includes(value);
 
 const RIGHT_BUTTONS = [
   { key: "stack", label: { en: "Stack parking", de: "Stack-Parken" }, href: "/portfolios/stack/stack-parking" },
@@ -41,6 +41,7 @@ const RIGHT_BUTTONS = [
   { key: "turn-table", label: { en: "Turn Table", de: "Drehteller" }, href: "/portfolios/automatic/turn-table" },
   { key: "cantilever", label: { en: "Cantilever parking", de: "Kragarm-Parken" }, href: "/portfolios/stack/cantilever-parking" },
   { key: "pit-stacker", label: { en: "Pit Stacker", de: "Gruben-Stacker" }, href: "/portfolios/stack/pit-stacker" },
+  { key: "bs-01", label: { en: "Bike Stack Parking", de: "Bike Stack Parking" }, href: "/portfolios/bike/bs-01" },
 ] as const;
 
 const VIDEO_MAP: Record<string, string> = {

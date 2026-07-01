@@ -20,6 +20,7 @@ const SEGMENT_MAP: SegmentMap = {
   stack: { de: "stapel" },
   puzzle: { de: "puzzle" },
   automatic: { de: "automatik" },
+  bike: { de: "zweirad" },
   // Product slugs
   "stack-parking": { de: "stack-parkieren" },
   "3-level-stack-parking": { de: "3-eben-stack-parkieren" },
@@ -32,6 +33,7 @@ const SEGMENT_MAP: SegmentMap = {
   "car-hoist": { de: "auto-aufzug" },
   rotary: { de: "rotations-parkhaus" },
   "turn-table": { de: "drehplattform" },
+  "bs-01": { de: "bs-01" },
 };
 
 const toLocalized = new Map<Locale, Map<string, string>>();

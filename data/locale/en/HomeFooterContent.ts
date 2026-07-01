@@ -58,6 +58,7 @@ export const content = {
       { id: 12, image: "/assets/footprint/BrigadeUtopia.webp", name: "Brigade Utopia", spaces: "300 Nos", location: "Bengaluru" },
       { id: 13, image: "/assets/footprint/BrigadeVantage.webp", name: "Brigade Vantage", spaces: "190 Nos", location: "Mysuru" },
       { id: 14, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Nos", location: "Bengaluru" },
+      { id: 15, image: "/assets/footprint/BrigadeDeccan.webp", name: "Brigade Group", spaces: "600 Nos", location: "Bengaluru, Mysuru" },
     ],
   },
 
@@ -74,6 +75,7 @@ export const content = {
       { id: 8, image: "/assets/parking_models/CarHoist.webp", title: "Car Hoist", path: "/portfolios/automatic/car-hoist" },
       { id: 9, image: "/assets/parking_models/TurnTable.webp", title: "Turn Table", path: "/portfolios/automatic/turn-table" },
       { id: 10, image: "/assets/parking_models/CantileverParking.webp", title: "Cantilever Parking", path: "/portfolios/stack/cantilever-parking" },
+      { id: 11, image: "/assets/parking_models/BikeStackParking.png", title: "BS-01 Bike Stack Parking", path: "/portfolios/bike/bs-01" },
     ],
   },
 
