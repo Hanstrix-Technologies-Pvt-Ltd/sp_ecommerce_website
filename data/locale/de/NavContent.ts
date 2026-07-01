@@ -64,6 +64,13 @@ export const NAV: NavLink[] = [
           { label: "DREHTELLER", href: "/portfolios/automatic/turn-table" },
         ],
       },
+      {
+        label: "BIKE STACK PARKING",
+        expandable: true,
+        children: [
+          { label: "BS-01 BIKE STACK PARKING", href: "/portfolios/bike/bs-01" },
+        ],
+      },
     ],
   },
 

@@ -37,6 +37,10 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
   const useGalleryAsHero = p.slug === "cantilever-parking" || p.slug === "pit-puzzle";
   const heroImage = useGalleryAsHero && p.gallery[0] ? p.gallery[0] : p.hero;
 
+  const galleryImages = p.gallery
+    .filter((g) => g.src !== heroImage.src && g.src !== p.hero.src)
+    .slice(0, 2);
+
   return (
     <div className="space-y-10 tablet:space-y-12">
       {/* HERO — square, much larger, scales with screen, never cropped */}
@@ -96,26 +100,28 @@ export default function ProductBody({ p, labels }: { p: ProductRecord; labels: L
         </ul>
       </section>
 
-      {/* GALLERY — 2 square cells, no cropping */}
-      <section aria-labelledby="gallery-title">
-        <h3 id="gallery-title" className="sr-only">{labels.gallery}</h3>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {p.gallery.slice(useGalleryAsHero ? 1 : 0, useGalleryAsHero ? 3 : 2).map((g, i) => (
-            <div key={i}>
-              <div className="relative w-full aspect-square">
-                <Image
-                  src={g.src}
-                  alt={g.alt ?? `${p.title} gallery ${i + 1}`}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 560px"
-                  loading={i === 0 ? "eager" : "lazy"}
-                />
+      {/* GALLERY — only when unique images exist (skip duplicates of hero) */}
+      {galleryImages.length > 0 ? (
+        <section aria-labelledby="gallery-title">
+          <h3 id="gallery-title" className="sr-only">{labels.gallery}</h3>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {galleryImages.map((g, i) => (
+              <div key={g.src}>
+                <div className="relative w-full aspect-square">
+                  <Image
+                    src={g.src}
+                    alt={g.alt ?? `${p.title} gallery ${i + 1}`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 560px"
+                    loading={i === 0 ? "eager" : "lazy"}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* APPLICATIONS */}
       <section aria-labelledby="applications-title" className="pb-2">

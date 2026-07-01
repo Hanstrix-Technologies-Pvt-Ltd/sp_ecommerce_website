@@ -27,7 +27,7 @@ const ANIM = {
 } as const;
 
 /** items that are section headers (no page) and must not navigate on click */
-const PRODUCTS_PARENT_ONLY = new Set<string>(["/products/stack", "/products/puzzle", "/products/automatic"]);
+const PRODUCTS_PARENT_ONLY = new Set<string>(["/products/stack", "/products/puzzle", "/products/automatic", "/products/bike"]);
 
 function isActive(pathname: string, href?: string): boolean {
   if (!href) return false;

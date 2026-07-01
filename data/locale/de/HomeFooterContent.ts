@@ -55,6 +55,7 @@ export const content = {
       { id: 9, image: "/assets/footprint/JyothiGranules.webp", name: "Jyothi Granules", spaces: "700 Stellplätze", location: "Hyderabad" },
       { id: 10, image: "/assets/footprint/Centrum.webp", name: "Centrum", spaces: "340 Stellplätze", location: "Hyderabad" },
       { id: 11, image: "/assets/home/sumadhura.png", name: "Sumadhura Capitol Towers", spaces: "1412 Stellplätze", location: "Bengaluru" },
+      { id: 12, image: "/assets/footprint/BrigadeDeccan.webp", name: "Brigade Group", spaces: "600 Stellplätze", location: "Bengaluru, Mysuru" },
     ],
   },
 
@@ -71,6 +72,7 @@ export const content = {
       { id: 8, image: "/assets/parking_models/CarHoist.webp", title: "Autoaufzug", path: "/portfolios/automatic/car-hoist" },
       { id: 9, image: "/assets/parking_models/TurnTable.webp", title: "Drehteller", path: "/portfolios/automatic/turn-table" },
       { id: 10, image: "/assets/parking_models/CantileverParking.webp", title: "Kragarm-Parken", path: "/portfolios/stack/cantilever-parking" },
+      { id: 11, image: "/assets/parking_models/BikeStackParking.png", title: "BS-01 Bike Stack Parking", path: "/portfolios/bike/bs-01" },
     ],
   },
 
