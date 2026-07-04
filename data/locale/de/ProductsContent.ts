@@ -14,6 +14,7 @@ export const content = {
       { id: 10, image: "/assets/parking_models/StackParking.webp", title: "Stack-Parken", link: "stack/stack-parking" },
       { id: 11, image: "/assets/parking_models/OP-01.webp", title: "OP -01", link: "puzzle/op-01" },
       { id: 12, image: "/assets/parking_models/Rotary.webp", title: "Rotary", link: "automatic/rotary" },
+      { id: 13, image: "/assets/parking_models/BikeStackParking.png", title: "BS-01 Bike Stack Parking", link: "bike/bs-01" },
     ],
   },
 };

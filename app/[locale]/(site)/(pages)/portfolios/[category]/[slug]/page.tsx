@@ -9,8 +9,8 @@ import { isLocale, type Locale } from "@/lib/i18n/config";
 
 type Params = { locale: string; category: string; slug: string };
 
-function asCategory(s: string): "stack" | "puzzle" | "automatic" | null {
-  return s === "stack" || s === "puzzle" || s === "automatic" ? s : null;
+function asCategory(s: string): "stack" | "puzzle" | "automatic" | "bike" | null {
+  return s === "stack" || s === "puzzle" || s === "automatic" || s === "bike" ? s : null;
 }
 
 async function loadProducts(locale: Locale) {

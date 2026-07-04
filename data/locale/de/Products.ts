@@ -4,11 +4,11 @@
 export const ROUTE_BASE = "/portfolios";
 
 /** Types */
-export type ProductCategory = "stack" | "puzzle" | "automatic";
+export type ProductCategory = "stack" | "puzzle" | "automatic" | "bike";
 
 export interface ProductRecord {
   id: number;
-  category: ProductCategory;          // "stack" | "puzzle" | "automatic"
+  category: ProductCategory;          // "stack" | "puzzle" | "automatic" | "bike"
   slug: string;                       // e.g. "stack-parking"
   path: string;                       // e.g. "/portfolios/stack/stack-parking"
   title: string;                      // H1
@@ -484,6 +484,54 @@ export const PRODUCTS: ProductRecord[] = [
       image: "/assets/products/turn-table/hero.webp",
     },
   }),
+
+  make({
+    id: 13,
+    category: "bike",
+    slug: "bs-01",
+    title: "BS-01 Bike Stack Parking",
+    subtitle: "Platzsparendes Zweirad-Parken für moderne Entwicklungen",
+    hero: { src: "/assets/products/bs-01/hero.png", alt: "STELZ BS-01 Bike Stack Parksystem" },
+    summary:
+      "Das BS-01 Bike Stack Parksystem ist eine platzsparende mechanische Parklösung, die entwickelt wurde, um die Zweirad-Parkkapazität in begrenzten Bereichen zu maximieren. Es nutzt einen vertikalen Stapelmechanismus, um mehrere Motorräder auf der Fläche eines einzigen Stellplatzes unterzubringen. Das System ist einfach zu bedienen, sicher und geeignet für Wohn-, Gewerbe-, institutionelle und öffentliche Parkanlagen. Seine robuste Stahlkonstruktion gewährleistet Langlebigkeit und lange Lebensdauer bei minimalem Wartungsaufwand. Das BS-01 hilft, das Parken effizient zu organisieren, Staus zu reduzieren und die Zugänglichkeit der Fahrzeuge zu verbessern. Es ist eine ideale Lösung für moderne Entwicklungen mit steigendem Bedarf an Zweirad-Parkplätzen.",
+    features: [
+      "Kompaktes vertikales Stapeldesign für optimale Flächennutzung.",
+      "Einfache und benutzerfreundliche Bedienung mit minimalem Aufwand.",
+      "Robuste Stahlkonstruktion für Stärke, Stabilität und Langlebigkeit.",
+      "Erhöhte Sicherheit durch mechanische Verriegelung und sichere Parkanordnung.",
+      "Geeignet für Wohn-, Gewerbe-, Büro-, Bildungs- und öffentliche Parkanlagen.",
+      "Geringer Wartungsaufwand und energieeffizienter Betrieb.",
+      "Korrosionsbeständige Oberflächenbehandlung für langfristigen Innen- und Außeneinsatz.",
+      "Organisiertes Parklayout verbessert die Zugänglichkeit und reduziert Staus.",
+      "Anpassbare Konfigurationen für standortspezifische Anforderungen.",
+    ],
+    applications: [
+      "Wohnanlagen und Gated Communities",
+      "Gewerbegebäude und Bürokomplexe",
+      "IT-Parks und Unternehmenscampus",
+      "Einkaufszentren und Einzelhandelszentren",
+      "Bildungseinrichtungen und Universitäten",
+      "Krankenhäuser und Gesundheitseinrichtungen",
+      "Bahnhöfe, U-Bahn-Stationen und Busbahnhöfe",
+      "Regierungsgebäude und öffentliche Parkbereiche",
+      "Industrieanlagen und Produktionsstätten",
+      "Hotels, Kongresszentren und Mixed-Use-Entwicklungen",
+    ],
+    gallery: [],
+    datasheetUrl: "/assets/datasheet/STELZ-BS-01-Data Sheet.pdf",
+    seo: {
+      description:
+        "Das BS-01 Bike Stack Parksystem maximiert die Zweirad-Kapazität durch vertikales Stapeln für Wohn-, Gewerbe- und öffentliche Anlagen.",
+      keywords: [
+        "bike stack parking",
+        "BS-01",
+        "Zweirad-Parken",
+        "Motorrad-Parksystem",
+        "STELZ Bike Parking",
+      ],
+      image: "/assets/products/bs-01/hero.png",
+    },
+  }),
 ];
 
 /** Convenience lookups (use later in layout/page) */
@@ -499,6 +547,7 @@ export const PRODUCT_SIDENAV = {
   stack: PRODUCTS.filter((p) => p.category === "stack").map((p) => ({ title: p.title, path: p.path })),
   puzzle: PRODUCTS.filter((p) => p.category === "puzzle").map((p) => ({ title: p.title, path: p.path })),
   automatic: PRODUCTS.filter((p) => p.category === "automatic").map((p) => ({ title: p.title, path: p.path })),
+  bike: PRODUCTS.filter((p) => p.category === "bike").map((p) => ({ title: p.title, path: p.path })),
 } as const;
 
 /** Getters (for page generation later) */

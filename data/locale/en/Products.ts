@@ -4,11 +4,11 @@
 export const ROUTE_BASE = "/portfolios";
 
 /** Types */
-export type ProductCategory = "stack" | "puzzle" | "automatic";
+export type ProductCategory = "stack" | "puzzle" | "automatic" | "bike";
 
 export interface ProductRecord {
   id: number;
-  category: ProductCategory;          // "stack" | "puzzle" | "automatic"
+  category: ProductCategory;          // "stack" | "puzzle" | "automatic" | "bike"
   slug: string;                       // e.g. "stack-parking"
   path: string;                       // e.g. "/portfolios/stack/stack-parking"
   title: string;                      // H1
@@ -485,6 +485,54 @@ export const PRODUCTS: ProductRecord[] = [
     },
   }),
 
+  make({
+    id: 13,
+    category: "bike",
+    slug: "bs-01",
+    title: "BS-01 Bike Stack Parking",
+    subtitle: "Space-Saving Two-Wheeler Parking for Modern Developments",
+    hero: { src: "/assets/products/bs-01/hero.png", alt: "STELZ BS-01 Bike Stack Parking System" },
+    summary:
+      "The BS-01 Bike Stack Parking System is a space-saving mechanical parking solution designed to maximize two-wheeler parking capacity in limited areas. It utilizes a vertical stacking mechanism to accommodate multiple bikes within the footprint of a single parking space. The system is easy to operate, safe, and suitable for residential, commercial, institutional, and public parking facilities. Its robust steel structure ensures durability and long service life with minimal maintenance. The BS-01 helps organize parking efficiently while reducing congestion and improving vehicle accessibility. It is an ideal solution for modern developments facing increasing two-wheeler parking demands.",
+    features: [
+      "Compact vertical stacking design for optimum space utilization.",
+      "Easy and user-friendly operation with minimal effort.",
+      "Robust steel structure designed for strength, stability, and durability.",
+      "Enhanced safety with mechanical locking and secure parking arrangement.",
+      "Suitable for residential, commercial, office, educational, and public parking facilities.",
+      "Low maintenance and energy-efficient operation.",
+      "Corrosion-resistant surface treatment for long-term outdoor and indoor use.",
+      "Organized parking layout improves accessibility and reduces congestion.",
+      "Customizable configurations to suit site-specific requirements.",
+    ],
+    applications: [
+      "Residential Apartments and Gated Communities",
+      "Commercial Buildings and Office Complexes",
+      "IT Parks and Corporate Campuses",
+      "Shopping Malls and Retail Centers",
+      "Educational Institutions and Universities",
+      "Hospitals and Healthcare Facilities",
+      "Railway Stations, Metro Stations, and Bus Terminals",
+      "Government Buildings and Public Parking Areas",
+      "Industrial Facilities and Manufacturing Plants",
+      "Hotels, Convention Centers, and Mixed-Use Developments",
+    ],
+    gallery: [],
+    datasheetUrl: "/assets/datasheet/STELZ-BS-01-Data Sheet.pdf",
+    seo: {
+      description:
+        "BS-01 Bike Stack Parking System maximizes two-wheeler capacity with vertical stacking for residential, commercial, and public facilities.",
+      keywords: [
+        "bike stack parking",
+        "BS-01",
+        "two-wheeler parking",
+        "motorcycle parking system",
+        "STELZ bike parking",
+      ],
+      image: "/assets/products/bs-01/hero.png",
+    },
+  }),
+
 ];
 
 /** Convenience lookups (use later in layout/page) */
@@ -500,6 +548,7 @@ export const PRODUCT_SIDENAV = {
   stack: PRODUCTS.filter((p) => p.category === "stack").map((p) => ({ title: p.title, path: p.path })),
   puzzle: PRODUCTS.filter((p) => p.category === "puzzle").map((p) => ({ title: p.title, path: p.path })),
   automatic: PRODUCTS.filter((p) => p.category === "automatic").map((p) => ({ title: p.title, path: p.path })),
+  bike: PRODUCTS.filter((p) => p.category === "bike").map((p) => ({ title: p.title, path: p.path })),
 } as const;
 
 /** Getters (for page generation later) */
