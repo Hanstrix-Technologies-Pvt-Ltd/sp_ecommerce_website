@@ -110,6 +110,7 @@ export default function LeafletLocationsMap(): JSX.Element {
         maxZoom={16}
         opacity={0.7}
       />
+      
 
       {LOCATIONS.map((loc, index) => (
         <Marker
