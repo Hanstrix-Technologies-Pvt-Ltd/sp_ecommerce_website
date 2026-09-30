@@ -105,9 +105,12 @@ export default function LeafletLocationsMap(): JSX.Element {
       preferCanvas={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+        attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+        maxZoom={16}
         opacity={0.7}
       />
+      
 
       {LOCATIONS.map((loc, index) => (
         <Marker
