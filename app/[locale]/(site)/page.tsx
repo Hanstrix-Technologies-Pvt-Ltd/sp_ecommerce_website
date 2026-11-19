@@ -8,6 +8,7 @@ import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
 import { SITE_URL } from "@/lib/i18n/config";
 import { getFooterContent } from "@/lib/i18n/content";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
+import { getPublicProjects } from "@/lib/cms/public";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -29,10 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const locale = await getRequestLocale();
-  const [footerModule, copy] = await Promise.all([getFooterContent(locale), getPageCopy(locale)]);
+  const [footerModule, copy, projects] = await Promise.all([
+    getFooterContent(locale),
+    getPageCopy(locale),
+    getPublicProjects(locale),
+  ]);
   const footerContent = footerModule.content;
   const heroContent = footerContent?.hero ?? { taglines: [], images: [], highlights: [] };
-  const footprintContent = footerContent?.footprint ?? { projects: [] };
   const modelItems = (footerContent.models.items as ModelItem[]) ?? [];
 
   return (
@@ -41,7 +45,7 @@ export default async function Home() {
       <FootprintCarousel
         content={{
           title: copy.home.footprint.title,
-          projects: footprintContent.projects ?? [],
+          projects,
           labels: {
             carSpaces: copy.home.footprint.carSpaces,
             location: copy.home.footprint.location,

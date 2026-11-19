@@ -34,6 +34,10 @@ function isActive(pathname: string, href?: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname.startsWith(href);
 }
+function getNavHref(href: NavLink["href"], locale: Locale): string {
+  if (!href) return "#";
+  return href.startsWith("/admin") ? href : translatePath(href, locale);
+}
 function hasKids(i: NavLink): i is NavLink & { children: NavLink[] } {
   return Array.isArray(i.children) && i.children.length > 0;
 }
@@ -127,7 +131,7 @@ export default function Navbar({ locale, nav }: NavbarProps): JSX.Element {
                 <DesktopTopItem
                   key={item.label}
                   item={item}
-                  active={isActive(pathname, item.href ? translatePath(item.href, locale) : undefined)}
+                  active={isActive(pathname, getNavHref(item.href, locale))}
                   locale={locale}
                   isLaptopUI={isLaptopUI}
                 />
@@ -229,7 +233,7 @@ function DesktopTopItem({
   isLaptopUI: boolean;
 }): JSX.Element {
   const [open, setOpen] = useState<boolean>(false);
-  const href = item.href ? translatePath(item.href, locale) : "#";
+  const href = getNavHref(item.href, locale);
   const enableHover = isLaptopUI;
 
   const handleMouseEnter = (): void => {
@@ -320,7 +324,7 @@ function MenuList({ items, depth = 0, locale }: MenuListProps): JSX.Element {
     <ul className={`${widthClass} rounded-xs border border-neutral-200 bg-white py-2.5 shadow-xl`}>
       {items.map((i: NavLink) => {
         const kids = hasKids(i);
-        const href = i.href ? translatePath(i.href, locale) : "#";
+        const href = getNavHref(i.href, locale);
         const selfActive = isActive(pathname, href);
 
         return (
@@ -387,7 +391,7 @@ function MobileMenu({
 
   const ItemRow = ({ item, level = 0 }: { item: NavLink; level?: number }): JSX.Element => {
     const kids = hasKids(item);
-    const href = item.href ? translatePath(item.href, locale) : "#";
+    const href = getNavHref(item.href, locale);
     const selfActive = isActive(pathname, href);
     const isChild = level > 0;
 

@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  section     String   // installation | concept
+  title       String   @default("")
+  titleDe     String   @default("")
+  description String   @default("")
+  altText     String   @default("")
+  category    String   @default("")
+  imageUrl    String
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([section, published, sortOrder])
+  @@index([category])
+}
+
+model Project {
+  id                  String         @id @default(cuid())
+  title               String
+  slug                String         @unique
+  shortDescription    String         @default("")
+  detailedDescription String         @default("")
+  category            String         @default("")
+  location            String         @default("")
+  spaces              String         @default("")
+  spacesDe            String         @default("")
+  instagramUrl        String         @default("")
+  coverImageUrl       String
+  clientId            String?
+  client              Client?        @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  completionYear      Int?
+  featured            Boolean        @default(false)
+  status              String         @default("published") // draft | published | archived
+  sortOrder           Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  images              ProjectImage[]
+  galleryItems        GalleryItem[]
+
+  @@index([status, sortOrder])
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  altText   String  @default("")
+  sortOrder Int     @default(0)
+
+  @@index([projectId, sortOrder])
+}
+
+model Client {
+  id          String    @id @default(cuid())
+  name        String
+  logoUrl     String
+  websiteUrl  String    @default("")
+  description String    @default("")
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+
+  @@index([active, sortOrder])
+}

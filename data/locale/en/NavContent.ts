@@ -69,6 +69,7 @@ export const NAV: NavLink[] = [
   { label: "OUR CLIENTS", href: "/clients" },
   { label: "GALLERY", href: "/gallery" },
   { label: "CONTACT US", href: "/contact" },
+  { label: "ADMIN", href: "/admin/login" },
 ];
 
 type NavContent = {

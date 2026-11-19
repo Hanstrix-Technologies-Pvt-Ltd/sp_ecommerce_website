@@ -6,46 +6,8 @@ import { ArrowRight } from "lucide-react";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
-
-const logos = [
-  "sattva",
-  "brigade",
-  "shriram",
-  "purvankara",
-  "phoenix",
-  "kalyani",
-  "sumadura",
-  "vaishnavi",
-  "confident",
-  "bhartiya",
-  "vamsiram",
-  "suvarna",
-  "indiqube",
-  "manipal",
-  "concorde",
-  "pavani",
-  "tamara",
-  
-  "ginger",
-  "supreme",
-  "divyasree",
-  "gar",
-  "swojas",
-  "sapra",
-  "cmr",
-  "skav",
-  "dmart",
-  "lohia",
-  "durga",
-  "sparsh",
-  "aragen",
-  "apurupadeco",
-  "taksh",
-  "esic",
-  "ushodaya",
-  "nanik",
-  "maavi",
-] as const;
+import { getPublicClients } from "@/lib/cms/public";
+import type { PublicClient } from "@/lib/cms/types";
 
 const GUTTERS = {
   partnersGrid: "px-6 tablet:px-12 laptop:px-16 desktop:px-24",
@@ -71,14 +33,9 @@ function BlueArrow() {
   );
 }
 
-function DocLogo({ name }: { name: string }) {
-  // Try webp first, fallback to jpg
-  const src = `/assets/clients/${name}.webp`;
-  const srcJpg = `/assets/clients/${name}.jpg`;
+function DocLogo({ client }: { client: PublicClient }) {
   const CUT = 45;
-
-  // Logos that need extra padding to appear smaller with more white border
-  const needsExtraPadding = name === "sumadura";
+  const needsExtraPadding = /sumadur/i.test(client.name) || /sumadur/i.test(client.logoUrl);
 
   return (
     <div
@@ -95,10 +52,10 @@ function DocLogo({ name }: { name: string }) {
       }}
     >
       <div className="absolute inset-0 flex items-center justify-center p-6 tablet:p-7">
-        <div className={`relative ${needsExtraPadding ? 'w-[60%] h-[60%]' : 'w-full h-full'}`}>
+        <div className={`relative ${needsExtraPadding ? "w-[60%] h-[60%]" : "w-full h-full"}`}>
           <Image
-            src={["sumadura", "tamara", "apurupadeco"].includes(name) ? srcJpg : src}
-            alt={`${name} logo`}
+            src={client.logoUrl}
+            alt={`${client.name} logo`}
             fill
             className="object-contain"
             sizes="(max-width: 640px) 44vw, (max-width: 1024px) 22vw, 12vw"
@@ -124,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ClientsPage() {
   const locale = await getRequestLocale();
-  const copy = await getPageCopy(locale);
+  const [copy, clients] = await Promise.all([getPageCopy(locale), getPublicClients()]);
   const c = copy.clients;
 
   return (
@@ -155,11 +112,15 @@ export default async function ClientsPage() {
         </div>
 
         <div className={`mx-auto w-full max-w-[1600px] ${GUTTERS.partnersGrid}`}>
-          <div className="mx-auto mt-8 grid grid-cols-2 gap-y-0 gap-x-5 sm:grid-cols-3 tablet:mt-10 tablet:grid-cols-4 tablet:gap-x-6 laptop:grid-cols-5 desktop:grid-cols-6">
-            {logos.map((name) => (
-              <DocLogo key={name} name={name} />
-            ))}
-          </div>
+          {clients.length ? (
+            <div className="mx-auto mt-8 grid grid-cols-2 gap-y-0 gap-x-5 sm:grid-cols-3 tablet:mt-10 tablet:grid-cols-4 tablet:gap-x-6 laptop:grid-cols-5 desktop:grid-cols-6">
+              {clients.map((client) => (
+                <DocLogo key={client.id} client={client} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-8 text-center text-sm text-neutral-500">Client logos will appear here soon.</p>
+          )}
         </div>
       </section>
 

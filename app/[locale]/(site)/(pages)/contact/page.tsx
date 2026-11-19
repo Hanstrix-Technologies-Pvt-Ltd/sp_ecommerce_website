@@ -42,7 +42,7 @@ export default async function ContactPage() {
         imageSrc={copy.contact.header.background}
       />
       <main className="bg-white text-[#616161]">
-        <ContactDetails content={contactContent} />
+        {locale !== "de" && <ContactDetails content={contactContent} />}
         <ContactForm copy={copy.contact.form} />
         <ContactGlobal content={contactContent} />
       </main>

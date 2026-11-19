@@ -5,13 +5,7 @@ import ConceptCarousel from "./components/ConceptCarousel";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
-
-async function loadGalleryContent(locale: string) {
-  if (locale === "de") {
-    return import("@/data/locale/de/GalleryContent").then((m) => m.content);
-  }
-  return import("@/data/locale/en/GalleryContent").then((m) => m.content);
-}
+import { getPublicGallery } from "@/lib/cms/public";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -28,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function GalleryPage() {
   const locale = await getRequestLocale();
-  const [copy, galleryContent] = await Promise.all([getPageCopy(locale), loadGalleryContent(locale)]);
+  const [copy, galleryContent] = await Promise.all([getPageCopy(locale), getPublicGallery(locale)]);
 
   return (
     <>
@@ -40,7 +34,19 @@ export default async function GalleryPage() {
       />
       <main className="flex flex-col">
         <GalleryCarousel content={{ gallery: galleryContent.gallery }} />
-        <ConceptCarousel content={{ concepts: galleryContent.concepts }} />
+        <ConceptCarousel
+          content={{
+            concepts: {
+              title: galleryContent.concepts.title,
+              items: galleryContent.concepts.items.map((item) => ({
+                id: item.id,
+                image: item.image,
+                title: item.title || "",
+                location: item.location,
+              })),
+            },
+          }}
+        />
       </main>
     </>
   );
