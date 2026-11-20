@@ -1,12 +1,24 @@
 import type { NextConfig } from "next";
 
+// Neon Object Storage (public_read bucket) serves CMS uploads; allow next/image to load them.
+const storageEndpoint = process.env.AWS_ENDPOINT_URL_S3 ? new URL(process.env.AWS_ENDPOINT_URL_S3) : null;
+const storageBucket = process.env.CMS_BUCKET || "assets";
+
 const nextConfig: NextConfig = {
   // Use Babel React Compiler for automatic memoization and performance optimizations
   reactCompiler: true,
 
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [],
+    remotePatterns: storageEndpoint
+      ? [
+          {
+            protocol: storageEndpoint.protocol.replace(":", "") as "https" | "http",
+            hostname: storageEndpoint.hostname,
+            pathname: `/${storageBucket}/**`,
+          },
+        ]
+      : [],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Optimize for slow networks

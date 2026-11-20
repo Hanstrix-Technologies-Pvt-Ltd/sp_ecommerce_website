@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -37,7 +36,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-=======
 # These are some examples of commonly ignored file patterns.
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
@@ -88,4 +86,11 @@ Thumbs.db
 *.mov
 *.wmv
 
->>>>>>> 5d22d56ed6180d47afbb190b5db69132ffea49a6
+# env files (secrets)
+.env
+.env*.local
+
+# local sqlite
+prisma/*.db
+prisma/*.db-journal
+.neon
