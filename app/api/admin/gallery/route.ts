@@ -3,8 +3,9 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok, parsePagination } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
+import { moveInOrder, SORT_ORDER } from "@/lib/cms/reorder";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
-import { galleryUpsertSchema, reorderSchema } from "@/lib/cms/validators";
+import { galleryUpsertSchema, moveSchema } from "@/lib/cms/validators";
 
 export const runtime = "nodejs";
 
@@ -23,10 +24,10 @@ export async function GET(req: NextRequest) {
         q
           ? {
               OR: [
-                { title: { contains: q } },
-                { titleDe: { contains: q } },
-                { category: { contains: q } },
-                { altText: { contains: q } },
+                { title: { contains: q, mode: "insensitive" as const } },
+                { titleDe: { contains: q, mode: "insensitive" as const } },
+                { category: { contains: q, mode: "insensitive" as const } },
+                { altText: { contains: q, mode: "insensitive" as const } },
               ],
             }
           : {},
@@ -40,7 +41,7 @@ export async function GET(req: NextRequest) {
       prisma.galleryItem.count({ where }),
       prisma.galleryItem.findMany({
         where,
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        orderBy: SORT_ORDER,
         skip,
         take,
         include: { project: { select: { id: true, title: true } } },
@@ -78,17 +79,29 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     requireAdmin(req);
-    const body = await req.json();
-    const parsed = reorderSchema.safeParse(body);
-    if (!parsed.success) return fail("orderedIds required");
+    const parsed = moveSchema.safeParse(await req.json());
+    if (!parsed.success) return fail("id and direction (-1 or 1) are required");
+    const { id, direction } = parsed.data;
 
-    await prisma.$transaction(
-      parsed.data.orderedIds.map((id, index) =>
-        prisma.galleryItem.update({ where: { id }, data: { sortOrder: index } }),
-      ),
-    );
-    revalidatePath("/gallery");
-    return ok({ message: "Order updated" });
+    const current = await prisma.galleryItem.findUnique({ where: { id }, select: { section: true } });
+    if (!current) return fail("Not found", 404);
+    // Gallery order is per section
+    const all = await prisma.galleryItem.findMany({
+      where: { section: current.section },
+      orderBy: SORT_ORDER,
+      select: { id: true },
+    });
+
+    const next = moveInOrder(all.map((row) => row.id), id, direction);
+    if (next) {
+      await prisma.$transaction(
+        next.map((rowId, index) =>
+          prisma.galleryItem.update({ where: { id: rowId }, data: { sortOrder: index } }),
+        ),
+      );
+      revalidatePath("/gallery");
+    }
+    return ok({ message: next ? "Order updated" : "Already at the edge" });
   } catch (error) {
     return handleRouteError(error);
   }

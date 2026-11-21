@@ -231,11 +231,8 @@ export function ImageUploader({
       {progress ? <p className="text-xs text-[#5a6570]">{progress}</p> : null}
       {error ? <Alert tone="error">{error}</Alert> : null}
       {value ? (
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="/uploads/cms/..."
-        />
+        // Read-only: images must come from the uploader (the API also rejects external URLs).
+        <Input value={value} readOnly aria-label={`${label} URL`} className="bg-[#f4f6f9] text-xs" />
       ) : null}
     </div>
   );

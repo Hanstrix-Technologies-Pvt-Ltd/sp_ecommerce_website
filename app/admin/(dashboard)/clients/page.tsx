@@ -140,17 +140,20 @@ export default function AdminClientsPage() {
   }
 
   async function move(id: string, direction: -1 | 1) {
-    const index = items.findIndex((i) => i.id === id);
-    const swap = index + direction;
-    if (index < 0 || swap < 0 || swap >= items.length) return;
-    const ordered = [...items];
-    [ordered[index], ordered[swap]] = [ordered[swap], ordered[index]];
-    setItems(ordered);
-    await fetch("/api/admin/clients", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderedIds: ordered.map((i) => i.id) }),
-    });
+    // The server moves the item within the full order (not just this page/filter), then we reload.
+    setError("");
+    try {
+      const res = await fetch("/api/admin/clients", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, direction }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.success) throw new Error(json.message || "Failed to reorder");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to reorder");
+    }
+    await load();
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));

@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 // Neon Object Storage (public_read bucket) serves CMS uploads; allow next/image to load them.
-const storageEndpoint = process.env.AWS_ENDPOINT_URL_S3 ? new URL(process.env.AWS_ENDPOINT_URL_S3) : null;
+// Matched by host pattern rather than read from AWS_ENDPOINT_URL_S3, so a build without storage
+// env vars still produces a config that serves uploaded images. Which exact URLs can be stored is
+// enforced by the CMS validators (only our own bucket).
 const storageBucket = process.env.CMS_BUCKET || "assets";
 
 const nextConfig: NextConfig = {
@@ -10,15 +12,10 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: storageEndpoint
-      ? [
-          {
-            protocol: storageEndpoint.protocol.replace(":", "") as "https" | "http",
-            hostname: storageEndpoint.hostname,
-            pathname: `/${storageBucket}/**`,
-          },
-        ]
-      : [],
+    remotePatterns: [
+      // e.g. https://br-xxxx.storage.c-2.ap-southeast-1.aws.neon.tech/assets/cms/...
+      { protocol: "https", hostname: "**.aws.neon.tech", pathname: `/${storageBucket}/**` },
+    ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Optimize for slow networks
@@ -101,15 +98,29 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache HTML pages for 1 day with revalidation (skip static assets)
+      // Cache public HTML pages for 1 day with revalidation (skip static assets, admin and API)
       {
-        source: "/((?!_next/static|_next/image|assets|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
+        source: "/((?!_next/static|_next/image|assets|admin|api|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
         headers: [
           {
             key: "Cache-Control",
             value: "public, s-maxage=86400, stale-while-revalidate=600",
           },
         ],
+      },
+      // Admin pages and all API responses must never be stored by a CDN or shared cache.
+      // Listed last so it wins over any earlier rule that sets Cache-Control.
+      {
+        source: "/admin/:path*",
+        headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+      },
+      {
+        source: "/admin",
+        headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+      },
+      {
+        source: "/api/:path*",
+        headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
       },
     ];
   },

@@ -3,8 +3,9 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok, parsePagination, slugify } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
+import { moveInOrder, SORT_ORDER } from "@/lib/cms/reorder";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
-import { projectUpsertSchema, reorderSchema } from "@/lib/cms/validators";
+import { projectUpsertSchema, moveSchema } from "@/lib/cms/validators";
 
 export const runtime = "nodejs";
 
@@ -22,10 +23,10 @@ export async function GET(req: NextRequest) {
         q
           ? {
               OR: [
-                { title: { contains: q } },
-                { location: { contains: q } },
-                { slug: { contains: q } },
-                { shortDescription: { contains: q } },
+                { title: { contains: q, mode: "insensitive" as const } },
+                { location: { contains: q, mode: "insensitive" as const } },
+                { slug: { contains: q, mode: "insensitive" as const } },
+                { shortDescription: { contains: q, mode: "insensitive" as const } },
               ],
             }
           : {},
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
       prisma.project.count({ where }),
       prisma.project.findMany({
         where,
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        orderBy: SORT_ORDER,
         skip,
         take,
         include: {
@@ -96,17 +97,23 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     requireAdmin(req);
-    const body = await req.json();
-    const parsed = reorderSchema.safeParse(body);
-    if (!parsed.success) return fail("orderedIds required");
+    const parsed = moveSchema.safeParse(await req.json());
+    if (!parsed.success) return fail("id and direction (-1 or 1) are required");
+    const { id, direction } = parsed.data;
 
-    await prisma.$transaction(
-      parsed.data.orderedIds.map((id, index) =>
-        prisma.project.update({ where: { id }, data: { sortOrder: index } }),
-      ),
-    );
-    revalidatePath("/");
-    return ok({ message: "Order updated" });
+    const all = await prisma.project.findMany({ orderBy: SORT_ORDER, select: { id: true } });
+    if (!all.some((row) => row.id === id)) return fail("Not found", 404);
+
+    const next = moveInOrder(all.map((row) => row.id), id, direction);
+    if (next) {
+      await prisma.$transaction(
+        next.map((rowId, index) =>
+          prisma.project.update({ where: { id: rowId }, data: { sortOrder: index } }),
+        ),
+      );
+      revalidatePath("/");
+    }
+    return ok({ message: next ? "Order updated" : "Already at the edge" });
   } catch (error) {
     return handleRouteError(error);
   }
