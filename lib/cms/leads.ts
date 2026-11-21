@@ -1,10 +1,11 @@
 import type { Prisma } from "@prisma/client";
 
-export const LEAD_SOURCES = ["brochure_download", "datasheet_download"] as const;
+export const LEAD_SOURCES = ["brochure_download", "datasheet_download", "contact"] as const;
 
 export const LEAD_SOURCE_LABELS: Record<string, string> = {
   brochure_download: "Brochure",
   datasheet_download: "Datasheet",
+  contact: "Contact form",
 };
 
 /** Filter for the admin Leads list/export: free-text search plus optional form type and date range. */
@@ -23,6 +24,8 @@ export function leadWhere(searchParams: URLSearchParams): Prisma.LeadWhereInput 
         { projectName: contains },
         { projectLocation: contains },
         { product: contains },
+        { email: contains },
+        { message: contains },
       ],
     });
   }

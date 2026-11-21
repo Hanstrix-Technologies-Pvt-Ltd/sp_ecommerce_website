@@ -90,7 +90,9 @@ model Lead {
   contactNumber   String
   projectName     String
   projectLocation String
-  source          String   @default("brochure_download") // brochure_download | datasheet_download
+  source          String   @default("brochure_download") // brochure_download | datasheet_download | contact
+  email           String   @default("") // contact form only
+  message         String   @default("") // contact form only
   product         String   @default("") // product title, for datasheet requests
   page            String   @default("") // website page the form was submitted from
   emailSent       Boolean  @default(false)

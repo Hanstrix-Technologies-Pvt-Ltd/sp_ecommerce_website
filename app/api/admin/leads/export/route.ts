@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const where = leadWhere(req.nextUrl.searchParams);
     const rows = await prisma.lead.findMany({ where, orderBy: { createdAt: "desc" }, take: 10_000 });
 
-    const header = ["Date (IST)", "Name", "Contact number", "Project name", "Project location", "Form", "Product", "Page", "Email sent"];
+    const header = ["Date (IST)", "Name", "Contact number", "Email", "Project name", "Project location", "Message", "Form", "Product", "Page", "Email sent"];
     const fmt = new Intl.DateTimeFormat("en-IN", {
       timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
     });
@@ -32,8 +32,10 @@ export async function GET(req: NextRequest) {
         fmt.format(r.createdAt),
         r.name,
         r.contactNumber,
+        r.email,
         r.projectName,
         r.projectLocation,
+        r.message,
         LEAD_SOURCE_LABELS[r.source] || r.source,
         r.product,
         r.page,

@@ -21,6 +21,8 @@ type Lead = {
   contactNumber: string;
   projectName: string;
   projectLocation: string;
+  email: string;
+  message: string;
   source: string;
   product: string;
   page: string;
@@ -31,6 +33,7 @@ type Lead = {
 const SOURCE_LABELS: Record<string, string> = {
   brochure_download: "Brochure",
   datasheet_download: "Datasheet",
+  contact: "Contact form",
 };
 
 const dateFmt = new Intl.DateTimeFormat("en-IN", {
@@ -44,13 +47,14 @@ const dateFmt = new Intl.DateTimeFormat("en-IN", {
 });
 
 function SourceBadge({ lead }: { lead: Lead }) {
-  const datasheet = lead.source === "datasheet_download";
+  const style =
+    lead.source === "datasheet_download"
+      ? "bg-[#F3E8FF] text-[#6B21A8]"
+      : lead.source === "contact"
+        ? "bg-[#ecfdf3] text-[#027a48]"
+        : "bg-[#EAF3FD] text-[#006DDB]";
   return (
-    <span
-      className={`inline-block px-2 py-0.5 text-xs font-medium ${
-        datasheet ? "bg-[#F3E8FF] text-[#6B21A8]" : "bg-[#EAF3FD] text-[#006DDB]"
-      }`}
-    >
+    <span className={`inline-block px-2 py-0.5 text-xs font-medium ${style}`}>
       {SOURCE_LABELS[lead.source] || lead.source}
     </span>
   );
@@ -139,7 +143,7 @@ export default function AdminLeadsPage() {
     <div>
       <PageTitle
         title="Leads"
-        subtitle="Brochure and datasheet download requests from the website, newest first."
+        subtitle="Contact form enquiries and brochure/datasheet requests from the website, newest first."
         action={
           <a
             href={exportHref}
@@ -153,7 +157,7 @@ export default function AdminLeadsPage() {
 
       <Card className="mb-4 flex flex-wrap gap-3">
         <Input
-          placeholder="Search name, phone, project, location…"
+          placeholder="Search name, phone, email, project, message…"
           value={q}
           onChange={(e) => {
             setPage(1);
@@ -173,6 +177,7 @@ export default function AdminLeadsPage() {
           <option value="">All forms</option>
           <option value="brochure_download">Brochure</option>
           <option value="datasheet_download">Datasheet</option>
+          <option value="contact">Contact form</option>
         </Select>
         <Select
           value={days}
@@ -208,7 +213,7 @@ export default function AdminLeadsPage() {
           body={
             filtered
               ? "Try a different search or clear the filters."
-              : "Brochure and datasheet requests from the website will appear here."
+              : "Contact form enquiries and brochure/datasheet requests will appear here."
           }
         />
       ) : (
@@ -221,7 +226,7 @@ export default function AdminLeadsPage() {
                   <th className="px-4 py-3 font-semibold">Date</th>
                   <th className="px-4 py-3 font-semibold">Name</th>
                   <th className="px-4 py-3 font-semibold">Contact</th>
-                  <th className="px-4 py-3 font-semibold">Project</th>
+                  <th className="px-4 py-3 font-semibold">Project / message</th>
                   <th className="px-4 py-3 font-semibold">Form</th>
                   <th className="px-4 py-3 font-semibold">
                     <span className="sr-only">Actions</span>
@@ -242,10 +247,21 @@ export default function AdminLeadsPage() {
                       <a href={`tel:${lead.contactNumber.replace(/[^\d+]/g, "")}`} className="text-[#006DDB] hover:underline">
                         {lead.contactNumber}
                       </a>
+                      {lead.email ? (
+                        <a href={`mailto:${lead.email}`} className="mt-1 block text-xs text-[#616161] hover:text-[#006DDB] hover:underline">
+                          {lead.email}
+                        </a>
+                      ) : null}
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="text-[#1F1F1F]">{lead.projectName}</p>
-                      <p className="text-xs text-[#616161]">{lead.projectLocation}</p>
+                    <td className="max-w-md px-4 py-3">
+                      {lead.source === "contact" ? (
+                        <p className="whitespace-pre-line text-[#1F1F1F]">{lead.message}</p>
+                      ) : (
+                        <>
+                          <p className="text-[#1F1F1F]">{lead.projectName}</p>
+                          <p className="text-xs text-[#616161]">{lead.projectLocation}</p>
+                        </>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <SourceBadge lead={lead} />
@@ -274,11 +290,22 @@ export default function AdminLeadsPage() {
                   </div>
                   <SourceBadge lead={lead} />
                 </div>
-                <p className="mt-2 text-sm text-[#1F1F1F]">{lead.projectName}</p>
-                <p className="text-xs text-[#616161]">
-                  {lead.projectLocation}
-                  {lead.product ? ` · ${lead.product}` : ""}
-                </p>
+                {lead.source === "contact" ? (
+                  <>
+                    <p className="mt-2 whitespace-pre-line text-sm text-[#1F1F1F]">{lead.message}</p>
+                    {lead.email ? (
+                      <a href={`mailto:${lead.email}`} className="mt-1 block text-xs text-[#006DDB]">{lead.email}</a>
+                    ) : null}
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-2 text-sm text-[#1F1F1F]">{lead.projectName}</p>
+                    <p className="text-xs text-[#616161]">
+                      {lead.projectLocation}
+                      {lead.product ? ` · ${lead.product}` : ""}
+                    </p>
+                  </>
+                )}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <a
                     href={`tel:${lead.contactNumber.replace(/[^\d+]/g, "")}`}

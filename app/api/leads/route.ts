@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { z } from 'zod';
 import { brochureDownloadTemplate, datasheetDownloadTemplate } from '@/lib/contact/emailTemplates';
 import { prisma } from '@/lib/cms/db';
+import { clientIp, findRecentDuplicate, isRateLimited } from '@/lib/publicForms';
 
 export const runtime = 'nodejs';
 
@@ -75,6 +76,24 @@ export async function POST(request: NextRequest) {
   }
   const lead = parsed.data;
   const timestamp = new Date().toISOString();
+
+  if (isRateLimited('leads', clientIp(request))) {
+    return NextResponse.json(
+      { success: false, message: 'Too many requests from your connection. Please try again in a few minutes.' },
+      { status: 429 },
+    );
+  }
+
+  // Same request again within a few minutes (double-click / retry): reuse it so the visitor
+  // still gets their download, without a duplicate lead or a second email.
+  const duplicate = await findRecentDuplicate({
+    source: lead.source,
+    contactNumber: lead.contactNumber,
+    projectName: lead.projectName,
+  });
+  if (duplicate) {
+    return NextResponse.json({ success: true, message: 'Lead captured successfully', leadId: duplicate });
+  }
 
   // 1) Save the lead first, so it's never lost even if the email fails.
   let leadId: string | null = null;
