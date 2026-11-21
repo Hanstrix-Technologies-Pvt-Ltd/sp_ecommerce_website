@@ -10,6 +10,12 @@ export default function proxy(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-locale", locale);
+  requestHeaders.set("x-pathname", pathname);
+
+  // Keep admin and uploaded CMS assets outside locale rewriting
+  if (pathname.startsWith("/admin") || pathname.startsWith("/uploads")) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   // If no locale prefix, prepend the default locale and keep the remaining path
   if (!isLocale(maybeLocale)) {
@@ -28,5 +34,5 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|assets/).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|assets/|uploads/).*)"],
 };

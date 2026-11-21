@@ -5,28 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import AutoPlay from "embla-carousel-autoplay";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/carousel/carousel-context";
 import { Space_Grotesk } from "next/font/google";
+import type { PublicClient } from "@/lib/cms/types";
 
-/* font */
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-/* data */
-const logos = [
-  "purvankara",
-  "vamsiram",
-  "bhartiya",
-  "sparsh",
-  "manipal",
-  "confident",
-  "suvarna",
-] as const;
-
-/* longer ribbon so it always overflows */
-const loopLogos = [...logos, ...logos];
-
-/* blue arrow tag icon (mask) */
 function BlueArrow() {
   return (
     <span
@@ -46,30 +31,27 @@ function BlueArrow() {
   );
 }
 
-/* logo cell */
-function Logo({ name }: { name: string }) {
-  const src = `/assets/clients/${name}.webp`;
-  const srcJpg = `/assets/clients/${name}.jpg`;
+function Logo({ client }: { client: PublicClient }) {
   const IMG_CLASSES =
     "object-contain pointer-events-none select-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:scale-110 will-change-transform";
   return (
     <div className="relative w-full h-24 sm:h-28 tablet:h-32 laptop:h-36 desktop:h-40">
       <Image
-        src={name === "sumadhura" ? srcJpg : src}
-        alt={`${name} logo`}
+        src={client.logoUrl}
+        alt={`${client.name} logo`}
         fill
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-        className={IMG_CLASSES}         
+        className={IMG_CLASSES}
         loading="lazy"
       />
     </div>
   );
 }
 
-export default function PartnersCarousel() {
-  // Init the autoplay plugin on the client only
+export default function PartnersCarousel({ clients = [] }: { clients?: PublicClient[] }) {
   const [autoplay, setAutoplay] = useState<ReturnType<typeof AutoPlay> | null>(null);
   const autoplayRef = useRef<ReturnType<typeof AutoPlay> | null>(null);
+  const loopClients = clients.length ? [...clients, ...clients] : [];
 
   useEffect(() => {
     autoplayRef.current = AutoPlay({
@@ -79,15 +61,15 @@ export default function PartnersCarousel() {
     });
     setAutoplay(autoplayRef.current);
     return () => {
-      // embla plugins don't typically need cleanup, but null to be safe
       autoplayRef.current = null;
     };
   }, []);
 
+  if (!clients.length) return null;
+
   return (
     <section className={`${spaceGrotesk.className} bg-white py-8 px-3 tablet:px-10`}>
       <div className="mx-auto max-w-[1500px] px-[5px]">
-        {/* header: blue arrow + tag + title */}
         <div className="w-full text-center mb-8 tablet:mb-10">
           <div className="flex items-center justify-center gap-2">
             <BlueArrow />
@@ -107,7 +89,6 @@ export default function PartnersCarousel() {
           </p>
         </div>
 
-        {/* carousel: no arrows, no dots; 2/4/6 logos */}
         <div className="relative mt-[3px]">
           <Carousel
             opts={{
@@ -118,18 +99,17 @@ export default function PartnersCarousel() {
               slidesToScroll: 1,
               skipSnaps: false,
             }}
-            plugins={autoplay ? [autoplay] : []}   // client-only plugin
+            plugins={autoplay ? [autoplay] : []}
             className="w-full"
           >
-            {/* pair track -ml with slide pl so gutters don't force single-slide view */}
             <CarouselContent className="-ml-2 tablet:-ml-3">
-              {loopLogos.map((name, i) => (
+              {loopClients.map((client, i) => (
                 <CarouselItem
-                  key={`${name}-${i}`}
+                  key={`${client.id}-${i}`}
                   className="!basis-1/2 tablet:!basis-1/4 laptop:!basis-1/6 pl-2 tablet:pl-3"
                 >
                   <div className="group flex items-center justify-center py-4 tablet:py-6">
-                    <Logo name={name} />
+                    <Logo client={client} />
                   </div>
                 </CarouselItem>
               ))}

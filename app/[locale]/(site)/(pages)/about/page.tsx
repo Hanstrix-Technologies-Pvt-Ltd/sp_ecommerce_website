@@ -9,6 +9,7 @@ import PartnersCarousel from "./components/PartnersCarousel";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
+import { getPublicClients } from "@/lib/cms/public";
 import type { AboutContentFile } from "@/data/locale/en/AboutContent";
 
 async function loadAboutContent(locale: string): Promise<AboutContentFile> {
@@ -33,7 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutUs() {
   const locale = await getRequestLocale();
-  const [copy, aboutContent] = await Promise.all([getPageCopy(locale), loadAboutContent(locale)]);
+  const [copy, aboutContent, clients] = await Promise.all([
+    getPageCopy(locale),
+    loadAboutContent(locale),
+    getPublicClients(),
+  ]);
 
   return (
     <>
@@ -48,7 +53,7 @@ export default async function AboutUs() {
       <AboutTabs tabs={aboutContent.tabs} labels={copy.about.tabsLabels} />
       <Philosophy content={aboutContent.philosophy} />
       <WhyStelz why={aboutContent.why} />
-      <PartnersCarousel />
+      <PartnersCarousel clients={clients} />
     </>
   );
 }

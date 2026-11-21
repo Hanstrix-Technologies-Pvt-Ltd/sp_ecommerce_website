@@ -7,6 +7,7 @@ import Partners from "./components/Partners";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
+import { getPublicClients } from "@/lib/cms/public";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -23,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ServicesPage() {
   const locale = await getRequestLocale();
-  const copy = await getPageCopy(locale);
+  const [copy, clients] = await Promise.all([getPageCopy(locale), getPublicClients()]);
   const c = copy.services;
   const servicesContent =
     locale === "de"
@@ -111,7 +112,7 @@ export default async function ServicesPage() {
             </div>
           </div>
         </section>
-        <Partners />
+        <Partners clients={clients.slice(0, 7)} />
       </main>
     </>
   );
