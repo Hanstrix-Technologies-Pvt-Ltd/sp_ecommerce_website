@@ -5,8 +5,18 @@ import { NextRequest } from "next/server";
 export const ADMIN_COOKIE = "stelz_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
 
+// Env values pasted into a dashboard often pick up an invisible trailing newline/space,
+// which would make an otherwise-correct password never match. Trim them once here.
+function env(name: string): string {
+  return (process.env[name] || "").trim();
+}
+
+export function getAdminUsername(): string {
+  return env("ADMIN_USERNAME") || "admin";
+}
+
 function getSecret(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET;
+  const secret = env("ADMIN_SESSION_SECRET");
   if (!secret || secret.length < 16) {
     throw new Error("ADMIN_SESSION_SECRET must be set (min 16 characters).");
   }
@@ -49,8 +59,7 @@ export function verifySessionToken(token: string | undefined | null): AdminSessi
 }
 
 export function verifyAdminPassword(password: string): boolean {
-  const configured = process.env.ADMIN_PASSWORD || "";
-  const username = process.env.ADMIN_USERNAME || "admin";
+  const configured = env("ADMIN_PASSWORD");
   if (!configured) return false;
 
   // Support either plain comparison (dev) or scrypt hash "scrypt$salt$hash"
@@ -65,7 +74,7 @@ export function verifyAdminPassword(password: string): boolean {
 
   const a = Buffer.from(password);
   const b = Buffer.from(configured);
-  return a.length === b.length && timingSafeEqual(a, b) && Boolean(username);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 export function hashAdminPassword(password: string): string {

@@ -4,6 +4,7 @@ import {
   cookieOptions,
   createSessionToken,
   getAdminSessionFromRequest,
+  getAdminUsername,
   verifyAdminPassword,
 } from "@/lib/admin/auth";
 import { fail, ok } from "@/lib/cms/api";
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const username = String(body.username || "").trim();
     const password = String(body.password || "");
-    const expectedUser = process.env.ADMIN_USERNAME || "admin";
+    const expectedUser = getAdminUsername();
 
     if (!username || !password) {
       return fail("Username and password are required", 400);
