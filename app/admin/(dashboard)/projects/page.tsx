@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
+  adminFetch,
   Alert,
   Button,
   Card,
@@ -10,11 +11,16 @@ import {
   EmptyState,
   Field,
   ImageUploader,
+  IMAGE_SPECS,
   Input,
   PageTitle,
+  scrollIntoViewSoon,
   Select,
   TextArea,
+  useDebouncedValue,
+  useReorder,
 } from "../../components/ui";
+import { DragHandle, SortableList } from "../../components/Sortable";
 
 type Project = {
   id: string;
@@ -37,7 +43,7 @@ type Project = {
   client?: { id: string; name: string } | null;
 };
 
-type ClientOption = { id: string; name: string };
+type ClientOption = { id: string; name: string; active: boolean };
 
 const emptyForm = {
   title: "",
@@ -52,10 +58,7 @@ const emptyForm = {
   coverImageUrl: "",
   clientId: "",
   completionYear: "",
-  featured: false,
   status: "published" as "draft" | "published" | "archived",
-  sortOrder: 0,
-  extraImages: [] as string[],
 };
 
 function slugify(v: string) {
@@ -77,31 +80,46 @@ export default function AdminProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const pageSize = 10;
+  const [deleteError, setDeleteError] = useState("");
+  const [uploadingCount, setUploadingCount] = useState(0);
+  // Once the slug is typed by hand, stop regenerating it from the title.
+  const [slugEdited, setSlugEdited] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  const latestRequest = useRef(0);
+  const debouncedQ = useDebouncedValue(q);
+  // Large enough that all projects fit on one page, so any project can be dragged anywhere.
+  const pageSize = 50;
+  const onUploadingChange = useCallback(
+    (uploading: boolean) => setUploadingCount((n) => Math.max(0, n + (uploading ? 1 : -1))),
+    [],
+  );
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    // Ignore responses from older requests, so a slow one can't overwrite newer results.
+    const requestId = ++latestRequest.current;
+    if (!opts?.silent) setLoading(true);
     setError("");
     try {
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-      if (q) params.set("q", q);
+      if (debouncedQ) params.set("q", debouncedQ);
       if (status) params.set("status", status);
-      const [projRes, clientRes] = await Promise.all([
-        fetch(`/api/admin/projects?${params}`),
-        fetch("/api/admin/clients?pageSize=100&active=true"),
+      const [projJson, clientJson] = await Promise.all([
+        adminFetch<{ items: Project[]; total: number }>(`/api/admin/projects?${params}`),
+        // All clients, not only active ones: a project linked to an inactive client must still
+        // show (and keep) that client in the dropdown.
+        adminFetch<{ items: ClientOption[] }>("/api/admin/clients?pageSize=100").catch(() => null),
       ]);
-      const projJson = await projRes.json();
-      const clientJson = await clientRes.json();
-      if (!projRes.ok || !projJson.success) throw new Error(projJson.message || "Failed to load");
+      if (requestId !== latestRequest.current) return;
       setItems(projJson.items);
       setTotal(projJson.total);
-      if (clientJson.success) setClients(clientJson.items);
+      if (clientJson) setClients(clientJson.items);
     } catch (e) {
+      if (requestId !== latestRequest.current) return;
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
-      setLoading(false);
+      if (requestId === latestRequest.current) setLoading(false);
     }
-  }, [page, q, status]);
+  }, [page, debouncedQ, status]);
 
   useEffect(() => {
     load();
@@ -110,11 +128,17 @@ export default function AdminProjectsPage() {
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
+    setSlugEdited(false);
     setShowForm(true);
+    setSuccess("");
+    scrollIntoViewSoon(formRef);
   }
 
   function openEdit(item: Project) {
     setEditing(item);
+    setSlugEdited(true);
+    setSuccess("");
+    scrollIntoViewSoon(formRef);
     setForm({
       title: item.title,
       slug: item.slug,
@@ -128,10 +152,7 @@ export default function AdminProjectsPage() {
       coverImageUrl: item.coverImageUrl,
       clientId: item.clientId || "",
       completionYear: item.completionYear ? String(item.completionYear) : "",
-      featured: item.featured,
       status: item.status,
-      sortOrder: item.sortOrder,
-      extraImages: (item.images || []).map((i) => i.imageUrl),
     });
     setShowForm(true);
   }
@@ -156,22 +177,16 @@ export default function AdminProjectsPage() {
         coverImageUrl: form.coverImageUrl,
         clientId: form.clientId || null,
         completionYear: form.completionYear ? Number(form.completionYear) : null,
-        featured: form.featured,
         status: form.status,
-        sortOrder: form.sortOrder,
-        images: form.extraImages.map((url, index) => ({
-          imageUrl: url,
-          altText: form.title,
-          sortOrder: index,
-        })),
+        // sortOrder is not sent: edits keep the dragged position, new projects go last.
+        // images (extra photographs) is not sent either: the website only shows the cover image,
+        // and leaving the field out keeps any photos saved earlier instead of deleting them.
       };
-      const res = await fetch(editing ? `/api/admin/projects/${editing.id}` : "/api/admin/projects", {
+      await adminFetch(editing ? `/api/admin/projects/${editing.id}` : "/api/admin/projects", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Save failed");
       setSuccess(editing ? "Project updated" : "Project created");
       setShowForm(false);
       await load();
@@ -185,36 +200,32 @@ export default function AdminProjectsPage() {
   async function confirmDelete() {
     if (!deleteId) return;
     setBusy(true);
+    setDeleteError("");
     try {
-      const res = await fetch(`/api/admin/projects/${deleteId}`, { method: "DELETE" });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Delete failed");
+      await adminFetch(`/api/admin/projects/${deleteId}`, { method: "DELETE" });
       setDeleteId(null);
       setSuccess("Project deleted");
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
+      setDeleteError(err instanceof Error ? err.message : "Delete failed");
     } finally {
       setBusy(false);
     }
   }
 
-  async function move(id: string, direction: -1 | 1) {
-    // The server moves the item within the full order (not just this page/filter), then we reload.
-    setError("");
-    try {
-      const res = await fetch("/api/admin/projects", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, direction }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.success) throw new Error(json.message || "Failed to reorder");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to reorder");
-    }
-    await load();
-  }
+  // Drag-and-drop: show the new order at once, save in the background (see useReorder).
+  const reorder = useReorder<Project>("/api/admin/projects", {
+    setItems,
+    reload: () => load({ silent: true }),
+    onSaved: () => {
+      setError("");
+      setSuccess("Order saved");
+    },
+    onError: (message) => {
+      setSuccess("");
+      setError(message);
+    },
+  });
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -255,8 +266,9 @@ export default function AdminProjectsPage() {
       {success ? <div className="mb-3"><Alert tone="success">{success}</Alert></div> : null}
 
       {showForm ? (
+        <div ref={formRef} className="scroll-mt-4">
         <Card className="mb-5">
-          <h3 className="mb-3 text-lg font-semibold">{editing ? "Edit project" : "New project"}</h3>
+          <h3 className="mb-3 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit project" : "New project"}</h3>
           <form onSubmit={onSubmit} className="grid gap-4 laptop:grid-cols-2">
             <Field label="Title">
               <Input
@@ -266,13 +278,20 @@ export default function AdminProjectsPage() {
                   setForm((f) => ({
                     ...f,
                     title: e.target.value,
-                    slug: f.slug && editing ? f.slug : slugify(e.target.value),
+                    slug: slugEdited ? f.slug : slugify(e.target.value),
                   }))
                 }
               />
             </Field>
             <Field label="Slug" hint="URL-safe unique identifier">
-              <Input required value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: slugify(e.target.value) }))} />
+              <Input
+                required
+                value={form.slug}
+                onChange={(e) => {
+                  setSlugEdited(true);
+                  setForm((f) => ({ ...f, slug: slugify(e.target.value) }));
+                }}
+              />
             </Field>
             <Field label="Location">
               <Input value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
@@ -287,11 +306,18 @@ export default function AdminProjectsPage() {
               <Input value={form.spacesDe} onChange={(e) => setForm((f) => ({ ...f, spacesDe: e.target.value }))} />
             </Field>
             <Field label="Instagram URL">
-              <Input value={form.instagramUrl} onChange={(e) => setForm((f) => ({ ...f, instagramUrl: e.target.value }))} />
+              <Input
+                type="url"
+                placeholder="https://www.instagram.com/…"
+                value={form.instagramUrl}
+                onChange={(e) => setForm((f) => ({ ...f, instagramUrl: e.target.value }))}
+              />
             </Field>
             <Field label="Completion year">
               <Input
                 type="number"
+                min={1950}
+                max={2100}
                 value={form.completionYear}
                 onChange={(e) => setForm((f) => ({ ...f, completionYear: e.target.value }))}
               />
@@ -300,7 +326,10 @@ export default function AdminProjectsPage() {
               <Select value={form.clientId} onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}>
                 <option value="">None</option>
                 {clients.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                    {c.active ? "" : " (inactive)"}
+                  </option>
                 ))}
               </Select>
             </Field>
@@ -328,43 +357,21 @@ export default function AdminProjectsPage() {
               <ImageUploader
                 folder="projects"
                 label="Cover image"
+                spec={IMAGE_SPECS.projectCover}
                 value={form.coverImageUrl}
                 onChange={(url) => setForm((f) => ({ ...f, coverImageUrl: url }))}
+                onUploadingChange={onUploadingChange}
               />
             </div>
-            <div className="laptop:col-span-2 space-y-2">
-              <p className="text-sm font-medium">Additional photographs</p>
-              <ImageUploader
-                folder="projects"
-                label="Add photograph"
-                value=""
-                onChange={(url) => setForm((f) => ({ ...f, extraImages: [...f.extraImages, url] }))}
-              />
-              <div className="flex flex-wrap gap-2">
-                {form.extraImages.map((url) => (
-                  <div key={url} className="relative h-20 w-28 overflow-hidden rounded border">
-                    <Image src={url} alt="" fill className="object-cover" unoptimized />
-                    <button
-                      type="button"
-                      className="absolute right-1 top-1 rounded bg-black/60 px-1 text-xs text-white"
-                      onClick={() => setForm((f) => ({ ...f, extraImages: f.extraImages.filter((u) => u !== url) }))}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} />
-              Featured
-            </label>
             <div className="flex gap-2 laptop:col-span-2">
-              <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
-              <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>Cancel</Button>
+              <Button type="submit" disabled={busy || uploadingCount > 0}>
+                {busy ? "Saving…" : uploadingCount > 0 ? "Waiting for upload…" : "Save"}
+              </Button>
+              <Button type="button" variant="secondary" disabled={uploadingCount > 0} onClick={() => setShowForm(false)}>Cancel</Button>
             </div>
           </form>
         </Card>
+        </div>
       ) : null}
 
       {loading ? (
@@ -372,35 +379,47 @@ export default function AdminProjectsPage() {
       ) : items.length === 0 ? (
         <EmptyState title="No projects yet" body="Add key projects to populate the home Footprint carousel." />
       ) : (
-        <div className="space-y-3">
-          {items.map((item) => (
-            <Card key={item.id} className="flex flex-col gap-3 tablet:flex-row">
-              <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-lg bg-[#eef1f5] tablet:w-44">
-                <Image src={item.coverImageUrl} alt={item.title} fill className="object-cover" unoptimized />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-[#0f2744]">{item.title}</p>
-                <p className="text-xs text-[#5a6570]">
-                  {item.status} · {item.location || "—"} · /{item.slug}
-                  {item.client ? ` · ${item.client.name}` : ""}
-                </p>
-                <p className="mt-1 line-clamp-2 text-sm text-[#5a6570]">{item.shortDescription || item.spaces}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
-                  <Button type="button" variant="ghost" onClick={() => move(item.id, -1)}>↑</Button>
-                  <Button type="button" variant="ghost" onClick={() => move(item.id, 1)}>↓</Button>
-                  <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
+        <>
+          <p className="mb-3 text-sm text-[#616161]">
+            Drag the ⠿ handle to change the order projects appear in the home page carousel.
+          </p>
+          <SortableList
+            items={items}
+            onReorder={reorder}
+            className="space-y-3"
+            renderItem={(item, drag) => (
+              <Card className="flex flex-col gap-3 tablet:flex-row tablet:items-center">
+                <div className="hidden tablet:block">
+                  <DragHandle drag={drag} label={item.title} />
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                <div className="relative h-28 w-full shrink-0 overflow-hidden bg-[#F5F5F5] tablet:w-44">
+                  <Image src={item.coverImageUrl} alt={item.title} fill sizes="(min-width: 768px) 176px, 100vw" className="object-cover" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-[#1F1F1F]">{item.title}</p>
+                  <p className="text-xs text-[#616161]">
+                    {item.status} · {item.location || "—"} · /{item.slug}
+                    {item.client ? ` · ${item.client.name}` : ""}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm text-[#616161]">{item.shortDescription || item.spaces}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <div className="tablet:hidden">
+                      <DragHandle drag={drag} label={item.title} />
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
+                    <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+          />
+        </>
       )}
 
       {pages > 1 ? (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-          <span className="text-sm text-[#5a6570]">Page {page} / {pages}</span>
+          <span className="text-sm text-[#616161]">Page {page} / {pages}</span>
           <Button variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
         </div>
       ) : null}
@@ -409,9 +428,13 @@ export default function AdminProjectsPage() {
         open={Boolean(deleteId)}
         title="Delete project?"
         body="This removes the project and its photo records. Uploaded files are removed only if unused elsewhere."
-        onCancel={() => setDeleteId(null)}
+        onCancel={() => {
+          setDeleteId(null);
+          setDeleteError("");
+        }}
         onConfirm={confirmDelete}
         busy={busy}
+        error={deleteError}
       />
     </div>
   );

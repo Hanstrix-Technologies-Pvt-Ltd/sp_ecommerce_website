@@ -2,7 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Space_Grotesk } from "next/font/google";
+import { Eye, EyeOff } from "lucide-react";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -11,8 +13,9 @@ const spaceGrotesk = Space_Grotesk({
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("admin");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -49,11 +52,21 @@ export default function AdminLoginPage() {
         <div className="h-[4px] w-full bg-[#006DDB]" />
 
         <div className="px-8 py-10 tablet:px-12">
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/assets/home/Logo.webp"
+              alt="STELZ"
+              width={800}
+              height={200}
+              priority
+              className="h-16 w-auto"
+            />
+          </div>
           <h1 className="text-center text-[36px] font-semibold leading-tight text-[#1F1F1F] tablet:text-[44px]">
-            Admin Login
+            Sign in
           </h1>
           <p className="mt-3 text-center text-base leading-7 text-[#616161]">
-            Sign in to manage gallery, projects, and clients.
+            Manage the gallery, key projects and clients on stelzparking.com.
           </p>
 
           <form className="mt-8 space-y-5" onSubmit={onSubmit}>
@@ -67,16 +80,27 @@ export default function AdminLoginPage() {
               required
               className={inputBase}
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-              className={inputBase}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                className={`${inputBase} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-[#616161] hover:text-[#006DDB]"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
             {error ? (
               <p className="text-sm text-red-600" role="alert">

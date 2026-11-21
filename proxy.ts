@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "./lib/i18n/config";
 import { translateSegments } from "./lib/i18n/slugMap";
+import { ADMIN_COOKIE, verifySessionToken } from "./lib/admin/session";
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -11,6 +12,20 @@ export default function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-locale", locale);
   requestHeaders.set("x-pathname", pathname);
+
+  // Admin auth gate: redirect here, before any page render, so /admin doesn't wait on a
+  // full server render (and a cold start) just to discover the visitor isn't logged in.
+  // The dashboard layout still verifies the session as a second line of defence.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const loggedIn = Boolean(verifySessionToken(request.cookies.get(ADMIN_COOKIE)?.value));
+    const onLogin = pathname === "/admin/login";
+    if (!loggedIn && !onLogin) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+    if (loggedIn && onLogin) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+  }
 
   // Keep admin and uploaded CMS assets outside locale rewriting
   if (pathname.startsWith("/admin") || pathname.startsWith("/uploads")) {

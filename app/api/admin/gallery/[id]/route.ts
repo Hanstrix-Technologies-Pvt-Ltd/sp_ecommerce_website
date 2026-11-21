@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicSite } from "@/lib/cms/revalidate";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
+import { nextSortOrder } from "@/lib/cms/reorder";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
 import { galleryUpdateSchema } from "@/lib/cms/validators";
 
@@ -38,6 +39,16 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
       if (!exists) return fail("Associated project not found", 400);
     }
 
+    // Moving to the other section: append to the end of that section's order instead of
+    // keeping a position number that belonged to the old section.
+    if (data.section && data.section !== existing.section && data.sortOrder === undefined) {
+      const { _max } = await prisma.galleryItem.aggregate({
+        where: { section: data.section },
+        _max: { sortOrder: true },
+      });
+      data.sortOrder = nextSortOrder(_max.sortOrder);
+    }
+
     const oldUrl = existing.imageUrl;
     const item = await prisma.galleryItem.update({ where: { id }, data });
 
@@ -45,9 +56,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
       await deleteImageIfUnreferenced(oldUrl);
     }
 
-    revalidatePath("/gallery");
-    revalidatePath("/en/gallery");
-    revalidatePath("/de/gallery");
+    revalidatePublicSite();
     return ok({ item });
   } catch (error) {
     return handleRouteError(error);
@@ -64,7 +73,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
     await prisma.galleryItem.delete({ where: { id } });
     await deleteImageIfUnreferenced(existing.imageUrl);
 
-    revalidatePath("/gallery");
+    revalidatePublicSite();
     return ok({ message: "Deleted" });
   } catch (error) {
     return handleRouteError(error);

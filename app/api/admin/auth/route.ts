@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
       return fail("Username and password are required", 400);
     }
     if (username !== expectedUser || !verifyAdminPassword(password)) {
+      // Slow down password guessing: every failed attempt costs ~1s.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return fail("Invalid credentials", 401);
     }
 

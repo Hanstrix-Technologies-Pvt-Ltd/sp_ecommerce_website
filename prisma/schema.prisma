@@ -81,3 +81,31 @@ model Client {
 
   @@index([active, sortOrder])
 }
+
+// Brochure / datasheet download form submissions from the public website.
+// Saved before the notification email is sent, so a lead is never lost if email fails.
+model Lead {
+  id              String   @id @default(cuid())
+  name            String
+  contactNumber   String
+  projectName     String
+  projectLocation String
+  source          String   @default("brochure_download") // brochure_download | datasheet_download
+  product         String   @default("") // product title, for datasheet requests
+  page            String   @default("") // website page the form was submitted from
+  emailSent       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Uploaded replacements for downloadable PDFs (brochure, product datasheets).
+// `key` is the original file's public path (e.g. /assets/brochure.pdf). With no row, the
+// original bundled file is served; with a row, the uploaded file in Neon storage is served.
+model Document {
+  key       String   @id
+  url       String
+  fileName  String
+  size      Int
+  updatedAt DateTime @updatedAt
+}

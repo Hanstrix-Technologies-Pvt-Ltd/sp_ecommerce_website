@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
+  adminFetch,
   Alert,
   Button,
   Card,
@@ -10,11 +11,16 @@ import {
   EmptyState,
   Field,
   ImageUploader,
+  IMAGE_SPECS,
   Input,
   PageTitle,
+  scrollIntoViewSoon,
   Select,
   TextArea,
+  useDebouncedValue,
+  useReorder,
 } from "../../components/ui";
+import { DragHandle, SortableList } from "../../components/Sortable";
 
 type GalleryItem = {
   id: string;
@@ -40,9 +46,7 @@ const emptyForm = {
   category: "",
   imageUrl: "",
   projectId: "",
-  featured: false,
   published: true,
-  sortOrder: 0,
 };
 
 export default function AdminGalleryPage() {
@@ -50,7 +54,8 @@ export default function AdminGalleryPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
-  const [section, setSection] = useState("");
+  // Order is per section, so start on a section (drag and drop needs one selected).
+  const [section, setSection] = useState("installation");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -59,29 +64,37 @@ export default function AdminGalleryPage() {
   const [showForm, setShowForm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const pageSize = 12;
+  const [deleteError, setDeleteError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  const latestRequest = useRef(0);
+  const debouncedQ = useDebouncedValue(q);
+  // Large enough that a whole section fits on one page, so any image can be dragged anywhere.
+  const pageSize = 60;
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    // Ignore responses from older requests, so a slow one can't overwrite newer results.
+    const requestId = ++latestRequest.current;
+    if (!opts?.silent) setLoading(true);
     setError("");
     try {
       const params = new URLSearchParams({
         page: String(page),
         pageSize: String(pageSize),
       });
-      if (q) params.set("q", q);
+      if (debouncedQ) params.set("q", debouncedQ);
       if (section) params.set("section", section);
-      const res = await fetch(`/api/admin/gallery?${params}`);
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Failed to load");
+      const json = await adminFetch<{ items: GalleryItem[]; total: number }>(`/api/admin/gallery?${params}`);
+      if (requestId !== latestRequest.current) return;
       setItems(json.items);
       setTotal(json.total);
     } catch (e) {
+      if (requestId !== latestRequest.current) return;
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
-      setLoading(false);
+      if (requestId === latestRequest.current) setLoading(false);
     }
-  }, [page, q, section]);
+  }, [page, debouncedQ, section]);
 
   useEffect(() => {
     load();
@@ -92,6 +105,7 @@ export default function AdminGalleryPage() {
     setForm(emptyForm);
     setShowForm(true);
     setSuccess("");
+    scrollIntoViewSoon(formRef);
   }
 
   function openEdit(item: GalleryItem) {
@@ -105,12 +119,11 @@ export default function AdminGalleryPage() {
       category: item.category,
       imageUrl: item.imageUrl,
       projectId: item.projectId || "",
-      featured: item.featured,
       published: item.published,
-      sortOrder: item.sortOrder,
     });
     setShowForm(true);
     setSuccess("");
+    scrollIntoViewSoon(formRef);
   }
 
   async function onSubmit(e: FormEvent) {
@@ -124,16 +137,21 @@ export default function AdminGalleryPage() {
         ...form,
         projectId: form.projectId || null,
       };
-      const res = await fetch(editing ? `/api/admin/gallery/${editing.id}` : "/api/admin/gallery", {
+      await adminFetch(editing ? `/api/admin/gallery/${editing.id}` : "/api/admin/gallery", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Save failed");
       setSuccess(editing ? "Gallery item updated" : "Gallery item created");
       setShowForm(false);
-      await load();
+      if (section && section !== form.section) {
+        // Saved into the other section: switch the list there (this reloads it), otherwise the
+        // item would seem to have disappeared.
+        setPage(1);
+        setSection(form.section);
+      } else {
+        await load();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -144,36 +162,32 @@ export default function AdminGalleryPage() {
   async function confirmDelete() {
     if (!deleteId) return;
     setBusy(true);
+    setDeleteError("");
     try {
-      const res = await fetch(`/api/admin/gallery/${deleteId}`, { method: "DELETE" });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Delete failed");
+      await adminFetch(`/api/admin/gallery/${deleteId}`, { method: "DELETE" });
       setDeleteId(null);
       setSuccess("Gallery item deleted");
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
+      setDeleteError(err instanceof Error ? err.message : "Delete failed");
     } finally {
       setBusy(false);
     }
   }
 
-  async function move(id: string, direction: -1 | 1) {
-    // The server moves the item within the full order (not just this page/filter), then we reload.
-    setError("");
-    try {
-      const res = await fetch("/api/admin/gallery", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, direction }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.success) throw new Error(json.message || "Failed to reorder");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to reorder");
-    }
-    await load();
-  }
+  // Drag-and-drop: show the new order at once, save in the background (see useReorder).
+  const reorder = useReorder<GalleryItem>("/api/admin/gallery", {
+    setItems,
+    reload: () => load({ silent: true }),
+    onSaved: () => {
+      setError("");
+      setSuccess("Order saved");
+    },
+    onError: (message) => {
+      setSuccess("");
+      setError(message);
+    },
+  });
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -213,8 +227,9 @@ export default function AdminGalleryPage() {
       {success ? <div className="mb-3"><Alert tone="success">{success}</Alert></div> : null}
 
       {showForm ? (
+        <div ref={formRef} className="scroll-mt-4">
         <Card className="mb-5">
-          <h3 className="mb-3 text-lg font-semibold text-[#0f2744]">
+          <h3 className="mb-3 text-lg font-semibold text-[#1F1F1F]">
             {editing ? "Edit gallery item" : "New gallery item"}
           </h3>
           <form onSubmit={onSubmit} className="grid gap-4 laptop:grid-cols-2">
@@ -241,13 +256,6 @@ export default function AdminGalleryPage() {
             <Field label="Alt text">
               <Input value={form.altText} onChange={(e) => setForm((f) => ({ ...f, altText: e.target.value }))} />
             </Field>
-            <Field label="Sort order">
-              <Input
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm((f) => ({ ...f, sortOrder: Number(e.target.value) || 0 }))}
-              />
-            </Field>
             <div className="laptop:col-span-2">
               <Field label="Description">
                 <TextArea
@@ -260,32 +268,37 @@ export default function AdminGalleryPage() {
             <div className="laptop:col-span-2">
               <ImageUploader
                 folder="gallery"
+                spec={form.section === "concept" ? IMAGE_SPECS.galleryConcept : IMAGE_SPECS.galleryInstallation}
                 value={form.imageUrl}
                 onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+                onUploadingChange={setUploading}
               />
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.featured}
-                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-              />
-              Featured
-            </label>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={form.published}
                 onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
               />
-              Published
+              Published (visible on the website; untick to keep as a draft)
             </label>
             <div className="flex gap-2 laptop:col-span-2">
-              <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
-              <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>Cancel</Button>
+              <Button type="submit" disabled={busy || uploading}>
+                {busy ? "Saving…" : uploading ? "Waiting for upload…" : "Save"}
+              </Button>
+              <Button type="button" variant="secondary" disabled={uploading} onClick={() => setShowForm(false)}>Cancel</Button>
             </div>
           </form>
         </Card>
+        </div>
+      ) : null}
+
+      {!loading && items.length > 0 ? (
+        <p className="mb-3 text-sm text-[#616161]">
+          {section
+            ? "Drag the ⠿ handle to change the order images appear on the website."
+            : "Choose Installations or Concepts above to reorder images (each section has its own order)."}
+        </p>
       ) : null}
 
       {loading ? (
@@ -293,38 +306,43 @@ export default function AdminGalleryPage() {
       ) : items.length === 0 ? (
         <EmptyState title="No gallery items" body="Add installation or concept images to populate /gallery." />
       ) : (
-        <div className="grid gap-4 tablet:grid-cols-2 laptop:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item.id} className="overflow-hidden p-0">
-              <div className="relative h-40 w-full bg-[#eef1f5]">
-                <Image src={item.imageUrl} alt={item.altText || item.title || "Gallery"} fill className="object-cover" unoptimized />
+        <SortableList
+          items={items}
+          onReorder={reorder}
+          disabled={!section}
+          className="grid gap-4 tablet:grid-cols-2 laptop:grid-cols-3"
+          renderItem={(item, drag) => (
+            <Card className="h-full overflow-hidden p-0">
+              <div className="relative h-40 w-full bg-[#F5F5F5]">
+                <Image src={item.imageUrl} alt={item.altText || item.title || "Gallery"} fill sizes="(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw" className="object-cover" />
               </div>
               <div className="space-y-2 p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-[#0f2744]">{item.title || "(untitled)"}</p>
-                    <p className="text-xs text-[#5a6570]">
-                      {item.section} · {item.published ? "published" : "draft"}
-                      {item.category ? ` · ${item.category}` : ""}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium text-[#1F1F1F]">{item.title || "(untitled)"}</p>
+                  <p className="text-xs text-[#616161]">
+                    {item.section} · {item.published ? "published" : "draft"}
+                    {item.category ? ` · ${item.category}` : ""}
+                  </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <DragHandle
+                    drag={drag}
+                    label={item.title || "image"}
+                    disabledReason="Choose a section to reorder"
+                  />
                   <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
-                  <Button type="button" variant="ghost" onClick={() => move(item.id, -1)}>↑</Button>
-                  <Button type="button" variant="ghost" onClick={() => move(item.id, 1)}>↓</Button>
                   <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
+          )}
+        />
       )}
 
       {pages > 1 ? (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-          <span className="text-sm text-[#5a6570]">Page {page} / {pages}</span>
+          <span className="text-sm text-[#616161]">Page {page} / {pages}</span>
           <Button variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
         </div>
       ) : null}
@@ -333,9 +351,13 @@ export default function AdminGalleryPage() {
         open={Boolean(deleteId)}
         title="Delete gallery item?"
         body="This removes the record. Managed upload files are deleted only if nothing else references them."
-        onCancel={() => setDeleteId(null)}
+        onCancel={() => {
+          setDeleteId(null);
+          setDeleteError("");
+        }}
         onConfirm={confirmDelete}
         busy={busy}
+        error={deleteError}
       />
     </div>
   );

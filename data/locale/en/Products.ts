@@ -194,7 +194,7 @@ export const PRODUCTS: ProductRecord[] = [
     id: 5,
     category: "stack",
     slug: "cantilever-parking",
-    title: "Canilever Parking",
+    title: "Cantilever Parking",
     subtitle: "Achieve Clean Design with Cantilever Parking Solutions",
     hero: { src: "/assets/products/cantilever-parking/hero.webp" },
     summary:

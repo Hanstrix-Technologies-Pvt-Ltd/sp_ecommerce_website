@@ -56,7 +56,7 @@ export const galleryUpsertSchema = z.object({
   projectId: galleryFields.projectId.optional(),
   featured: galleryFields.featured.optional().default(false),
   published: galleryFields.published.optional().default(true),
-  sortOrder: galleryFields.sortOrder.optional().default(0),
+  sortOrder: galleryFields.sortOrder.optional(), // omitted -> placed last (see nextSortOrder)
 });
 
 export const galleryUpdateSchema = z.object(galleryFields).partial();
@@ -101,7 +101,7 @@ export const projectUpsertSchema = z.object({
   completionYear: projectFields.completionYear.optional(),
   featured: projectFields.featured.optional().default(false),
   status: projectFields.status.optional().default("published"),
-  sortOrder: projectFields.sortOrder.optional().default(0),
+  sortOrder: projectFields.sortOrder.optional(), // omitted -> placed last (see nextSortOrder)
   images: projectFields.images.optional().default([]),
 });
 
@@ -121,15 +121,18 @@ export const clientUpsertSchema = z.object({
   ...clientFields,
   websiteUrl: clientFields.websiteUrl.optional().default(""),
   description: clientFields.description.optional().default(""),
-  sortOrder: clientFields.sortOrder.optional().default(0),
+  sortOrder: clientFields.sortOrder.optional(), // omitted -> placed last (see nextSortOrder)
   active: clientFields.active.optional().default(true),
 });
 
 export const clientUpdateSchema = z.object(clientFields).partial();
 
 // ---------- Reordering ----------
-/** Move one record up or down by one place within the full (unpaged, unfiltered) order. */
-export const moveSchema = z.object({
-  id: z.string().min(1),
-  direction: z.union([z.literal(-1), z.literal(1)]),
-});
+/**
+ * Reorder within the full (unpaged, unfiltered) order: either one step up/down, or drop the
+ * record onto another record's position (drag and drop).
+ */
+export const moveSchema = z.union([
+  z.object({ id: z.string().min(1), overId: z.string().min(1) }),
+  z.object({ id: z.string().min(1), direction: z.union([z.literal(-1), z.literal(1)]) }),
+]);

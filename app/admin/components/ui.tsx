@@ -1,7 +1,108 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/**
+ * Vercel rejects function request bodies over 4.5 MB before our code runs, so keep uploads
+ * under that. Must match MAX_UPLOAD_BYTES' default in lib/cms/storage.ts.
+ */
+export const MAX_UPLOAD_MB = 4;
+
+type ApiBody = { success?: boolean; message?: string; errors?: Record<string, string[] | undefined> };
+
+function humanizeField(key: string) {
+  return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
+}
+
+/**
+ * fetch() for admin API calls: parses JSON safely, turns validation errors into a readable
+ * message ("Instagram url: Invalid URL"), and sends the user back to login when the session
+ * has expired instead of leaving the page stuck on "Unauthorized".
+ */
+export async function adminFetch<T>(input: string, init?: RequestInit): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(input, init);
+  } catch {
+    throw new Error("Network error. Check your connection and try again.");
+  }
+  if (res.status === 401) {
+    window.location.assign("/admin/login");
+    throw new Error("Your session has expired. Please log in again.");
+  }
+  if (res.status === 413) {
+    throw new Error(`File too large. Max ${MAX_UPLOAD_MB}MB.`);
+  }
+  const json = (await res.json().catch(() => null)) as (ApiBody & T) | null;
+  if (!res.ok || !json?.success) {
+    let message = json?.message || `Request failed (${res.status})`;
+    const fieldErrors = Object.entries(json?.errors || {})
+      .filter(([, msgs]) => msgs?.length)
+      .map(([field, msgs]) => `${humanizeField(field)}: ${msgs![0]}`);
+    if (fieldErrors.length) message = `${message}. ${fieldErrors.join("; ")}`;
+    throw new Error(message);
+  }
+  return json;
+}
+
+/** Returns `value` once it has stopped changing for `delayMs` (used for search boxes). */
+export function useDebouncedValue<T>(value: T, delayMs = 300): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(t);
+  }, [value, delayMs]);
+  return debounced;
+}
+
+/**
+ * Drag-and-drop reorder handler for an admin list.
+ *
+ * Saves run strictly one after another: the server computes each move from the order stored in
+ * the database, so two overlapping requests (fast successive drags) could otherwise both read
+ * the old order and one move would be lost. The list is re-fetched only once the last pending
+ * save has finished, so a refresh can't briefly undo a drag the user just made.
+ */
+export function useReorder<T>(
+  endpoint: string,
+  opts: {
+    setItems: (items: T[]) => void;
+    reload: () => Promise<void>;
+    onSaved: () => void;
+    onError: (message: string) => void;
+  },
+) {
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  const pending = useRef(0);
+
+  return async function reorder(id: string, overId: string, nextItems: T[]) {
+    opts.setItems(nextItems);
+    pending.current += 1;
+    const save = queue.current.then(() =>
+      adminFetch(endpoint, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, overId }),
+      }),
+    );
+    queue.current = save.catch(() => undefined);
+    try {
+      await save;
+      opts.onSaved();
+    } catch (e) {
+      opts.onError(e instanceof Error ? e.message : "Failed to save the new order");
+    } finally {
+      pending.current -= 1;
+      if (pending.current === 0) await opts.reload();
+    }
+  };
+}
+
+/** Scrolls an element into view on the next frame (after it has rendered). */
+export function scrollIntoViewSoon(ref: React.RefObject<HTMLElement | null>) {
+  requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+}
 
 export function PageTitle({
   title,
@@ -12,17 +113,12 @@ export function PageTitle({
   subtitle?: string;
   action?: React.ReactNode;
 }) {
+  // The page banner above already shows the title, so it's kept for screen readers only.
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <div className="mb-2 flex items-center gap-2">
-          <span className="inline-block h-3.5 w-3.5 bg-[#006DDB]" aria-hidden />
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#006DDB]">
-            Admin
-          </span>
-        </div>
-        <h2 className="text-3xl font-semibold tracking-tight text-[#1F1F1F]">{title}</h2>
-        {subtitle ? <p className="mt-2 text-base text-[#616161]">{subtitle}</p> : null}
+        <h2 className="sr-only">{title}</h2>
+        {subtitle ? <p className="text-base text-[#616161]">{subtitle}</p> : null}
       </div>
       {action}
     </div>
@@ -100,7 +196,7 @@ export function Field({
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`border border-[#E5E5E5] bg-[#F5F5F5] p-4 ${className}`}>
+    <div className={`border border-[#E5E7EB] bg-white p-4 ${className}`}>
       {children}
     </div>
   );
@@ -109,25 +205,31 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
 export function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <Card className="py-12 text-center">
-      <p className="text-lg font-medium text-[#0f2744]">{title}</p>
-      <p className="mt-1 text-sm text-[#5a6570]">{body}</p>
+      <p className="text-lg font-medium text-[#1F1F1F]">{title}</p>
+      <p className="mt-1 text-sm text-[#616161]">{body}</p>
     </Card>
   );
 }
+
 
 export function Alert({
   tone = "info",
   children,
 }: {
-  tone?: "info" | "error" | "success";
+  tone?: "info" | "error" | "success" | "warning";
   children: React.ReactNode;
 }) {
   const colors = {
-    info: "bg-[#eef4ff] text-[#0f2744] border-[#c9d8f0]",
+    warning: "bg-[#fffaeb] text-[#93370d] border-[#fedf89]",
+    info: "bg-[#eef4ff] text-[#1F1F1F] border-[#c9d8f0]",
     error: "bg-[#fef3f2] text-[#b42318] border-[#fecdca]",
     success: "bg-[#ecfdf3] text-[#027a48] border-[#a6f4c5]",
   }[tone];
-  return <div className={`rounded-md border px-3 py-2 text-sm ${colors}`}>{children}</div>;
+  return (
+    <div className={`border px-3 py-2 text-sm ${colors}`} role={tone === "error" ? "alert" : "status"}>
+      {children}
+    </div>
+  );
 }
 
 export function ConfirmDialog({
@@ -138,6 +240,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
   busy,
+  error,
 }: {
   open: boolean;
   title: string;
@@ -146,15 +249,31 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
   busy?: boolean;
+  /** Shown inside the dialog, so a failed action isn't hidden behind the overlay. */
+  error?: string;
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
-        <h3 className="text-lg font-semibold text-[#0f2744]">{title}</h3>
-        <p className="mt-2 text-sm text-[#5a6570]">{body}</p>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && !busy) onCancel();
+      }}
+    >
+      <div className="w-full max-w-md bg-white p-5 shadow-xl">
+        <div className="-mx-5 -mt-5 mb-4 h-[4px] bg-[#b42318]" aria-hidden />
+        <h3 className="text-lg font-semibold text-[#1F1F1F]">{title}</h3>
+        <p className="mt-2 text-sm text-[#616161]">{body}</p>
+        {error ? (
+          <div className="mt-3">
+            <Alert tone="error">{error}</Alert>
+          </div>
+        ) : null}
         <div className="mt-5 flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onCancel} disabled={busy}>
+          {/* Focus Cancel (the safe choice) when the dialog opens, so Escape/Enter work from the keyboard. */}
+          <Button type="button" variant="secondary" onClick={onCancel} disabled={busy} autoFocus>
             Cancel
           </Button>
           <Button type="button" variant="danger" onClick={onConfirm} disabled={busy}>
@@ -166,39 +285,157 @@ export function ConfirmDialog({
   );
 }
 
+const UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+
+export type ImageSpec = {
+  /** Shape description shown to the user, e.g. "landscape 16:10". */
+  shape: string;
+  width: number;
+  height: number;
+  /** Below this the image will look blurry on large screens (warned, not blocked). */
+  minWidth: number;
+  minHeight: number;
+  /** "cropped": fills the frame and edges may be cut off. "whole": always shown in full. */
+  fit: "cropped" | "whole";
+  tip?: string;
+};
+
+/**
+ * Recommended image sizes, matched to how each image is displayed on the public website
+ * (and to the existing images there).
+ */
+export const IMAGE_SPECS = {
+  // Gallery page "Installations" carousel: landscape cards, cropped to fill (existing: 1734×1080)
+  galleryInstallation: {
+    shape: "landscape 16:10", width: 1600, height: 1000, minWidth: 1200, minHeight: 750, fit: "cropped",
+    tip: "Keep the main subject in the centre, as the edges may be trimmed.",
+  },
+  // Gallery page "3D Concepts" carousel: square, shown whole (existing: 2560×2560)
+  galleryConcept: {
+    shape: "square 1:1", width: 2000, height: 2000, minWidth: 1200, minHeight: 1200, fit: "whole",
+    tip: "Use a plain white or light background, like the existing concept renders.",
+  },
+  // Home page "STELZ Footprint" carousel: 4:3 cards, cropped to fill
+  projectCover: {
+    shape: "landscape 4:3", width: 1600, height: 1200, minWidth: 1200, minHeight: 900, fit: "cropped",
+    tip: "Keep the building in the centre, as the edges may be trimmed.",
+  },
+  // Clients page / partner logos: square tiles, shown whole (existing: 300×300)
+  clientLogo: {
+    shape: "square 1:1", width: 500, height: 500, minWidth: 300, minHeight: 300, fit: "whole",
+    tip: "Use a PNG or WebP with a transparent or white background, with little empty space around the logo.",
+  },
+} satisfies Record<string, ImageSpec>;
+
+/** Reads an image file's pixel size in the browser (null if it can't be decoded). */
+async function readImageSize(objectUrl: string): Promise<{ width: number; height: number } | null> {
+  try {
+    const img = new window.Image();
+    img.src = objectUrl;
+    await img.decode();
+    return { width: img.naturalWidth, height: img.naturalHeight };
+  } catch {
+    return null;
+  }
+}
+
+/** Recommended size + file limits, shown above every uploader. */
+function UploadGuidance({ spec }: { spec?: ImageSpec }) {
+  return (
+    <div className="border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2.5 text-xs leading-5 text-[#4B5563]">
+      {spec ? (
+        <>
+          <p>
+            <span className="font-semibold text-[#1F1F1F]">Recommended size:</span> {spec.width} × {spec.height} px (
+            {spec.shape}), at least {spec.minWidth} × {spec.minHeight} px.{" "}
+            {spec.fit === "cropped"
+              ? "The image is cropped to fill its frame on the website."
+              : "The whole image is always shown on the website."}
+          </p>
+          {spec.tip ? <p>{spec.tip}</p> : null}
+        </>
+      ) : null}
+      <p>
+        <span className="font-semibold text-[#1F1F1F]">File:</span> JPEG, PNG, WebP or AVIF, max {MAX_UPLOAD_MB} MB.
+        Under 500 KB is best for fast pages (WebP is usually smallest).
+      </p>
+    </div>
+  );
+}
+
 export function ImageUploader({
   folder,
   value,
   onChange,
+  onUploadingChange,
   label = "Image",
+  spec,
 }: {
   folder: "gallery" | "projects" | "clients";
   value?: string;
   onChange: (url: string) => void;
+  /** Lets the parent form disable Save while a file is still uploading. */
+  onUploadingChange?: (uploading: boolean) => void;
   label?: string;
+  /** Recommended dimensions for this image (see IMAGE_SPECS). */
+  spec?: ImageSpec;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
 
   async function onFile(file: File | null) {
     if (!file) return;
     setError("");
+    setWarning("");
+    setProgress("");
+    // Check before uploading, so the user gets a clear message instead of a failed request.
+    if (!UPLOAD_TYPES.includes(file.type)) {
+      setError("Unsupported image type. Use JPEG, PNG, WebP, or AVIF.");
+      return;
+    }
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      setError(`File too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max ${MAX_UPLOAD_MB}MB.`);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+    // Warn (don't block) when the image is smaller than recommended: it would look blurry.
+    if (spec) {
+      const size = await readImageSize(objectUrl);
+      if (size && (size.width < spec.minWidth || size.height < spec.minHeight)) {
+        setWarning(
+          `This image is ${size.width} × ${size.height} px, smaller than the recommended minimum of ` +
+            `${spec.minWidth} × ${spec.minHeight} px, so it may look blurry on large screens. ` +
+            `You can still use it, but a larger version will look sharper.`,
+        );
+      }
+    }
+
+    setUploading(true);
+    onUploadingChange?.(true);
     setProgress("Uploading…");
-    setPreview(URL.createObjectURL(file));
     try {
       const form = new FormData();
       form.append("file", file);
       form.append("folder", folder);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: form });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Upload failed");
+      const json = await adminFetch<{ url: string }>("/api/admin/upload", { method: "POST", body: form });
       onChange(json.url);
       setProgress("Uploaded");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
       setProgress("");
+    } finally {
+      // Show the saved image (or the previous one, if the upload failed), not the local preview.
+      setPreview(null);
+      URL.revokeObjectURL(objectUrl);
+      setUploading(false);
+      onUploadingChange?.(false);
     }
   }
 
@@ -207,32 +444,43 @@ export function ImageUploader({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-[#0f2744]">{label}</span>
-        <Button type="button" variant="secondary" onClick={() => inputRef.current?.click()}>
-          {value ? "Replace image" : "Upload image"}
+        <span className="text-sm font-medium text-[#1F1F1F]">{label}</span>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading ? "Uploading…" : value ? "Replace image" : "Upload image"}
         </Button>
       </div>
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif"
+        accept={UPLOAD_TYPES.join(",")}
         className="hidden"
-        onChange={(e) => onFile(e.target.files?.[0] || null)}
+        onChange={(e) => {
+          onFile(e.target.files?.[0] || null);
+          // Allow picking the same file again after an error.
+          e.target.value = "";
+        }}
       />
+      <UploadGuidance spec={spec} />
       {shown ? (
-        <div className="relative h-40 w-full overflow-hidden rounded-lg border border-[#d5dbe3] bg-[#f4f6f9]">
+        <div className="relative h-40 w-full overflow-hidden border border-[#D2D2D2] bg-[#F5F5F5]">
           <Image src={shown} alt="Preview" fill className="object-contain p-2" unoptimized />
         </div>
       ) : (
-        <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-[#d5dbe3] text-sm text-[#5a6570]">
+        <div className="flex h-40 items-center justify-center border border-dashed border-[#D2D2D2] text-sm text-[#616161]">
           No image selected
         </div>
       )}
-      {progress ? <p className="text-xs text-[#5a6570]">{progress}</p> : null}
+      {progress ? <p className="text-xs text-[#616161]">{progress}</p> : null}
+      {warning ? <Alert tone="warning">{warning}</Alert> : null}
       {error ? <Alert tone="error">{error}</Alert> : null}
       {value ? (
         // Read-only: images must come from the uploader (the API also rejects external URLs).
-        <Input value={value} readOnly aria-label={`${label} URL`} className="bg-[#f4f6f9] text-xs" />
+        <Input value={value} readOnly aria-label={`${label} URL`} className="bg-[#F5F5F5] text-xs" />
       ) : null}
     </div>
   );

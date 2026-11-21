@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicSite } from "@/lib/cms/revalidate";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok, parsePagination, slugify } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
-import { moveInOrder, SORT_ORDER } from "@/lib/cms/reorder";
+import { nextSortOrder, SORT_ORDER } from "@/lib/cms/reorder";
+import { applyMoveLocked } from "@/lib/cms/reorder-db";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
 import { projectUpsertSchema, moveSchema } from "@/lib/cms/validators";
 
@@ -71,9 +72,11 @@ export async function POST(req: NextRequest) {
     }
 
     const { images, ...projectData } = data;
+    const { _max } = await prisma.project.aggregate({ _max: { sortOrder: true } });
     const item = await prisma.project.create({
       data: {
         ...projectData,
+        sortOrder: projectData.sortOrder ?? nextSortOrder(_max.sortOrder),
         images: images?.length
           ? {
               create: images.map((img, index) => ({
@@ -87,7 +90,7 @@ export async function POST(req: NextRequest) {
       include: { images: true, client: true },
     });
 
-    revalidatePath("/");
+    revalidatePublicSite();
     return ok({ item }, { status: 201 });
   } catch (error) {
     return handleRouteError(error);
@@ -98,22 +101,16 @@ export async function PATCH(req: NextRequest) {
   try {
     requireAdmin(req);
     const parsed = moveSchema.safeParse(await req.json());
-    if (!parsed.success) return fail("id and direction (-1 or 1) are required");
-    const { id, direction } = parsed.data;
+    if (!parsed.success) return fail("id and either overId or direction (-1 or 1) are required");
+    const move = parsed.data;
 
-    const all = await prisma.project.findMany({ orderBy: SORT_ORDER, select: { id: true } });
-    if (!all.some((row) => row.id === id)) return fail("Not found", 404);
+    const exists = await prisma.project.findUnique({ where: { id: move.id }, select: { id: true } });
+    if (!exists) return fail("Not found", 404);
 
-    const next = moveInOrder(all.map((row) => row.id), id, direction);
-    if (next) {
-      await prisma.$transaction(
-        next.map((rowId, index) =>
-          prisma.project.update({ where: { id: rowId }, data: { sortOrder: index } }),
-        ),
-      );
-      revalidatePath("/");
-    }
-    return ok({ message: next ? "Order updated" : "Already at the edge" });
+    // Locked so simultaneous reorders (two admins / two tabs) can't overwrite each other.
+    const changed = await applyMoveLocked("Project", move);
+    if (changed) revalidatePublicSite();
+    return ok({ message: changed ? "Order updated" : "Already at the edge" });
   } catch (error) {
     return handleRouteError(error);
   }
@@ -138,7 +135,7 @@ export async function DELETE(req: NextRequest) {
       await deleteImageIfUnreferenced(url);
     }
 
-    revalidatePath("/");
+    revalidatePublicSite();
     return ok({ message: "Deleted" });
   } catch (error) {
     return handleRouteError(error);

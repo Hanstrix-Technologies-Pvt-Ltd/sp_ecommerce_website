@@ -51,7 +51,7 @@ export default function FixedButtons() {
         alert(result.message);
       }
     } catch (error) {
-      alert('Failed to submit lead. Please try again.');
+      alert(error instanceof Error && error.message ? error.message : 'Failed to submit lead. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

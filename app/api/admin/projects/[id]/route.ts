@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicSite } from "@/lib/cms/revalidate";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok } from "@/lib/cms/api";
-import { prisma } from "@/lib/cms/db";
+import { prisma, withConnectionRetry } from "@/lib/cms/db";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
 import { projectUpdateSchema } from "@/lib/cms/validators";
 
@@ -53,7 +53,8 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     const oldCover = existing.coverImageUrl;
     const oldImageUrls = existing.images.map((i) => i.imageUrl);
 
-    const item = await prisma.$transaction(async (tx) => {
+    // Retried as a whole on connection failures (safe: a failed transaction is fully rolled back).
+    const item = await withConnectionRetry(() => prisma.$transaction(async (tx) => {
       if (images) {
         await tx.projectImage.deleteMany({ where: { projectId: id } });
         if (images.length) {
@@ -73,7 +74,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
         data: projectData,
         include: { images: { orderBy: { sortOrder: "asc" } }, client: true },
       });
-    });
+    }));
 
     if (data.coverImageUrl && data.coverImageUrl !== oldCover) {
       await deleteImageIfUnreferenced(oldCover);
@@ -85,7 +86,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
       }
     }
 
-    revalidatePath("/");
+    revalidatePublicSite();
     return ok({ item });
   } catch (error) {
     return handleRouteError(error);
@@ -106,7 +107,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
     for (const url of [existing.coverImageUrl, ...existing.images.map((i) => i.imageUrl)]) {
       await deleteImageIfUnreferenced(url);
     }
-    revalidatePath("/");
+    revalidatePublicSite();
     return ok({ message: "Deleted" });
   } catch (error) {
     return handleRouteError(error);

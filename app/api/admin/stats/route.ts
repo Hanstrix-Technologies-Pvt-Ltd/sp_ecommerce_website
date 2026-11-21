@@ -8,14 +8,18 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   try {
     requireAdmin(req);
-    const [gallery, projects, clients, publishedProjects, activeClients] = await Promise.all([
-      prisma.galleryItem.count(),
-      prisma.project.count(),
-      prisma.client.count(),
-      prisma.project.count({ where: { status: "published" } }),
-      prisma.client.count({ where: { active: true } }),
-    ]);
-    return ok({ gallery, projects, clients, publishedProjects, activeClients });
+    const last30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const [gallery, projects, clients, publishedProjects, activeClients, leads, leadsLast30Days] =
+      await Promise.all([
+        prisma.galleryItem.count(),
+        prisma.project.count(),
+        prisma.client.count(),
+        prisma.project.count({ where: { status: "published" } }),
+        prisma.client.count({ where: { active: true } }),
+        prisma.lead.count(),
+        prisma.lead.count({ where: { createdAt: { gte: last30Days } } }),
+      ]);
+    return ok({ gallery, projects, clients, publishedProjects, activeClients, leads, leadsLast30Days });
   } catch (error) {
     return handleRouteError(error);
   }

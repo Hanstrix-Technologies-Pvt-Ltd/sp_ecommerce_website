@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
+  adminFetch,
   Alert,
   Button,
   Card,
@@ -10,11 +11,16 @@ import {
   EmptyState,
   Field,
   ImageUploader,
+  IMAGE_SPECS,
   Input,
   PageTitle,
+  scrollIntoViewSoon,
   Select,
   TextArea,
+  useDebouncedValue,
+  useReorder,
 } from "../../components/ui";
+import { DragHandle, SortableList } from "../../components/Sortable";
 
 type Client = {
   id: string;
@@ -32,7 +38,6 @@ const emptyForm = {
   logoUrl: "",
   websiteUrl: "",
   description: "",
-  sortOrder: 0,
   active: true,
 };
 
@@ -50,26 +55,34 @@ export default function AdminClientsPage() {
   const [showForm, setShowForm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const pageSize = 24;
+  const [deleteError, setDeleteError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  const latestRequest = useRef(0);
+  const debouncedQ = useDebouncedValue(q);
+  // Large enough that all clients fit on one page, so any logo can be dragged anywhere.
+  const pageSize = 100;
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    // Ignore responses from older requests, so a slow one can't overwrite newer results.
+    const requestId = ++latestRequest.current;
+    if (!opts?.silent) setLoading(true);
     setError("");
     try {
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-      if (q) params.set("q", q);
+      if (debouncedQ) params.set("q", debouncedQ);
       if (active) params.set("active", active);
-      const res = await fetch(`/api/admin/clients?${params}`);
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Failed to load");
+      const json = await adminFetch<{ items: Client[]; total: number }>(`/api/admin/clients?${params}`);
+      if (requestId !== latestRequest.current) return;
       setItems(json.items);
       setTotal(json.total);
     } catch (e) {
+      if (requestId !== latestRequest.current) return;
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
-      setLoading(false);
+      if (requestId === latestRequest.current) setLoading(false);
     }
-  }, [page, q, active]);
+  }, [page, debouncedQ, active]);
 
   useEffect(() => {
     load();
@@ -79,16 +92,19 @@ export default function AdminClientsPage() {
     setEditing(null);
     setForm(emptyForm);
     setShowForm(true);
+    setSuccess("");
+    scrollIntoViewSoon(formRef);
   }
 
   function openEdit(item: Client) {
     setEditing(item);
+    setSuccess("");
+    scrollIntoViewSoon(formRef);
     setForm({
       name: item.name,
       logoUrl: item.logoUrl,
       websiteUrl: item.websiteUrl,
       description: item.description,
-      sortOrder: item.sortOrder,
       active: item.active,
     });
     setShowForm(true);
@@ -101,13 +117,11 @@ export default function AdminClientsPage() {
     setSuccess("");
     try {
       if (!form.logoUrl) throw new Error("Logo is required");
-      const res = await fetch(editing ? `/api/admin/clients/${editing.id}` : "/api/admin/clients", {
+      await adminFetch(editing ? `/api/admin/clients/${editing.id}` : "/api/admin/clients", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Save failed");
       setSuccess(editing ? "Client updated" : "Client created");
       setShowForm(false);
       await load();
@@ -121,10 +135,11 @@ export default function AdminClientsPage() {
   async function confirmDelete() {
     if (!deleteId) return;
     setBusy(true);
+    setDeleteError("");
     try {
-      const res = await fetch(`/api/admin/clients/${deleteId}`, { method: "DELETE" });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Delete failed");
+      const json = await adminFetch<{ detachedProjects?: number }>(`/api/admin/clients/${deleteId}`, {
+        method: "DELETE",
+      });
       setDeleteId(null);
       setSuccess(
         json.detachedProjects
@@ -133,28 +148,25 @@ export default function AdminClientsPage() {
       );
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
+      setDeleteError(err instanceof Error ? err.message : "Delete failed");
     } finally {
       setBusy(false);
     }
   }
 
-  async function move(id: string, direction: -1 | 1) {
-    // The server moves the item within the full order (not just this page/filter), then we reload.
-    setError("");
-    try {
-      const res = await fetch("/api/admin/clients", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, direction }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.success) throw new Error(json.message || "Failed to reorder");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to reorder");
-    }
-    await load();
-  }
+  // Drag-and-drop: show the new order at once, save in the background (see useReorder).
+  const reorder = useReorder<Client>("/api/admin/clients", {
+    setItems,
+    reload: () => load({ silent: true }),
+    onSaved: () => {
+      setError("");
+      setSuccess("Order saved");
+    },
+    onError: (message) => {
+      setSuccess("");
+      setError(message);
+    },
+  });
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -194,14 +206,16 @@ export default function AdminClientsPage() {
       {success ? <div className="mb-3"><Alert tone="success">{success}</Alert></div> : null}
 
       {showForm ? (
+        <div ref={formRef} className="scroll-mt-4">
         <Card className="mb-5">
-          <h3 className="mb-3 text-lg font-semibold">{editing ? "Edit client" : "New client"}</h3>
+          <h3 className="mb-3 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit client" : "New client"}</h3>
           <form onSubmit={onSubmit} className="grid gap-4 laptop:grid-cols-2">
             <Field label="Client name">
               <Input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
             </Field>
             <Field label="Website URL">
               <Input
+                type="url"
                 value={form.websiteUrl}
                 onChange={(e) => setForm((f) => ({ ...f, websiteUrl: e.target.value }))}
                 placeholder="https://"
@@ -216,8 +230,10 @@ export default function AdminClientsPage() {
               <ImageUploader
                 folder="clients"
                 label="Client logo"
+                spec={IMAGE_SPECS.clientLogo}
                 value={form.logoUrl}
                 onChange={(url) => setForm((f) => ({ ...f, logoUrl: url }))}
+                onUploadingChange={setUploading}
               />
             </div>
             <label className="flex items-center gap-2 text-sm">
@@ -225,11 +241,14 @@ export default function AdminClientsPage() {
               Active on public site
             </label>
             <div className="flex gap-2 laptop:col-span-2">
-              <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
-              <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>Cancel</Button>
+              <Button type="submit" disabled={busy || uploading}>
+                {busy ? "Saving…" : uploading ? "Waiting for upload…" : "Save"}
+              </Button>
+              <Button type="button" variant="secondary" disabled={uploading} onClick={() => setShowForm(false)}>Cancel</Button>
             </div>
           </form>
         </Card>
+        </div>
       ) : null}
 
       {loading ? (
@@ -237,36 +256,43 @@ export default function AdminClientsPage() {
       ) : items.length === 0 ? (
         <EmptyState title="No clients" body="Add client logos to populate the clients and partners sections." />
       ) : (
-        <div className="grid gap-3 tablet:grid-cols-2 laptop:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item.id}>
-              <div className="flex items-center gap-3">
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border bg-white">
-                  <Image src={item.logoUrl} alt={item.name} fill className="object-contain p-1" unoptimized />
+        <>
+          <p className="mb-3 text-sm text-[#616161]">
+            Drag the ⠿ handle to change the order logos appear on the website.
+          </p>
+          <SortableList
+            items={items}
+            onReorder={reorder}
+            className="grid gap-3 tablet:grid-cols-2 laptop:grid-cols-3"
+            renderItem={(item, drag) => (
+              <Card className="h-full">
+                <div className="flex items-center gap-3">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-[#D2D2D2] bg-white">
+                    <Image src={item.logoUrl} alt={item.name} fill sizes="64px" className="object-contain p-1" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-[#1F1F1F]">{item.name}</p>
+                    <p className="text-xs text-[#616161]">
+                      {item.active ? "active" : "inactive"}
+                      {item._count ? ` · ${item._count.projects} projects` : ""}
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-[#0f2744]">{item.name}</p>
-                  <p className="text-xs text-[#5a6570]">
-                    {item.active ? "active" : "inactive"}
-                    {item._count ? ` · ${item._count.projects} projects` : ""}
-                  </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <DragHandle drag={drag} label={item.name} />
+                  <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
+                  <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
                 </div>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
-                <Button type="button" variant="ghost" onClick={() => move(item.id, -1)}>↑</Button>
-                <Button type="button" variant="ghost" onClick={() => move(item.id, 1)}>↓</Button>
-                <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            )}
+          />
+        </>
       )}
 
       {pages > 1 ? (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-          <span className="text-sm text-[#5a6570]">Page {page} / {pages}</span>
+          <span className="text-sm text-[#616161]">Page {page} / {pages}</span>
           <Button variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
         </div>
       ) : null}
@@ -275,9 +301,13 @@ export default function AdminClientsPage() {
         open={Boolean(deleteId)}
         title="Delete client?"
         body="Linked projects will keep their data but lose the client association. Logos are removed from disk only if unused."
-        onCancel={() => setDeleteId(null)}
+        onCancel={() => {
+          setDeleteId(null);
+          setDeleteError("");
+        }}
         onConfirm={confirmDelete}
         busy={busy}
+        error={deleteError}
       />
     </div>
   );

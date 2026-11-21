@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { AuthError } from "@/lib/admin/auth";
 import { ZodError } from "zod";
+import { Prisma } from "@prisma/client";
 
 export function ok<T>(data: T, init?: ResponseInit) {
   return NextResponse.json({ success: true, ...unwrap(data) }, init);
@@ -25,6 +26,31 @@ export function handleRouteError(error: unknown) {
     return fail("Validation failed", 400, {
       errors: error.flatten().fieldErrors,
     });
+  }
+  // Database errors: log the full detail server-side, but never send Prisma's raw message
+  // (it includes internal file paths, query code and the database host) to the browser.
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+    return fail("Record not found", 404);
+  }
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError ||
+    error instanceof Prisma.PrismaClientUnknownRequestError ||
+    error instanceof Prisma.PrismaClientInitializationError ||
+    error instanceof Prisma.PrismaClientRustPanicError ||
+    error instanceof Prisma.PrismaClientValidationError
+  ) {
+    console.error("[cms] database error:", error);
+    // P1001 can't reach server, P1002 timed out, P1008 operation timed out, P1017 connection closed
+    const unreachable =
+      error instanceof Prisma.PrismaClientInitializationError ||
+      (error instanceof Prisma.PrismaClientKnownRequestError &&
+        ["P1001", "P1002", "P1008", "P1017"].includes(error.code));
+    return fail(
+      unreachable
+        ? "The database is starting up or unreachable. Please try again in a few seconds."
+        : "A database error occurred. Please try again.",
+      unreachable ? 503 : 500,
+    );
   }
   if (error instanceof Error) {
     console.error("[cms]", error.message);

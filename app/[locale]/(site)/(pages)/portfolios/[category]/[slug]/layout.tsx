@@ -154,7 +154,8 @@ export default function PortfolioLayout({
     try {
       const dataWithSource = {
         ...leadData,
-        source: downloadType === 'brochure' ? 'brochure_download' : 'datasheet_download'
+        source: downloadType === 'brochure' ? 'brochure_download' : 'datasheet_download',
+        product: localizedProduct?.title || '',
       };
       const result = await submitLeadCapture(dataWithSource);
       if (result.success) {
@@ -168,7 +169,7 @@ export default function PortfolioLayout({
         alert(result.message);
       }
     } catch (error) {
-      alert('Failed to submit lead. Please try again.');
+      alert(error instanceof Error && error.message ? error.message : 'Failed to submit lead. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

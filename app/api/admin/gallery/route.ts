@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicSite } from "@/lib/cms/revalidate";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok, parsePagination } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
-import { moveInOrder, SORT_ORDER } from "@/lib/cms/reorder";
+import { nextSortOrder, SORT_ORDER } from "@/lib/cms/reorder";
+import { applyMoveLocked } from "@/lib/cms/reorder-db";
 import { deleteImageIfUnreferenced } from "@/lib/cms/storage";
 import { galleryUpsertSchema, moveSchema } from "@/lib/cms/validators";
 
@@ -65,11 +66,15 @@ export async function POST(req: NextRequest) {
       if (!exists) return fail("Associated project not found", 400);
     }
 
-    const item = await prisma.galleryItem.create({ data });
-    revalidatePath("/");
-    revalidatePath("/gallery");
-    revalidatePath("/en/gallery");
-    revalidatePath("/de/gallery");
+    // Gallery order is per section, so "last" means last within the item's section.
+    const { _max } = await prisma.galleryItem.aggregate({
+      where: { section: data.section },
+      _max: { sortOrder: true },
+    });
+    const item = await prisma.galleryItem.create({
+      data: { ...data, sortOrder: data.sortOrder ?? nextSortOrder(_max.sortOrder) },
+    });
+    revalidatePublicSite();
     return ok({ item }, { status: 201 });
   } catch (error) {
     return handleRouteError(error);
@@ -80,28 +85,16 @@ export async function PATCH(req: NextRequest) {
   try {
     requireAdmin(req);
     const parsed = moveSchema.safeParse(await req.json());
-    if (!parsed.success) return fail("id and direction (-1 or 1) are required");
-    const { id, direction } = parsed.data;
+    if (!parsed.success) return fail("id and either overId or direction (-1 or 1) are required");
+    const move = parsed.data;
 
-    const current = await prisma.galleryItem.findUnique({ where: { id }, select: { section: true } });
+    const current = await prisma.galleryItem.findUnique({ where: { id: move.id }, select: { section: true } });
     if (!current) return fail("Not found", 404);
-    // Gallery order is per section
-    const all = await prisma.galleryItem.findMany({
-      where: { section: current.section },
-      orderBy: SORT_ORDER,
-      select: { id: true },
-    });
 
-    const next = moveInOrder(all.map((row) => row.id), id, direction);
-    if (next) {
-      await prisma.$transaction(
-        next.map((rowId, index) =>
-          prisma.galleryItem.update({ where: { id: rowId }, data: { sortOrder: index } }),
-        ),
-      );
-      revalidatePath("/gallery");
-    }
-    return ok({ message: next ? "Order updated" : "Already at the edge" });
+    // Gallery order is per section. Locked so simultaneous reorders can't overwrite each other.
+    const changed = await applyMoveLocked("GalleryItem", move, { section: current.section });
+    if (changed) revalidatePublicSite();
+    return ok({ message: changed ? "Order updated" : "Already at the edge" });
   } catch (error) {
     return handleRouteError(error);
   }
@@ -119,7 +112,7 @@ export async function DELETE(req: NextRequest) {
     await prisma.galleryItem.delete({ where: { id } });
     await deleteImageIfUnreferenced(existing.imageUrl);
 
-    revalidatePath("/gallery");
+    revalidatePublicSite();
     return ok({ message: "Deleted" });
   } catch (error) {
     return handleRouteError(error);

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicSite } from "@/lib/cms/revalidate";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fail, handleRouteError, ok } from "@/lib/cms/api";
 import { prisma } from "@/lib/cms/db";
@@ -40,9 +40,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
       await deleteImageIfUnreferenced(oldLogo);
     }
 
-    revalidatePath("/clients");
-    revalidatePath("/about");
-    revalidatePath("/services");
+    revalidatePublicSite();
     return ok({ item });
   } catch (error) {
     return handleRouteError(error);
@@ -62,7 +60,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
     await prisma.client.delete({ where: { id } });
     await deleteImageIfUnreferenced(existing.logoUrl);
 
-    revalidatePath("/clients");
+    revalidatePublicSite();
     return ok({ message: "Deleted", detachedProjects: existing._count.projects });
   } catch (error) {
     return handleRouteError(error);
