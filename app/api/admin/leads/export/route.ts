@@ -12,7 +12,9 @@ export const runtime = "nodejs";
  */
 function csvCell(value: unknown): string {
   let s = value === null || value === undefined ? "" : String(value);
-  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+  // Plain phone numbers like "+91 98450 12345" are safe and shouldn't get a visible apostrophe.
+  const plainNumber = /^\+?[\d\s()-]+$/.test(s);
+  if (!plainNumber && /^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return `"${s.replace(/"/g, '""')}"`;
 }
 

@@ -47,6 +47,9 @@ export default function ConceptCarousel({ content }: { content: GalleryContent }
 
   const handleDotClick = (index: number) => api?.scrollTo(index);
 
+  // Nothing published in this section: hide it rather than show a heading over an empty strip.
+  if (!items.length) return null;
+
   return (
     <section className="bg-white py-8 px-4">
       {/* +5px LR padding at the edges */}

@@ -32,11 +32,15 @@ export async function submitLeadCapture(data: LeadData): Promise<LeadCaptureResp
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Read the body even for errors, so the visitor sees the server's message
+    // ("Invalid contact number format", "Too many requests…") instead of "HTTP error 400".
+    const result = (await response.json().catch(() => null)) as LeadCaptureResponse | null;
+    if (!response.ok || !result) {
+      return {
+        success: false,
+        message: result?.message || 'Failed to submit your details. Please try again.',
+      };
     }
-
-    const result = await response.json();
     return result;
   } catch (error) {
     console.error('Lead capture submission error:', error);
@@ -64,9 +68,11 @@ async function startDownload(endpoint: string, body: Record<string, string>): Pr
   }
 
   // Make sure the file exists before "downloading" it, so a missing file shows a clear message
-  // instead of saving an error page as a .pdf.
+  // instead of saving an error page as a .pdf. Only a definite "not found" stops the download:
+  // if the check itself can't run (e.g. the storage bucket's CORS settings block it), go ahead
+  // rather than blocking a file that is probably fine.
   const check = await fetch(result.url, { method: 'HEAD' }).catch(() => null);
-  if (!check || !check.ok) {
+  if (check && (check.status === 404 || check.status === 403)) {
     throw new Error('Sorry, this file is not available right now. Please contact us and we will send it to you.');
   }
 

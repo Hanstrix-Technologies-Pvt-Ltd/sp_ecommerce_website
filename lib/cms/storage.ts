@@ -21,6 +21,10 @@ function s3(): S3Client {
   s3Client ??= new S3Client({
     // Retry brief network failures (e.g. a DNS lookup that fails once) before giving up.
     maxAttempts: 4,
+    // Only add checksums when an operation requires them. By default the SDK puts a checksum
+    // into presigned upload URLs, and since the URL is made before the file exists it's the
+    // checksum of an *empty* body, which a strict S3 server would reject for any real PDF.
+    requestChecksumCalculation: "WHEN_REQUIRED",
     forcePathStyle: true,
     endpoint: process.env.AWS_ENDPOINT_URL_S3,
     region: process.env.AWS_REGION,
@@ -168,6 +172,9 @@ export async function presignDocumentUpload(fileName: string): Promise<{ uploadU
   const headers = {
     "Content-Type": "application/pdf",
     "Content-Disposition": `attachment; filename="${name.replace(/"/g, "")}"`,
+    // Each upload has its own unique path, so it can be cached for a long time. It has to be a
+    // signed header the browser sends, otherwise it's silently dropped and never stored.
+    "Cache-Control": "public, max-age=31536000, immutable",
   };
   const uploadUrl = await getSignedUrl(
     s3(),
@@ -176,10 +183,9 @@ export async function presignDocumentUpload(fileName: string): Promise<{ uploadU
       Key: key,
       ContentType: headers["Content-Type"],
       ContentDisposition: headers["Content-Disposition"],
-      // Each upload has its own unique path, so it can be cached for a long time.
-      CacheControl: "public, max-age=31536000, immutable",
+      CacheControl: headers["Cache-Control"],
     }),
-    { expiresIn: 15 * 60, signableHeaders: new Set(["content-type", "content-disposition"]) },
+    { expiresIn: 15 * 60, signableHeaders: new Set(["content-type", "content-disposition", "cache-control"]) },
   );
   return { uploadUrl, publicUrl: `${publicBaseUrl()}${key.split("/").map(encodeURIComponent).join("/")}`, headers };
 }
