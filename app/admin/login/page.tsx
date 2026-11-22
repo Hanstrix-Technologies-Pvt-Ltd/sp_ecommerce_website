@@ -53,13 +53,15 @@ export default function AdminLoginPage() {
 
         <div className="px-8 py-10 tablet:px-12">
           <div className="mb-6 flex justify-center">
+            {/* Transparent version: the regular logo has a white background that showed as a
+                white box on the grey card. */}
             <Image
-              src="/assets/home/Logo.webp"
+              src="/assets/home/LogoTransparent.webp"
               alt="STELZ"
-              width={800}
-              height={200}
+              width={1579}
+              height={556}
               priority
-              className="h-16 w-auto"
+              className="h-14 w-auto"
             />
           </div>
           <h1 className="text-center text-[36px] font-semibold leading-tight text-[#1F1F1F] tablet:text-[44px]">

@@ -155,6 +155,16 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
 
   /**
+   * SEO: always put <title>, description, canonical, hreflang and Open Graph tags in <head>.
+   * By default Next 16 "streams" metadata into the <body> for browsers and Googlebot (only a
+   * fixed list of bots got it in <head>). Google copes, but its first raw-HTML pass and most
+   * SEO tools (Search Console live test, Ahrefs, Screaming Frog...) read only <head>.
+   * Matching every user agent turns streaming off. Our generateMetadata functions don't wait
+   * on the database, so this costs practically nothing in response time.
+   */
+  htmlLimitedBots: /.*/,
+
+  /**
    * PERFORMANCE: Experimental features
    * - optimizePackageImports: tree-shake unused exports
    * - This reduces bundle size significantly
