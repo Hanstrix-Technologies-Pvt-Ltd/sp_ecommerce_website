@@ -107,9 +107,10 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
       {/* ---------------- Foreground content ---------------- */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-5 laptop:px-12">
         {/* Top title */}
-        <h1 className="text-center text-[26px] tablet:text-[40px] font-bold text-[#1F1F1F] py-15">
+        {/* h2: the page banner already holds the page's single <h1>. */}
+        <h2 className="text-center text-[26px] tablet:text-[40px] font-bold text-[#1F1F1F] py-15">
           Research &amp; Development
-        </h1>
+        </h2>
 
         {/* Hero row: image + text as separate containers */}
         <div className="mt-[15px] tablet:pb-10 flex flex-col items-start tablet:flex-row tablet:items-center gap-4 laptop:gap-6">

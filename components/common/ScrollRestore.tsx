@@ -31,13 +31,12 @@ export default function ScrollRestore() {
     window.addEventListener("pageshow", onPageShow);
     window.addEventListener("beforeunload", save);
     
-    let raf = 0;
+    // Save once scrolling pauses. Writing sessionStorage on every frame (as before) is a
+    // synchronous write on the main thread and made scrolling stutter on slower devices.
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        save();
-        raf = 0;
-      });
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(save, 150);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
@@ -45,7 +44,7 @@ export default function ScrollRestore() {
       window.removeEventListener("pageshow", onPageShow);
       window.removeEventListener("beforeunload", save);
       window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
+      if (timer) clearTimeout(timer);
     };
   }, [pathname]);
 

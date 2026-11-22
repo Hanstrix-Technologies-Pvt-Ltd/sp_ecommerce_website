@@ -49,5 +49,8 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|assets/|uploads/).*)"],
+  // Skip files (any path with a dot: robots.txt, sitemap.xml, icons, manifest...). They were
+  // being rewritten to /en/robots.txt etc. and answered 404, so search engines found neither
+  // the robots file nor the sitemap. Site and admin page URLs never contain a dot.
+  matcher: ["/((?!api|_next/static|_next/image|assets/|uploads/|.*\\..*).*)"],
 };

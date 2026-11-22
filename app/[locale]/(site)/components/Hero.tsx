@@ -50,7 +50,7 @@ export default function Hero({ content }: { content: HeroContent }): JSX.Element
 
     const interval = setInterval(
       () => setCurrentIndex((prev) => (prev + 1) % images.length),
-      3000
+      4000 // 4s per slide: the 0.6s out + 0.6s in typing animation leaves ~2.8s fully readable
     );
     return () => clearInterval(interval);
   }, [images.length, isSlowConnection]);

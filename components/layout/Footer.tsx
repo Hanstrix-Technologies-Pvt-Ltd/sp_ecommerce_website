@@ -97,7 +97,8 @@ export default function Footer({ content }: FooterProps) {
 
       {/* Keep bottom bar padding consistent at md and up */}
       <div className="border-t border-white/20 px-4 sm:px-6 tablet:px-8 laptop:px-10 py-4 text-center text-sm tablet:text-base">
-        {f.copyright}
+        {/* Always show the current year (the German copy still said 2025). */}
+        {f.copyright.replace(/©\s*\d{4}/, `© ${new Date().getFullYear()}`)}
       </div>
     </footer>
   );

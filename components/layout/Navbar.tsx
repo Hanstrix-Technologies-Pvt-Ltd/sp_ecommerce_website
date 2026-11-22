@@ -29,10 +29,31 @@ const ANIM = {
 /** items that are section headers (no page) and must not navigate on click */
 const PRODUCTS_PARENT_ONLY = new Set<string>(["/products/stack", "/products/puzzle", "/products/automatic", "/products/bike"]);
 
+/** Home links ("/" or a locale root like "/de") only match exactly; otherwise every German
+ *  page started with "/de" and HOME stayed highlighted everywhere. */
+function isRootHref(href: string): boolean {
+  return href === "/" || /^\/[a-z]{2}$/.test(href);
+}
+
+/** Top-level match: the page itself or any page below it ("/about" matches "/about/blog"). */
 function isActive(pathname: string, href?: string): boolean {
-  if (!href) return false;
-  if (href === "/") return pathname === "/";
-  return pathname.startsWith(href);
+  if (!href || href === "#") return false;
+  if (isRootHref(href)) return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+/** Dropdown entries only match their own page, so "WHO WE ARE" (/about) is not
+ *  highlighted together with "R & D" (/about/r-and-d). */
+function isExactActive(pathname: string, href?: string): boolean {
+  return !!href && href !== "#" && pathname === href;
+}
+
+/** True when the current page is one of this item's (nested) children. */
+function containsActive(item: NavLink, pathname: string, locale: Locale): boolean {
+  if (!hasKids(item)) return false;
+  return item.children.some(
+    (c) => isExactActive(pathname, getNavHref(c.href, locale)) || containsActive(c, pathname, locale)
+  );
 }
 function getNavHref(href: NavLink["href"], locale: Locale): string {
   if (!href) return "#";
@@ -131,7 +152,9 @@ export default function Navbar({ locale, nav }: NavbarProps): JSX.Element {
                 <DesktopTopItem
                   key={item.label}
                   item={item}
-                  active={isActive(pathname, getNavHref(item.href, locale))}
+                  active={
+                    isActive(pathname, getNavHref(item.href, locale)) || containsActive(item, pathname, locale)
+                  }
                   locale={locale}
                   isLaptopUI={isLaptopUI}
                 />
@@ -325,19 +348,37 @@ function MenuList({ items, depth = 0, locale }: MenuListProps): JSX.Element {
       {items.map((i: NavLink) => {
         const kids = hasKids(i);
         const href = getNavHref(i.href, locale);
-        const selfActive = isActive(pathname, href);
+        // Current page: light blue with a left bar. Category holding the current page
+        // (e.g. STACK PARKING while on a stack product): blue text. Hover/keyboard focus:
+        // solid blue, so "where I am" and "what I'm pointing at" never look the same.
+        const selfActive = !kids && isExactActive(pathname, href);
+        const branchActive = kids && containsActive(i, pathname, locale);
 
         return (
           <li key={i.label} className="relative group/sub">
             <Link
               href={href}
               onClick={onParentOnlyClick(i)}
+              data-no-progress={isProductsParentOnly(i) && kids ? "" : undefined}
+              aria-current={selfActive ? "page" : undefined}
               className={`
                 block px-3 py-3 text-[14px] font-medium uppercase tracking-wide
                 transition-colors duration-300
-                ${selfActive ? "bg-[#174b92] text-white" : "text-neutral-800"}
-                laptop-ui:hover:bg-[#174b92] laptop-ui:hover:text-white
-                focus:bg-[#174b92] focus:text-white active:bg-[#174b92] active:text-white
+                ${
+                  selfActive
+                    ? "bg-[#e8eef8] text-[#174b92] font-semibold shadow-[inset_3px_0_0_#174b92]"
+                    : branchActive
+                    ? "text-[#174b92] font-semibold"
+                    : "text-neutral-800"
+                }
+                laptop-ui:hover:bg-[#174b92] laptop-ui:hover:text-white laptop-ui:hover:shadow-none
+                ${
+                  /* category rows stay blue while the pointer is in their fly-out; only on rows
+                     with children, because group-hover also matches every link inside the fly-out */
+                  kids ? "laptop-ui:group-hover/sub:bg-[#174b92] laptop-ui:group-hover/sub:text-white" : ""
+                }
+                focus-visible:bg-[#174b92] focus-visible:text-white focus-visible:outline-none
+                active:bg-[#174b92] active:text-white
               `}
             >
               <span className={`inline-flex w-full items-center ${gapClass}`}>
@@ -392,8 +433,13 @@ function MobileMenu({
   const ItemRow = ({ item, level = 0 }: { item: NavLink; level?: number }): JSX.Element => {
     const kids = hasKids(item);
     const href = getNavHref(item.href, locale);
-    const selfActive = isActive(pathname, href);
     const isChild = level > 0;
+    // Top rows: the page or anything below it (incl. product pages under OUR PRODUCTS).
+    // Child rows: only their own page, so WHO WE ARE isn't highlighted on R & D / BLOG.
+    const selfActive = isChild
+      ? !kids && isExactActive(pathname, href)
+      : isActive(pathname, href) || containsActive(item, pathname, locale);
+    const branchActive = isChild && kids && containsActive(item, pathname, locale);
 
     const parentOnlyTop = !isChild && kids && isProductsParentOnly(item);
     const isChildHeader = isChild && kids;
@@ -430,14 +476,21 @@ function MobileMenu({
           <Link
             href={href}
             onClick={onLinkClick}
+            // rows that only open/highlight a section don't navigate -> no progress bar
+            data-no-progress={isChildHeader || parentOnlyTop ? "" : undefined}
             className={[
-              "flex-1 py-2.5 text-[15px] font-medium uppercase tracking-wide transition-colors pl-1.5",
+              "flex-1 py-2.5 font-medium uppercase tracking-wide transition-colors",
+              // indent by level so sub-items read as part of their parent
+              level === 0 ? "pl-1.5 text-[15px]" : level === 1 ? "pl-5 text-[14px]" : "pl-9 text-[13.5px]",
               !isChild && (selfActive ? "text-[#174b92]" : "text-neutral-900 hover:text-[#174b92]"),
               isChild &&
                 (selfActive || headerActive
                   ? "bg-[#174b92] text-white"
+                  : branchActive
+                  ? "text-[#174b92] font-semibold"
                   : "text-neutral-900 hover:text-[#174b92]"),
-              "focus:bg-[#174b92] focus:text-white active:bg-[#174b92] active:text-white",
+              // focus-visible (keyboard only): a tapped row no longer stays blue next to the current page
+              "focus-visible:bg-[#174b92] focus-visible:text-white focus-visible:outline-none active:bg-[#174b92] active:text-white",
             ].join(" ")}
             aria-current={selfActive ? "page" : undefined}
           >
@@ -452,7 +505,7 @@ function MobileMenu({
             >
               <motion.span
                 className={`text-[20px] font-medium ${
-                  headerActive ? "text-[#174b92]" : selfActive ? "text-[#174b92]" : "text-black"
+                  headerActive || selfActive || branchActive ? "text-[#174b92]" : "text-black"
                 }`}
                 animate={{ rotate: isExpanded ? 45 : 0 }}
                 transition={{ duration: 0.2 }}

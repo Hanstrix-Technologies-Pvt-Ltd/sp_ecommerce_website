@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import FixedButtons from "@/components/common/FixedButtons";
 import CustomCursor from "@/components/common/CustomCursor";
 import ScrollRestore from "@/components/common/ScrollRestore";
+import NavigationProgress from "@/components/common/NavigationProgress";
 import AnalyticsConsent from "@/components/common/AnalyticsConsent";
 import { NetworkClassProvider } from "@/components/common/NetworkClassProvider";
 import { Poppins } from "next/font/google";
@@ -200,11 +201,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               url: SITE_URL,
               logo: {
                 "@type": "ImageObject",
-                url: `${SITE_URL}/assets/Logo.webp`,
+                url: `${SITE_URL}/assets/home/Logo.webp`,
                 width: 250,
                 height: 250,
               },
-              image: `${SITE_URL}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/home/Logo.webp`,
               description: footerContent.meta.description,
               slogan: "Engineering Tomorrow's Parking",
               address: {
@@ -263,7 +264,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               name: "STELZ Multiparking",
               url: SITE_URL,
               description: footerContent.meta.description,
-              image: `${SITE_URL}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/home/Logo.webp`,
             }),
           }}
         />
@@ -271,6 +272,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
       <body className="bg-white text-neutral-900 font-sans">
         <NetworkClassProvider />
+        <NavigationProgress />
         <CustomCursor />
         <Navbar locale={locale} nav={navItems} />
         {children}

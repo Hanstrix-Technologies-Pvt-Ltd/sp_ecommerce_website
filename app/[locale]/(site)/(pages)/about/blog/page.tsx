@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import PageHeader from "@/app/[locale]/(site)/components/PageHeader";
 import { Space_Grotesk } from "next/font/google";
 import { getRequestLocale } from "@/lib/i18n/locale";
@@ -93,14 +94,14 @@ export default async function BlogPage() {
               [@media(min-width:1280px)_and_(max-width:1536px)]:px-10
               after:content-[''] after:absolute after:inset-y-0 after:left-0
               after:w-1.5 after:bg-[#174b92] after:rounded-full after:z-10
-              before:content-['\201C'] font-extrabold before:absolute before:top-16 before:right-8
+              before:content-['\201C'] before:font-extrabold before:absolute before:top-16 before:right-8
               before:text-[260px] tablet:before:text-[300px] laptop:before:text-[320px]
               before:leading-none before:text-zinc-400/20 before:font-serif
               before:pointer-events-none before:select-none before:z-0
             "
           >
             <div className="relative z-10 pt-5">
-              <figcaption className="mb-4 text-xl text-[18px] tablet:text-[18px] font-semibold tracking-normal text-zinc-900">
+              <figcaption className="mb-6 pr-10 text-[26px] tablet:text-[34px] font-bold leading-tight tracking-tight text-zinc-900">
                 {blog.title}
               </figcaption>
 
@@ -122,52 +123,36 @@ export default async function BlogPage() {
                     <h2 className="mb-5 text-[28px] sm:text-[32px] font-extrabold text-zinc-900">{s.h2}</h2>
 
                     {s.image && (
-                      <div className="mb-6">
-                        <img
+                      // next/image: the source PNGs are 13-16 MB each (~58 MB per visit with a
+                      // plain <img>); this serves resized WebP/AVIF at the displayed width instead.
+                      <div className="relative mb-6 aspect-[16/9] max-h-[400px] w-full overflow-hidden rounded-lg shadow-sm">
+                        <Image
                           src={s.image}
                           alt={s.h2}
-                          className="w-full rounded-lg shadow-sm"
-                          style={{ maxHeight: '400px', objectFit: 'cover' }}
+                          fill
+                          priority={idx === 0}
+                          sizes="(max-width: 768px) 100vw, 1100px"
+                          className="object-cover"
                         />
                       </div>
                     )}
 
                     <div className="space-y-[10px]">
-                      {s.ps.map((p, i) => {
-                        const isEmphasis =
-                          p === "Rotary Parking System" ||
-                          p === "Puzzle Parking Platforms" ||
-                          p === "we engineer the future of urban space.";
-                        const isConnector = p === "or";
-
-                        const isProduct = s.h2 === "Product: The Vision Behind Innovation";
-                        const containsQuestion = QUESTION_RE.test(p);
-                        const italicizeTechWords = s.h2 === "Technology: The Engine of Progress" && !isEmphasis && !isConnector;
-
-                        let content: React.ReactNode = p;
-
-                        if (isProduct && containsQuestion) {
-                          content = wrapRegexInline(p, QUESTION_RE);
-                        } else if (italicizeTechWords) {
-                          content = italicizeWords(p, ["how", "what"]);
-                        }
-
-                        return (
-                          <p
-                            key={i}
-                            className={[
-                              "leading-[1.6]",
-                              isEmphasis
-                                ? "font-bold text-zinc-800 text-[20px] tablet:text-[18px]"
-                                : isConnector
-                                ? "text-[20px] tablet:text-[18px]"
-                                : "text-[22px] tablet:text-[20px]",
-                            ].join(" ")}
-                          >
-                            {content}
-                          </p>
-                        );
-                      })}
+                      {groupBlogLines(s.ps).map((block, bi) =>
+                        block.kind === "list" ? (
+                          <ul key={`l${bi}`} className="list-disc space-y-1.5 pl-6 text-[18px] tablet:text-[18px] leading-[1.6] marker:text-[#174b92]">
+                            {block.items.map((item, ii) => (
+                              <li key={ii}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : block.kind === "subheading" ? (
+                          <h3 key={`h${bi}`} className="pt-4 text-[22px] tablet:text-[22px] font-semibold text-zinc-900">
+                            {block.text}
+                          </h3>
+                        ) : (
+                          <BlogParagraph key={`p${bi}`} p={block.text} h2={s.h2} />
+                        )
+                      )}
                     </div>
                   </section>
                 ))}
@@ -177,5 +162,63 @@ export default async function BlogPage() {
         </section>
       </main>
     </>
+  );
+}
+
+const EMPHASIS_LINES = ["Rotary Parking System", "Puzzle Parking Platforms", "we engineer the future of urban space."];
+
+type BlogBlock =
+  | { kind: "p"; text: string }
+  | { kind: "subheading"; text: string }
+  | { kind: "list"; items: string[] };
+
+// The blog copy is a flat list of lines. Numbered lines ("1. Parking Feasibility...") are
+// sub-headings, and short lines without closing punctuation ("Space optimization studies")
+// are list items; consecutive items are grouped into one bulleted list.
+function groupBlogLines(lines: string[]): BlogBlock[] {
+  const out: BlogBlock[] = [];
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (/^\d+\.\s/.test(line)) {
+      out.push({ kind: "subheading", text: line });
+      continue;
+    }
+    const isItem =
+      !EMPHASIS_LINES.includes(line) && line !== "or" && line.length < 120 && !/[.!?:…"'’”)]$/.test(line);
+    const last = out[out.length - 1];
+    if (isItem) {
+      if (last?.kind === "list") last.items.push(line);
+      else out.push({ kind: "list", items: [line] });
+    } else {
+      out.push({ kind: "p", text: line });
+    }
+  }
+  return out;
+}
+
+function BlogParagraph({ p, h2 }: { p: string; h2: string }) {
+  const isEmphasis = EMPHASIS_LINES.includes(p);
+  const isConnector = p === "or";
+  const isProduct = h2 === "Product: The Vision Behind Innovation";
+  const italicizeTechWords = h2 === "Technology: The Engine of Progress" && !isEmphasis && !isConnector;
+
+  let content: React.ReactNode = p;
+  if (isProduct && QUESTION_RE.test(p)) content = wrapRegexInline(p, QUESTION_RE);
+  else if (italicizeTechWords) content = italicizeWords(p, ["how", "what"]);
+
+  return (
+    <p
+      className={[
+        "leading-[1.6]",
+        isEmphasis
+          ? "font-bold text-zinc-800 text-[20px] tablet:text-[18px]"
+          : isConnector
+          ? "text-[20px] tablet:text-[18px]"
+          : "text-[19px] tablet:text-[18px]",
+      ].join(" ")}
+    >
+      {content}
+    </p>
   );
 }

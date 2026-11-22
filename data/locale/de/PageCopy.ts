@@ -44,7 +44,7 @@ export const pageCopy = {
     metadata: {
       title: "Unsere Kunden | STELZ Multiparking | Vertrauenswürdige Partner",
       description:
-        "Entdecken Sie die Kunden und Partner, die auf die innovativen automatisierten Parksysteme von STELZ Multiparking setzen. Lesen Sie echte Testimonials und Erfolgsgeschichten.",
+        "Kunden und Partner, die auf die automatisierten Parksysteme von STELZ Multiparking setzen – mit echten Kundenstimmen und Erfolgsgeschichten.",
       keywords: ["STELZ Kunden", "Parkkunden", "Kundenstimmen", "Parkpartner", "Fallstudien"],
       canonical: "/clients",
       ogImage: "/assets/home/Logo.webp",
@@ -87,7 +87,7 @@ export const pageCopy = {
     metadata: {
       title: "Kontakt | STELZ Multiparking | Kontakt aufnehmen",
       description:
-        "Kontaktieren Sie STELZ Multiparking bei Fragen zu automatisierten Parksystemen, Installationen und Dienstleistungen. Sprechen Sie noch heute mit unserem Expertenteam.",
+        "Fragen zu automatisierten Parksystemen, Installation oder Service? Kontaktieren Sie STELZ Multiparking und sprechen Sie mit unserem Expertenteam.",
       keywords: ["Kontakt STELZ", "Parkanfragen", "Parkberatung", "Kontakt", "Parksupport"],
       canonical: "/contact",
       ogImage: "/assets/home/Logo.webp",
@@ -127,7 +127,7 @@ export const pageCopy = {
     metadata: {
       title: "Produkte | STELZ Parking Systems | Automatisierte Parklösungen",
       description:
-        "Entdecken Sie STELZ Parkprodukte – darunter Stacker, Gruben-Stacker, Puzzle-Parken, Drehteller, Autoaufzüge und mehr. Lernen Sie Features, Fotos und Fallstudien kennen.",
+        "STELZ Parkprodukte: Stacker, Gruben-Stacker, Puzzle-Parken, Drehteller, Autoaufzüge und mehr – mit Features, Fotos und Anwendungsbeispielen.",
       keywords: [
         "Parksysteme",
         "Stack-Parken",
@@ -138,7 +138,7 @@ export const pageCopy = {
         "mechanisches Parken",
       ],
       canonical: "/products",
-      ogImage: "/assets/backgrounds/products.webp",
+      ogImage: "/assets/parking_models/3LevelStackParking.webp",
     },
     header: {
       title: "Produkte",
@@ -174,7 +174,7 @@ export const pageCopy = {
     metadata: {
       title: "Forschung & Entwicklung | STELZ Multiparking | Innovationslabor",
       description:
-        "Entdecken Sie die Forschungs- und Entwicklungsinitiativen von STELZ Multiparking, die Innovationen in automatisierten, mechanischen Parksystemen und smarten urbanen Parklösungen vorantreiben.",
+        "Forschung & Entwicklung bei STELZ Multiparking: Innovationen für automatisierte und mechanische Parksysteme und smarte urbane Parklösungen.",
       keywords: ["F&E Parken", "Parkinnovation", "Forschung Entwicklung", "automatisches Parken", "Parktechnologie"],
       canonical: "/about/r-and-d",
       ogImage: "/assets/home/Logo.webp",
@@ -187,9 +187,9 @@ export const pageCopy = {
   },
   aboutBlog: {
     metadata: {
-      title: "Warum mechanisches Parken zur urbanen Infrastruktur wird | STELZ Multiparking Blog",
+      title: "Mechanisches Parken als urbane Infrastruktur | STELZ Blog",
       description:
-        "Entdecken Sie, wie mechanische Parksysteme die urbane Infrastruktur transformieren. Erfahren Sie mehr über Flächenoptimierung, Smart City Integration und die Zukunft urbaner Mobilität mit STELZ Multiparking.",
+        "Wie mechanische Parksysteme urbane Infrastruktur verändern: Flächenoptimierung, Smart-City-Integration und die Zukunft urbaner Mobilität mit STELZ Multiparking.",
       keywords: ["mechanisches Parken", "urbane Infrastruktur", "Smart City Parken", "automatisierte Parksysteme", "Flächenoptimierung", "urbane Mobilität"],
       canonical: "/about/blog",
       ogImage: "/assets/home/Logo.webp",

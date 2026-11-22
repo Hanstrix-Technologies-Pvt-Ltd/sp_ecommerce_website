@@ -38,6 +38,8 @@ export function getHreflangAlternates(pathname: string) {
   return {
     [LOCALE_META.en.hrefLang]: `${SITE_URL}${enPath}`,
     [LOCALE_META.de.hrefLang]: `${SITE_URL}${dePath}`,
+    // Version for visitors whose language matches neither (Google recommends x-default).
+    "x-default": `${SITE_URL}${enPath}`,
   };
 }
 

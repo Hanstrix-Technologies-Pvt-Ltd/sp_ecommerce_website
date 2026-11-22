@@ -12,9 +12,12 @@ import { getPublicProjects } from "@/lib/cms/public";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  // German home page gets the German title/description (it used to show the English ones).
+  const meta = locale === "de" ? (await getFooterContent(locale)).content.meta : null;
   return buildLocalizedMetadata(locale, {
-    title: "STELZ Multiparking | Innovative Automated Parking Solutions",
+    title: meta?.title ?? "STELZ Multiparking | Innovative Automated Parking Solutions",
     description:
+      meta?.description ??
       "Discover STELZ Multiparking's cutting-edge automated parking systems. Engineering tomorrow's smart parking solutions for modern cities.",
     keywords: [
       "automated parking",

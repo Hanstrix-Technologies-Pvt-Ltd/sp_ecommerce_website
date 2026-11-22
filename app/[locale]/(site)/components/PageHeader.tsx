@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { usePathname } from "next/navigation";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
 
 interface PageHeaderProps {
   title: string;
@@ -23,9 +24,12 @@ export default function PageHeader({
   imageSrc = "/assets/pageTemplate/template_top.webp",
   heightClass = "h-27 tablet:h-31",
 }: PageHeaderProps) {
-  const resolvedHomeHref =
-    homeHref ??
-    ((locale && locale !== DEFAULT_LOCALE ? `/${locale}` : "/") || "/");
+  // Most pages don't pass `locale`, so read it from the URL; otherwise the breadcrumb on
+  // German pages linked back to the English home page.
+  const pathname = usePathname();
+  const firstSegment = pathname?.split("/").filter(Boolean)[0];
+  const effectiveLocale: Locale = locale ?? (isLocale(firstSegment) ? firstSegment : DEFAULT_LOCALE);
+  const resolvedHomeHref = homeHref ?? (effectiveLocale !== DEFAULT_LOCALE ? `/${effectiveLocale}` : "/");
   /* =========================
      Single built-in softener
      0–100 (higher = lighter)
