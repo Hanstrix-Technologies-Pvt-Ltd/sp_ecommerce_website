@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
-import type { PublicClient, PublicGalleryItem, PublicProject } from "./types";
+import type { PublicClient, PublicGalleryItem, PublicProject, PublicTestimonial } from "./types";
 import { content as enGalleryFallback } from "@/data/locale/en/GalleryContent";
 import { content as enHomeFallback } from "@/data/locale/en/HomeFooterContent";
 
@@ -96,6 +96,38 @@ const loadClientRows = unstable_cache(
   ["public-clients-v1"],
   CMS_CACHE,
 );
+
+const loadTestimonialRows = unstable_cache(
+  async () => {
+    const rows = await prisma.testimonial.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: { id: true, title: true, youtubeId: true },
+    });
+    const tableEmpty = !rows.length && (await prisma.testimonial.count()) === 0;
+    return { rows, tableEmpty };
+  },
+  ["public-testimonials-v1"],
+  CMS_CACHE,
+);
+
+/** Testimonial videos on the Clients page, in the admin's order. */
+export async function getPublicTestimonials(): Promise<PublicTestimonial[]> {
+  try {
+    const { rows, tableEmpty } = await withTimeout(loadTestimonialRows());
+    return tableEmpty ? FALLBACK_TESTIMONIALS : rows;
+  } catch (error) {
+    console.error("[cms] testimonials unavailable, showing built-in content:", error instanceof Error ? error.message : error);
+    return FALLBACK_TESTIMONIALS;
+  }
+}
+
+// The videos the page showed before testimonials moved into the admin.
+const FALLBACK_TESTIMONIALS: PublicTestimonial[] = [
+  { id: "static-1", title: "TGN Lotus Elite Mall", youtubeId: "hp3cmrW7xsM" },
+  { id: "static-2", title: "Mr. Anil Kumar", youtubeId: "njkMD_fyX-I" },
+  { id: "static-3", title: "Trusted by our customers", youtubeId: "MO3C_pTyy-g" },
+];
 
 /** Published gallery items for public carousels. */
 export async function getPublicGallery(locale: string): Promise<{

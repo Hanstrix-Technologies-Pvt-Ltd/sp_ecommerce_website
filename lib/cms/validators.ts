@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isManagedUploadUrl } from "./storage";
+import { parseYouTubeId } from "./youtube";
 
 /**
  * Image URLs must be either a bundled static asset (`/assets/...`, used by seeded content)
@@ -126,6 +127,35 @@ export const clientUpsertSchema = z.object({
 });
 
 export const clientUpdateSchema = z.object(clientFields).partial();
+
+// ---------- Testimonials ----------
+const youtubeVideo = z
+  .string()
+  .min(1, "YouTube link is required")
+  .max(500)
+  .transform((value, ctx) => {
+    const id = parseYouTubeId(value);
+    if (!id) {
+      ctx.addIssue({ code: "custom", message: "Paste a valid YouTube video link (e.g. https://youtu.be/…)" });
+      return z.NEVER;
+    }
+    return id;
+  });
+
+const testimonialFields = {
+  title: z.string().trim().min(1, "Name is required").max(200),
+  youtubeUrl: youtubeVideo, // stored as youtubeId
+  sortOrder: z.number().int(),
+  active: z.boolean(),
+};
+
+export const testimonialUpsertSchema = z.object({
+  ...testimonialFields,
+  sortOrder: testimonialFields.sortOrder.optional(), // omitted -> placed last (see nextSortOrder)
+  active: testimonialFields.active.optional().default(true),
+});
+
+export const testimonialUpdateSchema = z.object(testimonialFields).partial();
 
 // ---------- Reordering ----------
 /**

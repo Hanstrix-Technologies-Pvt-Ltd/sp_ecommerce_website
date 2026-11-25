@@ -10,6 +10,8 @@ interface PageHeaderProps {
   breadcrumbLabel: string;
   homeLabel?: string;
   homeHref?: string;
+  /** Screen-reader label for the first breadcrumb link (e.g. "Back to Dashboard" in the admin). */
+  homeAriaLabel?: string;
   locale?: Locale;
   imageSrc?: string;
   heightClass?: string; // e.g. "h-40 tablet:h-52"
@@ -20,6 +22,7 @@ export default function PageHeader({
   breadcrumbLabel,
   homeLabel = "stelzparking.com",
   homeHref,
+  homeAriaLabel = "Go to homepage",
   locale,
   imageSrc = "/assets/pageTemplate/template_top.webp",
   heightClass = "h-27 tablet:h-31",
@@ -72,7 +75,7 @@ export default function PageHeader({
             <nav aria-label="Breadcrumb" className="text-[15px] tablet:text-[16px]">
               <ol className="flex items-center gap-2 text-[#174b92] font-medium">
                 <li>
-                  <Link href={resolvedHomeHref} className="transition-colors hover:text-[#0C41AA]" aria-label="Go to homepage" prefetch>
+                  <Link href={resolvedHomeHref} className="transition-colors hover:text-[#0C41AA]" aria-label={homeAriaLabel} prefetch>
                     {homeLabel}
                   </Link>
                 </li>

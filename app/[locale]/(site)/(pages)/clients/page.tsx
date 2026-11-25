@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
-import { getPublicClients } from "@/lib/cms/public";
+import { getPublicClients, getPublicTestimonials } from "@/lib/cms/public";
 import type { PublicClient } from "@/lib/cms/types";
 
 const GUTTERS = {
@@ -81,7 +81,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ClientsPage() {
   const locale = await getRequestLocale();
-  const [copy, clients] = await Promise.all([getPageCopy(locale), getPublicClients()]);
+  const [copy, clients, testimonials] = await Promise.all([
+    getPageCopy(locale),
+    getPublicClients(),
+    getPublicTestimonials(),
+  ]);
   const c = copy.clients;
 
   return (
@@ -149,17 +153,14 @@ export default async function ClientsPage() {
             </Link>
           </div>
 
+          {/* Videos are managed in the admin (Testimonials). */}
           <div className="mt-8 grid grid-cols-1 gap-6 tablet:grid-cols-3">
-            {[
-              "https://www.youtube.com/embed/hp3cmrW7xsM",
-              "https://www.youtube.com/embed/njkMD_fyX-I",
-              "https://www.youtube.com/embed/MO3C_pTyy-g",
-            ].map((src, i) => (
-              <div key={i} className="aspect-video overflow-hidden rounded-sm ring-1 ring-gray-200 shadow-sm">
+            {testimonials.map((t) => (
+              <div key={t.id} className="aspect-video overflow-hidden rounded-sm ring-1 ring-gray-200 shadow-sm">
                 <iframe
                   className="h-full w-full"
-                  src={src}
-                  title={`Testimonial Video ${i + 1}`}
+                  src={`https://www.youtube.com/embed/${t.youtubeId}`}
+                  title={t.title}
                   loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

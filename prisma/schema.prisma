@@ -82,6 +82,21 @@ model Client {
   @@index([active, sortOrder])
 }
 
+// Testimonial videos on the Clients page ("Real Stories. Real Satisfaction.").
+// Only the YouTube video id is stored; the embed URL is built in code, so admins can't
+// put arbitrary iframes on the site.
+model Testimonial {
+  id        String   @id @default(cuid())
+  title     String   // client / video name, shown in the admin and as the player's accessible title
+  youtubeId String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
 // Brochure / datasheet download form submissions from the public website.
 // Saved before the notification email is sent, so a lead is never lost if email fails.
 model Lead {

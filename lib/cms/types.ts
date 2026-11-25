@@ -20,6 +20,12 @@ export type PublicProject = {
   slug?: string;
 };
 
+export type PublicTestimonial = {
+  id: string;
+  title: string;
+  youtubeId: string;
+};
+
 export type PublicClient = {
   id: string;
   name: string;

@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma, withConnectionRetry } from "./db";
 import { applyMove, type MoveRequest } from "./reorder";
 
-type OrderedTable = "GalleryItem" | "Project" | "Client";
+type OrderedTable = "GalleryItem" | "Project" | "Client" | "Testimonial";
 
 // One advisory-lock key per list. Gallery installations and concepts have separate orders but
 // share a key: reorders there are rare, so the simpler lock costs nothing noticeable.
@@ -10,6 +10,7 @@ const LOCK_KEYS: Record<OrderedTable, number> = {
   GalleryItem: 74_100_001,
   Project: 74_100_002,
   Client: 74_100_003,
+  Testimonial: 74_100_004,
 };
 
 /**

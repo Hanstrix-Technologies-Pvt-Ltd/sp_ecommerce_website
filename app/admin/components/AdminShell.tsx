@@ -6,7 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import PageHeader from "@/app/[locale]/(site)/components/PageHeader";
+import { ADMIN_FEATURES } from "@/lib/admin/features";
 import {
+  ArrowLeft,
   Building2,
   ExternalLink,
   FileText,
@@ -16,6 +18,7 @@ import {
   LogOut,
   Menu,
   Users,
+  Video,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -27,17 +30,23 @@ const spaceGrotesk = Space_Grotesk({
 
 type NavItem = { href: string; label: string; title: string; icon: LucideIcon; exact?: boolean };
 
+// Sections switched off in lib/admin/features.ts are left out of the menu.
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", title: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/gallery", label: "Gallery", title: "Gallery Management", icon: Images },
   { href: "/admin/projects", label: "Key Projects", title: "Key Projects", icon: Building2 },
   { href: "/admin/clients", label: "Clients", title: "Client Management", icon: Users },
-  { href: "/admin/brochures", label: "Brochures", title: "Brochures & Datasheets", icon: FileText },
+  ...(ADMIN_FEATURES.testimonials
+    ? [{ href: "/admin/testimonials", label: "Testimonials", title: "Testimonials", icon: Video }]
+    : []),
+  ...(ADMIN_FEATURES.brochures
+    ? [{ href: "/admin/brochures", label: "Brochures", title: "Brochures & Datasheets", icon: FileText }]
+    : []),
 ];
 
-const ENQUIRY_NAV: NavItem[] = [
-  { href: "/admin/leads", label: "Leads", title: "Leads", icon: Inbox },
-];
+const ENQUIRY_NAV: NavItem[] = ADMIN_FEATURES.leads
+  ? [{ href: "/admin/leads", label: "Leads", title: "Leads", icon: Inbox }]
+  : [];
 
 const ALL_NAV = [...NAV, ...ENQUIRY_NAV];
 
@@ -57,6 +66,7 @@ export default function AdminShell({
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const current = ALL_NAV.find((item) => isActive(item, pathname)) ?? NAV[0];
+  const isDashboard = current.href === "/admin";
 
   const navLink = (item: NavItem) => {
     const active = isActive(item, pathname);
@@ -121,10 +131,14 @@ export default function AdminShell({
         </p>
         <ul className="space-y-1">{NAV.map(navLink)}</ul>
 
-        <p className="px-3 pb-2 pt-7 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9CA3AF]">
-          Enquiries
-        </p>
-        <ul className="space-y-1">{ENQUIRY_NAV.map(navLink)}</ul>
+        {ENQUIRY_NAV.length > 0 ? (
+          <>
+            <p className="px-3 pb-2 pt-7 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9CA3AF]">
+              Enquiries
+            </p>
+            <ul className="space-y-1">{ENQUIRY_NAV.map(navLink)}</ul>
+          </>
+        ) : null}
 
         <p className="px-3 pb-2 pt-7 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9CA3AF]">
           Website
@@ -201,17 +215,30 @@ export default function AdminShell({
           <Image src="/assets/home/Logo.webp" alt="STELZ" width={1245} height={627} className="h-10 w-auto" />
         </div>
 
-        {/* Same banner as the public website pages */}
+        {/* Same banner as the public website pages. Inside a section the breadcrumb leads back to
+            the Dashboard (it used to jump out to the public website). */}
         <PageHeader
           title={current.title}
           breadcrumbLabel={current.label}
-          homeLabel="stelzparking.com"
-          homeHref="/"
+          homeLabel={isDashboard ? "stelzparking.com" : "Dashboard"}
+          homeHref={isDashboard ? "/" : "/admin"}
+          homeAriaLabel={isDashboard ? "Go to the website" : "Back to Dashboard"}
           imageSrc="/assets/backgrounds/services-subheader.jpg"
           heightClass="h-27 tablet:h-31"
         />
 
-        <main className="mx-auto max-w-[1400px] px-4 py-6 tablet:px-8 tablet:py-8">{children}</main>
+        <main className="mx-auto max-w-[1400px] px-4 py-6 tablet:px-8 tablet:py-8">
+          {!isDashboard ? (
+            <Link
+              href="/admin"
+              className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#4B5563] transition hover:text-[#006DDB]"
+            >
+              <ArrowLeft size={16} aria-hidden />
+              Back to Dashboard
+            </Link>
+          ) : null}
+          {children}
+        </main>
       </div>
     </div>
   );

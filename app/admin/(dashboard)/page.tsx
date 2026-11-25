@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Building2, Images, Inbox, Users } from "lucide-react";
+import { Building2, Images, Inbox, Users, Video } from "lucide-react";
 import { adminFetch, Card, PageTitle, Alert } from "../components/ui";
+import { ADMIN_FEATURES } from "@/lib/admin/features";
 
 type Stats = {
   gallery: number;
@@ -13,6 +14,8 @@ type Stats = {
   activeClients: number;
   leads: number;
   leadsLast30Days: number;
+  testimonials: number;
+  activeTestimonials: number;
 };
 
 export default function AdminDashboardPage() {
@@ -47,27 +50,48 @@ export default function AdminDashboardPage() {
       icon: Users,
       extra: stats ? `${stats.activeClients} active` : "",
     },
-    {
-      label: "Leads",
-      value: stats?.leads,
-      href: "/admin/leads",
-      icon: Inbox,
-      extra: stats ? `${stats.leadsLast30Days} in the last 30 days` : "",
-    },
+    // Optional sections only while switched on (lib/admin/features.ts).
+    ...(ADMIN_FEATURES.testimonials
+      ? [
+          {
+            label: "Testimonials",
+            value: stats?.testimonials,
+            href: "/admin/testimonials",
+            icon: Video,
+            extra: stats ? `${stats.activeTestimonials} shown` : "",
+          },
+        ]
+      : []),
+    // Leads card only while the Leads section is switched on (lib/admin/features.ts).
+    ...(ADMIN_FEATURES.leads
+      ? [
+          {
+            label: "Leads",
+            value: stats?.leads,
+            href: "/admin/leads",
+            icon: Inbox,
+            extra: stats ? `${stats.leadsLast30Days} in the last 30 days` : "",
+          },
+        ]
+      : []),
   ];
 
   return (
     <div>
       <PageTitle
         title="Dashboard"
-        subtitle="Manage website content and see enquiries from the brochure and datasheet forms."
+        subtitle={
+          ADMIN_FEATURES.leads
+            ? "Manage website content and see enquiries from the brochure and datasheet forms."
+            : "Manage website content."
+        }
       />
       {error ? (
         <div className="mb-4">
           <Alert tone="error">{error}</Alert>
         </div>
       ) : null}
-      <div className="grid gap-4 tablet:grid-cols-2 desktop:grid-cols-4">
+      <div className={`grid gap-4 tablet:grid-cols-2 ${cards.length === 3 ? "desktop:grid-cols-3" : "desktop:grid-cols-4"}`}>
         {cards.map((c) => {
           const Icon = c.icon;
           return (
@@ -101,6 +125,12 @@ export default function AdminDashboardPage() {
             <span className="font-medium text-[#1F1F1F]">Clients</span>: Clients page, plus the partner
             logos on the About and Services pages
           </li>
+          {ADMIN_FEATURES.testimonials ? (
+            <li>
+              <span className="font-medium text-[#1F1F1F]">Testimonials</span>: Clients page, Real Stories. Real
+              Satisfaction. videos
+            </li>
+          ) : null}
         </ul>
       </Card>
     </div>
