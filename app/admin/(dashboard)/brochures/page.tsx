@@ -231,7 +231,8 @@ export default function AdminBrochuresPage() {
       <div className="mb-5 border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-sm leading-6 text-[#4B5563]">
         <p>
           <span className="font-semibold text-[#1F1F1F]">File:</span> PDF only, max {Math.round(maxBytes / (1024 * 1024))} MB.
-          Aim for under 10 MB so visitors on mobile data can download it quickly.
+          Keep it under 5 MB if you can: it downloads quickly on mobile data, and the free hosting plan allows about
+          5 GB of downloads a month in total (a 5 MB file allows about 1,000 downloads; a 17 MB file only about 300).
         </p>
         <p>
           A new upload goes live immediately. <span className="font-medium">Restore original</span> switches back to the

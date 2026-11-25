@@ -203,6 +203,71 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
   );
 }
 
+/** Green "Shown on website" / grey "Hidden" label, the same on every admin list. */
+export function VisibilityBadge({ shown }: { shown: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium ${
+        shown ? "bg-[#ecfdf3] text-[#027a48]" : "bg-[#F3F4F6] text-[#616161]"
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${shown ? "bg-[#12b76a]" : "bg-[#9CA3AF]"}`} aria-hidden />
+      {shown ? "Shown on website" : "Hidden"}
+    </span>
+  );
+}
+
+/** A row of tab-like buttons (one is always selected). */
+export function Tabs<T extends string>({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+  label: string;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className="inline-flex flex-wrap border border-[#D2D2D2] bg-white">
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(o.value)}
+            className={`px-4 py-2 text-sm font-medium transition ${
+              active ? "bg-[#006DDB] text-white" : "text-[#4B5563] hover:bg-[#F3F4F6]"
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export type VisibilityFilterValue = "all" | "shown" | "hidden";
+export const VISIBILITY_FILTERS: { value: VisibilityFilterValue; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "shown", label: "Shown on website" },
+  { value: "hidden", label: "Hidden" },
+];
+
+/** Hide/Show from a list card: saves one field, then reloads the list. */
+export async function saveVisibility(url: string, body: Record<string, unknown>) {
+  await adminFetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 export function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <Card className="py-12 text-center">
@@ -501,17 +566,20 @@ export function ImageUploader({
           <Image src={shown} alt="Preview" fill className="object-contain p-2" unoptimized />
         </div>
       ) : (
-        <div className="flex h-40 items-center justify-center border border-dashed border-[#D2D2D2] text-sm text-[#616161]">
-          No image selected
-        </div>
+        // The empty box is itself a button, so there's one obvious place to click.
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+          className="flex h-40 w-full flex-col items-center justify-center gap-1 border border-dashed border-[#9CA3AF] text-sm text-[#616161] transition hover:border-[#006DDB] hover:bg-[#F5F9FF] hover:text-[#006DDB]"
+        >
+          <span className="text-2xl leading-none" aria-hidden>+</span>
+          Click to choose an image
+        </button>
       )}
       {progress ? <p className="text-xs text-[#616161]">{progress}</p> : null}
       {warning ? <Alert tone="warning">{warning}</Alert> : null}
       {error ? <Alert tone="error">{error}</Alert> : null}
-      {value ? (
-        // Read-only: images must come from the uploader (the API also rejects external URLs).
-        <Input value={value} readOnly aria-label={`${label} URL`} className="bg-[#F5F5F5] text-xs" />
-      ) : null}
     </div>
   );
 }

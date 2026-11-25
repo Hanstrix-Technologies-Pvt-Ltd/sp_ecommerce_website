@@ -14,64 +14,43 @@ import {
   IMAGE_SPECS,
   Input,
   PageTitle,
+  saveVisibility,
   scrollIntoViewSoon,
-  Select,
-  TextArea,
+  Tabs,
   useDebouncedValue,
   useReorder,
+  VISIBILITY_FILTERS,
+  VisibilityBadge,
+  type VisibilityFilterValue,
 } from "../../components/ui";
 import { DragHandle, SortableList } from "../../components/Sortable";
+
+type Status = "draft" | "published" | "archived";
 
 type Project = {
   id: string;
   title: string;
-  slug: string;
-  shortDescription: string;
-  detailedDescription: string;
-  category: string;
   location: string;
   spaces: string;
   spacesDe: string;
   instagramUrl: string;
   coverImageUrl: string;
-  clientId: string | null;
-  completionYear: number | null;
-  featured: boolean;
-  status: "draft" | "published" | "archived";
+  status: Status;
   sortOrder: number;
-  images?: { id?: string; imageUrl: string; altText: string; sortOrder: number }[];
-  client?: { id: string; name: string } | null;
 };
 
-type ClientOption = { id: string; name: string; active: boolean };
-
-const emptyForm = {
-  title: "",
-  slug: "",
-  shortDescription: "",
-  detailedDescription: "",
-  category: "",
-  location: "",
-  spaces: "",
-  spacesDe: "",
-  instagramUrl: "",
-  coverImageUrl: "",
-  clientId: "",
-  completionYear: "",
-  status: "published" as "draft" | "published" | "archived",
-};
-
-function slugify(v: string) {
-  return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
-}
+/*
+ * Only what the Home page "STELZ Footprint" cards show: photo, name, location, car spaces and an
+ * Instagram link. Slug, category, client, completion year and descriptions were never displayed,
+ * so they're no longer asked for (the slug is made automatically; values saved earlier are left
+ * untouched because they're simply not sent).
+ */
+const emptyForm = { title: "", location: "", spaces: "", spacesDe: "", instagramUrl: "", coverImageUrl: "", shown: true };
 
 export default function AdminProjectsPage() {
   const [items, setItems] = useState<Project[]>([]);
-  const [clients, setClients] = useState<ClientOption[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState("");
+  const [filter, setFilter] = useState<VisibilityFilterValue>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -81,18 +60,10 @@ export default function AdminProjectsPage() {
   const [busy, setBusy] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
-  const [uploadingCount, setUploadingCount] = useState(0);
-  // Once the slug is typed by hand, stop regenerating it from the title.
-  const [slugEdited, setSlugEdited] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const latestRequest = useRef(0);
   const debouncedQ = useDebouncedValue(q);
-  // Large enough that all projects fit on one page, so any project can be dragged anywhere.
-  const pageSize = 50;
-  const onUploadingChange = useCallback(
-    (uploading: boolean) => setUploadingCount((n) => Math.max(0, n + (uploading ? 1 : -1))),
-    [],
-  );
 
   const load = useCallback(async (opts?: { silent?: boolean }) => {
     // Ignore responses from older requests, so a slow one can't overwrite newer results.
@@ -100,26 +71,18 @@ export default function AdminProjectsPage() {
     if (!opts?.silent) setLoading(true);
     setError("");
     try {
-      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+      const params = new URLSearchParams({ page: "1", pageSize: "100" });
       if (debouncedQ) params.set("q", debouncedQ);
-      if (status) params.set("status", status);
-      const [projJson, clientJson] = await Promise.all([
-        adminFetch<{ items: Project[]; total: number }>(`/api/admin/projects?${params}`),
-        // All clients, not only active ones: a project linked to an inactive client must still
-        // show (and keep) that client in the dropdown.
-        adminFetch<{ items: ClientOption[] }>("/api/admin/clients?pageSize=100").catch(() => null),
-      ]);
+      const json = await adminFetch<{ items: Project[] }>(`/api/admin/projects?${params}`);
       if (requestId !== latestRequest.current) return;
-      setItems(projJson.items);
-      setTotal(projJson.total);
-      if (clientJson) setClients(clientJson.items);
+      setItems(json.items);
     } catch (e) {
       if (requestId !== latestRequest.current) return;
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
     }
-  }, [page, debouncedQ, status]);
+  }, [debouncedQ]);
 
   useEffect(() => {
     load();
@@ -128,7 +91,6 @@ export default function AdminProjectsPage() {
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
-    setSlugEdited(false);
     setShowForm(true);
     setSuccess("");
     scrollIntoViewSoon(formRef);
@@ -136,26 +98,23 @@ export default function AdminProjectsPage() {
 
   function openEdit(item: Project) {
     setEditing(item);
-    setSlugEdited(true);
-    setSuccess("");
-    scrollIntoViewSoon(formRef);
     setForm({
       title: item.title,
-      slug: item.slug,
-      shortDescription: item.shortDescription,
-      detailedDescription: item.detailedDescription,
-      category: item.category,
       location: item.location,
       spaces: item.spaces,
       spacesDe: item.spacesDe,
       instagramUrl: item.instagramUrl,
       coverImageUrl: item.coverImageUrl,
-      clientId: item.clientId || "",
-      completionYear: item.completionYear ? String(item.completionYear) : "",
-      status: item.status,
+      shown: item.status === "published",
     });
     setShowForm(true);
+    setSuccess("");
+    scrollIntoViewSoon(formRef);
   }
+
+  // Shown = published. Hidden keeps an existing "archived" as it was, otherwise "draft".
+  const statusFor = (shown: boolean, current?: Status): Status =>
+    shown ? "published" : current && current !== "published" ? current : "draft";
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -163,37 +122,39 @@ export default function AdminProjectsPage() {
     setError("");
     setSuccess("");
     try {
-      if (!form.coverImageUrl) throw new Error("Cover image is required");
-      const payload = {
-        title: form.title,
-        slug: form.slug || slugify(form.title),
-        shortDescription: form.shortDescription,
-        detailedDescription: form.detailedDescription,
-        category: form.category,
-        location: form.location,
-        spaces: form.spaces,
-        spacesDe: form.spacesDe,
-        instagramUrl: form.instagramUrl,
-        coverImageUrl: form.coverImageUrl,
-        clientId: form.clientId || null,
-        completionYear: form.completionYear ? Number(form.completionYear) : null,
-        status: form.status,
-        // sortOrder is not sent: edits keep the dragged position, new projects go last.
-        // images (extra photographs) is not sent either: the website only shows the cover image,
-        // and leaving the field out keeps any photos saved earlier instead of deleting them.
-      };
+      if (!form.coverImageUrl) throw new Error("Please choose a photo first.");
+      const { shown, ...fields } = form;
+      // sortOrder isn't sent (edits keep their dragged position, new projects go last), and neither
+      // is the slug: new projects get one made from the name, existing ones keep theirs.
+      const payload = { ...fields, status: statusFor(shown, editing?.status) };
       await adminFetch(editing ? `/api/admin/projects/${editing.id}` : "/api/admin/projects", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      setSuccess(editing ? "Project updated" : "Project created");
+      setSuccess(editing ? "Saved." : "Project added.");
       setShowForm(false);
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function toggle(item: Project) {
+    setError("");
+    setSuccess("");
+    const shown = item.status === "published";
+    const status = statusFor(!shown, item.status);
+    // Change the card at once; save in the background and undo if the save fails.
+    setItems((list) => list.map((p) => (p.id === item.id ? { ...p, status } : p)));
+    try {
+      await saveVisibility(`/api/admin/projects/${item.id}`, { status });
+      setSuccess(shown ? "Hidden from the website." : "Now shown on the website.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+      await load({ silent: true });
     }
   }
 
@@ -204,7 +165,7 @@ export default function AdminProjectsPage() {
     try {
       await adminFetch(`/api/admin/projects/${deleteId}`, { method: "DELETE" });
       setDeleteId(null);
-      setSuccess("Project deleted");
+      setSuccess("Project deleted.");
       await load();
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : "Delete failed");
@@ -219,7 +180,7 @@ export default function AdminProjectsPage() {
     reload: () => load({ silent: true }),
     onSaved: () => {
       setError("");
-      setSuccess("Order saved");
+      setSuccess("Order saved.");
     },
     onError: (message) => {
       setSuccess("");
@@ -227,186 +188,112 @@ export default function AdminProjectsPage() {
     },
   });
 
-  const pages = Math.max(1, Math.ceil(total / pageSize));
+  const isShown = (p: Project) => p.status === "published";
+  const visible = items.filter((p) => (filter === "all" ? true : filter === "shown" ? isShown(p) : !isShown(p)));
+  // Reordering a filtered or searched subset would make the rest of the list vanish from the
+  // screen until the next reload, so dragging is only offered on the full list.
+  const canReorder = filter === "all" && !q.trim();
 
   return (
     <div>
       <PageTitle
         title="Key Projects"
-        subtitle="Powers the home page STELZ Footprint carousel"
-        action={<Button onClick={openCreate}>Add project</Button>}
+        subtitle="Project cards in the “STELZ Footprint” carousel on the Home page."
+        action={<Button onClick={openCreate}>+ Add project</Button>}
       />
 
-      <Card className="mb-4 flex flex-wrap gap-3">
-        <Input
-          placeholder="Search title, location, slug…"
-          value={q}
-          onChange={(e) => {
-            setPage(1);
-            setQ(e.target.value);
-          }}
-          className="max-w-xs"
-        />
-        <Select
-          value={status}
-          onChange={(e) => {
-            setPage(1);
-            setStatus(e.target.value);
-          }}
-          className="max-w-[180px]"
-        >
-          <option value="">All statuses</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-          <option value="archived">Archived</option>
-        </Select>
-      </Card>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Input placeholder="Search by name or location…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
+        <Tabs label="Filter" value={filter} onChange={setFilter} options={VISIBILITY_FILTERS} />
+      </div>
 
       {error ? <div className="mb-3"><Alert tone="error">{error}</Alert></div> : null}
       {success ? <div className="mb-3"><Alert tone="success">{success}</Alert></div> : null}
 
       {showForm ? (
         <div ref={formRef} className="scroll-mt-4">
-        <Card className="mb-5">
-          <h3 className="mb-3 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit project" : "New project"}</h3>
-          <form onSubmit={onSubmit} className="grid gap-4 laptop:grid-cols-2">
-            <Field label="Title">
-              <Input
-                required
-                value={form.title}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    title: e.target.value,
-                    slug: slugEdited ? f.slug : slugify(e.target.value),
-                  }))
-                }
-              />
-            </Field>
-            <Field label="Slug" hint="URL-safe unique identifier">
-              <Input
-                required
-                value={form.slug}
-                onChange={(e) => {
-                  setSlugEdited(true);
-                  setForm((f) => ({ ...f, slug: slugify(e.target.value) }));
-                }}
-              />
-            </Field>
-            <Field label="Location">
-              <Input value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
-            </Field>
-            <Field label="Category">
-              <Input value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} />
-            </Field>
-            <Field label="Car spaces (EN)">
-              <Input value={form.spaces} onChange={(e) => setForm((f) => ({ ...f, spaces: e.target.value }))} />
-            </Field>
-            <Field label="Car spaces (DE)">
-              <Input value={form.spacesDe} onChange={(e) => setForm((f) => ({ ...f, spacesDe: e.target.value }))} />
-            </Field>
-            <Field label="Instagram URL">
-              <Input
-                type="url"
-                placeholder="https://www.instagram.com/…"
-                value={form.instagramUrl}
-                onChange={(e) => setForm((f) => ({ ...f, instagramUrl: e.target.value }))}
-              />
-            </Field>
-            <Field label="Completion year">
-              <Input
-                type="number"
-                min={1950}
-                max={2100}
-                value={form.completionYear}
-                onChange={(e) => setForm((f) => ({ ...f, completionYear: e.target.value }))}
-              />
-            </Field>
-            <Field label="Client">
-              <Select value={form.clientId} onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}>
-                <option value="">None</option>
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                    {c.active ? "" : " (inactive)"}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Status">
-              <Select
-                value={form.status}
-                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as Project["status"] }))}
-              >
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-                <option value="archived">Archived</option>
-              </Select>
-            </Field>
-            <div className="laptop:col-span-2">
-              <Field label="Short description">
-                <TextArea rows={2} value={form.shortDescription} onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))} />
-              </Field>
-            </div>
-            <div className="laptop:col-span-2">
-              <Field label="Detailed description">
-                <TextArea rows={4} value={form.detailedDescription} onChange={(e) => setForm((f) => ({ ...f, detailedDescription: e.target.value }))} />
-              </Field>
-            </div>
-            <div className="laptop:col-span-2">
+          <Card className="mb-5">
+            <h3 className="mb-4 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit project" : "Add project"}</h3>
+            <form onSubmit={onSubmit} className="space-y-5">
               <ImageUploader
                 folder="projects"
-                label="Cover image"
+                label="Photo"
                 spec={IMAGE_SPECS.projectCover}
                 value={form.coverImageUrl}
                 onChange={(url) => setForm((f) => ({ ...f, coverImageUrl: url }))}
-                onUploadingChange={onUploadingChange}
+                onUploadingChange={setUploading}
               />
-            </div>
-            <div className="flex gap-2 laptop:col-span-2">
-              <Button type="submit" disabled={busy || uploadingCount > 0}>
-                {busy ? "Saving…" : uploadingCount > 0 ? "Waiting for upload…" : "Save"}
-              </Button>
-              <Button type="button" variant="secondary" disabled={uploadingCount > 0} onClick={() => setShowForm(false)}>Cancel</Button>
-            </div>
-          </form>
-        </Card>
+              <div className="grid gap-4 laptop:grid-cols-2">
+                <Field label="Project name">
+                  <Input required maxLength={200} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="e.g. NCC Urban Park View" />
+                </Field>
+                <Field label="Location">
+                  <Input maxLength={200} value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} placeholder="e.g. Bengaluru" />
+                </Field>
+                <Field label="Car spaces, optional" hint="e.g. 120. Leave empty to hide this line.">
+                  <Input maxLength={120} value={form.spaces} onChange={(e) => setForm((f) => ({ ...f, spaces: e.target.value }))} />
+                </Field>
+                <Field label="Car spaces (German), optional" hint="Only if the German text differs. Otherwise leave empty.">
+                  <Input maxLength={120} value={form.spacesDe} onChange={(e) => setForm((f) => ({ ...f, spacesDe: e.target.value }))} />
+                </Field>
+                <div className="laptop:col-span-2">
+                  <Field label="Instagram link, optional" hint="Adds an Instagram icon to the card that opens this post or reel.">
+                    <Input type="url" placeholder="https://www.instagram.com/reel/…" value={form.instagramUrl} onChange={(e) => setForm((f) => ({ ...f, instagramUrl: e.target.value }))} />
+                  </Field>
+                </div>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.shown} onChange={(e) => setForm((f) => ({ ...f, shown: e.target.checked }))} />
+                Show on the website
+              </label>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={busy || uploading}>
+                  {busy ? "Saving…" : uploading ? "Waiting for upload…" : "Save"}
+                </Button>
+                <Button type="button" variant="secondary" disabled={uploading} onClick={() => setShowForm(false)}>Cancel</Button>
+              </div>
+            </form>
+          </Card>
         </div>
       ) : null}
 
       {loading ? (
-        <Card>Loading projects…</Card>
-      ) : items.length === 0 ? (
-        <EmptyState title="No projects yet" body="Add key projects to populate the home Footprint carousel." />
+        <Card>Loading…</Card>
+      ) : visible.length === 0 ? (
+        <EmptyState
+          title={items.length ? "Nothing matches" : "No projects yet"}
+          body={items.length ? "Clear the search or choose “All”." : "Click “+ Add project” to add the first one."}
+        />
       ) : (
         <>
           <p className="mb-3 text-sm text-[#616161]">
-            Drag the ⠿ handle to change the order projects appear in the home page carousel.
+            {items.filter(isShown).length} of {items.length} shown on the website.{" "}
+            {canReorder ? "Drag ⠿ to change the order." : "To change the order, choose “All” and clear the search."}
           </p>
           <SortableList
-            items={items}
+            items={visible}
             onReorder={reorder}
+            disabled={!canReorder}
             className="space-y-3"
             renderItem={(item, drag) => (
-              <Card className="flex flex-col gap-3 tablet:flex-row tablet:items-center">
-                <div className="hidden tablet:block">
-                  <DragHandle drag={drag} label={item.title} />
-                </div>
+              <Card className={`flex flex-col gap-3 tablet:flex-row tablet:items-center ${isShown(item) ? "" : "opacity-70"}`}>
                 <div className="relative h-28 w-full shrink-0 overflow-hidden bg-[#F5F5F5] tablet:w-44">
                   <Image src={item.coverImageUrl} alt={item.title} fill sizes="(min-width: 768px) 176px, 100vw" className="object-cover" />
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#1F1F1F]">{item.title}</p>
-                  <p className="text-xs text-[#616161]">
-                    {item.status} · {item.location || "—"} · /{item.slug}
-                    {item.client ? ` · ${item.client.name}` : ""}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-[#1F1F1F]">{item.title}</p>
+                    <VisibilityBadge shown={isShown(item)} />
+                  </div>
+                  <p className="mt-0.5 text-sm text-[#616161]">
+                    {item.location || "No location"}
+                    {item.spaces ? ` · Car spaces: ${item.spaces}` : ""}
+                    {item.instagramUrl ? " · Instagram link" : ""}
                   </p>
-                  <p className="mt-1 line-clamp-2 text-sm text-[#616161]">{item.shortDescription || item.spaces}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <div className="tablet:hidden">
-                      <DragHandle drag={drag} label={item.title} />
-                    </div>
+                  <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                    <DragHandle drag={drag} label={item.title} disabledReason="Choose “All” and clear the search to reorder" />
                     <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
+                    <Button type="button" variant="secondary" onClick={() => toggle(item)}>{isShown(item) ? "Hide" : "Show"}</Button>
                     <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
                   </div>
                 </div>
@@ -416,18 +303,10 @@ export default function AdminProjectsPage() {
         </>
       )}
 
-      {pages > 1 ? (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-          <span className="text-sm text-[#616161]">Page {page} / {pages}</span>
-          <Button variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
-        </div>
-      ) : null}
-
       <ConfirmDialog
         open={Boolean(deleteId)}
-        title="Delete project?"
-        body="This removes the project and its photo records. Uploaded files are removed only if unused elsewhere."
+        title="Delete this project?"
+        body="It will be removed from the Home page. To take it off the website but keep it here, use Hide instead."
         onCancel={() => {
           setDeleteId(null);
           setDeleteError("");

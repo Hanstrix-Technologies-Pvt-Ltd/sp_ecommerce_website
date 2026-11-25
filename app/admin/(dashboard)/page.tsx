@@ -34,21 +34,21 @@ export default function AdminDashboardPage() {
       value: stats?.gallery,
       href: "/admin/gallery",
       icon: Images,
-      extra: "Shown on the Gallery page",
+      extra: "Installation photos and 3D concepts",
     },
     {
       label: "Key projects",
       value: stats?.projects,
       href: "/admin/projects",
       icon: Building2,
-      extra: stats ? `${stats.publishedProjects} published` : "",
+      extra: stats ? `${stats.publishedProjects} shown on website` : "",
     },
     {
       label: "Clients",
       value: stats?.clients,
       href: "/admin/clients",
       icon: Users,
-      extra: stats ? `${stats.activeClients} active` : "",
+      extra: stats ? `${stats.activeClients} shown on website` : "",
     },
     // Optional sections only while switched on (lib/admin/features.ts).
     ...(ADMIN_FEATURES.testimonials
@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
             value: stats?.testimonials,
             href: "/admin/testimonials",
             icon: Video,
-            extra: stats ? `${stats.activeTestimonials} shown` : "",
+            extra: stats ? `${stats.activeTestimonials} shown on website` : "",
           },
         ]
       : []),
@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
         title="Dashboard"
         subtitle={
           ADMIN_FEATURES.leads
-            ? "Manage website content and see enquiries from the brochure and datasheet forms."
+            ? "Manage website content and see enquiries from the website's forms."
             : "Manage website content."
         }
       />
@@ -91,7 +91,17 @@ export default function AdminDashboardPage() {
           <Alert tone="error">{error}</Alert>
         </div>
       ) : null}
-      <div className={`grid gap-4 tablet:grid-cols-2 ${cards.length === 3 ? "desktop:grid-cols-3" : "desktop:grid-cols-4"}`}>
+      {/* One row on wide screens however many sections are switched on (class names written out
+          in full so Tailwind generates them). */}
+      <div
+        className={`grid gap-4 tablet:grid-cols-2 ${
+          cards.length >= 5
+            ? "laptop:grid-cols-3 desktop:grid-cols-5"
+            : cards.length === 4
+              ? "desktop:grid-cols-4"
+              : "desktop:grid-cols-3"
+        }`}
+      >
         {cards.map((c) => {
           const Icon = c.icon;
           return (
@@ -129,6 +139,18 @@ export default function AdminDashboardPage() {
             <li>
               <span className="font-medium text-[#1F1F1F]">Testimonials</span>: Clients page, Real Stories. Real
               Satisfaction. videos
+            </li>
+          ) : null}
+          {ADMIN_FEATURES.brochures ? (
+            <li>
+              <span className="font-medium text-[#1F1F1F]">Brochures</span>: the PDFs behind the Download Brochure
+              button and the datasheet buttons on product pages
+            </li>
+          ) : null}
+          {ADMIN_FEATURES.leads ? (
+            <li>
+              <span className="font-medium text-[#1F1F1F]">Leads</span>: enquiries people send through the
+              website&apos;s forms (contact, brochure and datasheet)
             </li>
           ) : null}
         </ul>

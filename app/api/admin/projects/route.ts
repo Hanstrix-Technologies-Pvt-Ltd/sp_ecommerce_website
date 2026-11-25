@@ -60,7 +60,16 @@ export async function POST(req: NextRequest) {
   try {
     requireAdmin(req);
     const raw = await req.json();
-    if (!raw.slug && raw.title) raw.slug = slugify(String(raw.title));
+    if (!raw.slug && raw.title) {
+      // The admin form no longer asks for a slug (the site has no project pages; it's only an
+      // internal id), so make a unique one from the title: "ncc-urban", "ncc-urban-2", ...
+      const base = slugify(String(raw.title)) || "project";
+      let candidate = base;
+      for (let n = 2; await prisma.project.findUnique({ where: { slug: candidate }, select: { id: true } }); n++) {
+        candidate = `${base}-${n}`.slice(0, 120);
+      }
+      raw.slug = candidate;
+    }
     const data = projectUpsertSchema.parse(raw);
 
     const slugTaken = await prisma.project.findUnique({ where: { slug: data.slug } });

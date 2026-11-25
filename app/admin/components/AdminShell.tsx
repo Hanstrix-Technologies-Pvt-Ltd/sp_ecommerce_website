@@ -33,9 +33,9 @@ type NavItem = { href: string; label: string; title: string; icon: LucideIcon; e
 // Sections switched off in lib/admin/features.ts are left out of the menu.
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", title: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/gallery", label: "Gallery", title: "Gallery Management", icon: Images },
+  { href: "/admin/gallery", label: "Gallery", title: "Gallery", icon: Images },
   { href: "/admin/projects", label: "Key Projects", title: "Key Projects", icon: Building2 },
-  { href: "/admin/clients", label: "Clients", title: "Client Management", icon: Users },
+  { href: "/admin/clients", label: "Clients", title: "Clients", icon: Users },
   ...(ADMIN_FEATURES.testimonials
     ? [{ href: "/admin/testimonials", label: "Testimonials", title: "Testimonials", icon: Video }]
     : []),
@@ -49,6 +49,14 @@ const ENQUIRY_NAV: NavItem[] = ADMIN_FEATURES.leads
   : [];
 
 const ALL_NAV = [...NAV, ...ENQUIRY_NAV];
+
+/** Pages inside a section (opened from the section's own page, not the menu): own banner title
+ *  and a "Back to <section>" link. The section stays highlighted in the menu. */
+type SubPage = { href: string; label: string; title: string; parent: string };
+const SUB_PAGES: SubPage[] = [
+  { href: "/admin/gallery/installations", label: "Installation photos", title: "Installation Photos", parent: "/admin/gallery" },
+  { href: "/admin/gallery/concepts", label: "3D concepts", title: "3D Concepts", parent: "/admin/gallery" },
+];
 
 function isActive(item: NavItem, pathname: string) {
   return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -67,6 +75,10 @@ export default function AdminShell({
   const [menuOpen, setMenuOpen] = useState(false);
   const current = ALL_NAV.find((item) => isActive(item, pathname)) ?? NAV[0];
   const isDashboard = current.href === "/admin";
+  const sub = SUB_PAGES.find((s) => pathname === s.href || pathname.startsWith(`${s.href}/`));
+  // Banner and back link: on a sub-page they point to its section, elsewhere to the Dashboard.
+  const banner = sub ? { title: sub.title, label: sub.label, home: current.label, homeHref: current.href } : null;
+  const back = sub ? { href: current.href, label: `Back to ${current.label}` } : { href: "/admin", label: "Back to Dashboard" };
 
   const navLink = (item: NavItem) => {
     const active = isActive(item, pathname);
@@ -218,11 +230,11 @@ export default function AdminShell({
         {/* Same banner as the public website pages. Inside a section the breadcrumb leads back to
             the Dashboard (it used to jump out to the public website). */}
         <PageHeader
-          title={current.title}
-          breadcrumbLabel={current.label}
-          homeLabel={isDashboard ? "stelzparking.com" : "Dashboard"}
-          homeHref={isDashboard ? "/" : "/admin"}
-          homeAriaLabel={isDashboard ? "Go to the website" : "Back to Dashboard"}
+          title={banner ? banner.title : current.title}
+          breadcrumbLabel={banner ? banner.label : current.label}
+          homeLabel={banner ? banner.home : isDashboard ? "stelzparking.com" : "Dashboard"}
+          homeHref={banner ? banner.homeHref : isDashboard ? "/" : "/admin"}
+          homeAriaLabel={banner ? back.label : isDashboard ? "Go to the website" : "Back to Dashboard"}
           imageSrc="/assets/backgrounds/services-subheader.jpg"
           heightClass="h-27 tablet:h-31"
         />
@@ -230,11 +242,11 @@ export default function AdminShell({
         <main className="mx-auto max-w-[1400px] px-4 py-6 tablet:px-8 tablet:py-8">
           {!isDashboard ? (
             <Link
-              href="/admin"
+              href={back.href}
               className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#4B5563] transition hover:text-[#006DDB]"
             >
               <ArrowLeft size={16} aria-hidden />
-              Back to Dashboard
+              {back.label}
             </Link>
           ) : null}
           {children}

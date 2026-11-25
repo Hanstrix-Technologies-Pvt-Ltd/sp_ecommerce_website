@@ -15,6 +15,7 @@ import {
   PageTitle,
   scrollIntoViewSoon,
   useReorder,
+  VisibilityBadge,
 } from "../../components/ui";
 import { DragHandle, SortableList } from "../../components/Sortable";
 import { parseYouTubeId, youtubeThumbnail, youtubeWatchUrl } from "@/lib/cms/youtube";
@@ -107,16 +108,18 @@ export default function AdminTestimonialsPage() {
   async function toggleActive(item: Testimonial) {
     setError("");
     setSuccess("");
+    // Change the card at once; save in the background and undo if the save fails.
+    setItems((list) => list.map((t) => (t.id === item.id ? { ...t, active: !item.active } : t)));
     try {
       await adminFetch(`/api/admin/testimonials/${item.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !item.active }),
       });
-      setSuccess(item.active ? "Hidden from the website" : "Shown on the website");
-      await load({ silent: true });
+      setSuccess(item.active ? "Hidden from the website." : "Now shown on the website.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
+      await load({ silent: true });
     }
   }
 
@@ -157,7 +160,7 @@ export default function AdminTestimonialsPage() {
       <PageTitle
         title="Testimonials"
         subtitle='YouTube videos in the "Real Stories. Real Satisfaction." section of the Clients page'
-        action={<Button onClick={openCreate}>Add testimonial</Button>}
+        action={<Button onClick={openCreate}>+ Add testimonial</Button>}
       />
 
       {error ? <div className="mb-3"><Alert tone="error">{error}</Alert></div> : null}
@@ -265,7 +268,7 @@ export default function AdminTestimonialsPage() {
                   </span>
                 </a>
                 <p className="mt-3 truncate font-medium text-[#1F1F1F]" title={item.title}>{item.title}</p>
-                <p className="text-xs text-[#616161]">{item.active ? "shown on website" : "hidden"}</p>
+                <div className="mt-1"><VisibilityBadge shown={item.active} /></div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <DragHandle drag={drag} label={item.title} />
                   <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>

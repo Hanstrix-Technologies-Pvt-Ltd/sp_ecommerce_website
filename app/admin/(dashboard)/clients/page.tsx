@@ -14,11 +14,14 @@ import {
   IMAGE_SPECS,
   Input,
   PageTitle,
+  saveVisibility,
   scrollIntoViewSoon,
-  Select,
-  TextArea,
+  Tabs,
   useDebouncedValue,
   useReorder,
+  VISIBILITY_FILTERS,
+  VisibilityBadge,
+  type VisibilityFilterValue,
 } from "../../components/ui";
 import { DragHandle, SortableList } from "../../components/Sortable";
 
@@ -26,27 +29,21 @@ type Client = {
   id: string;
   name: string;
   logoUrl: string;
-  websiteUrl: string;
-  description: string;
-  sortOrder: number;
   active: boolean;
-  _count?: { projects: number };
+  sortOrder: number;
 };
 
-const emptyForm = {
-  name: "",
-  logoUrl: "",
-  websiteUrl: "",
-  description: "",
-  active: true,
-};
+/*
+ * Only what the website uses: the logo and the client's name (the logo's description for search
+ * engines and screen readers). Website URL and description were never displayed, so they're no
+ * longer asked for; values saved earlier are left untouched because they're simply not sent.
+ */
+const emptyForm = { name: "", logoUrl: "", active: true };
 
 export default function AdminClientsPage() {
   const [items, setItems] = useState<Client[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
-  const [active, setActive] = useState("");
+  const [filter, setFilter] = useState<VisibilityFilterValue>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -60,8 +57,6 @@ export default function AdminClientsPage() {
   const formRef = useRef<HTMLDivElement>(null);
   const latestRequest = useRef(0);
   const debouncedQ = useDebouncedValue(q);
-  // Large enough that all clients fit on one page, so any logo can be dragged anywhere.
-  const pageSize = 100;
 
   const load = useCallback(async (opts?: { silent?: boolean }) => {
     // Ignore responses from older requests, so a slow one can't overwrite newer results.
@@ -69,20 +64,18 @@ export default function AdminClientsPage() {
     if (!opts?.silent) setLoading(true);
     setError("");
     try {
-      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+      const params = new URLSearchParams({ page: "1", pageSize: "100" });
       if (debouncedQ) params.set("q", debouncedQ);
-      if (active) params.set("active", active);
-      const json = await adminFetch<{ items: Client[]; total: number }>(`/api/admin/clients?${params}`);
+      const json = await adminFetch<{ items: Client[] }>(`/api/admin/clients?${params}`);
       if (requestId !== latestRequest.current) return;
       setItems(json.items);
-      setTotal(json.total);
     } catch (e) {
       if (requestId !== latestRequest.current) return;
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
     }
-  }, [page, debouncedQ, active]);
+  }, [debouncedQ]);
 
   useEffect(() => {
     load();
@@ -98,16 +91,10 @@ export default function AdminClientsPage() {
 
   function openEdit(item: Client) {
     setEditing(item);
+    setForm({ name: item.name, logoUrl: item.logoUrl, active: item.active });
+    setShowForm(true);
     setSuccess("");
     scrollIntoViewSoon(formRef);
-    setForm({
-      name: item.name,
-      logoUrl: item.logoUrl,
-      websiteUrl: item.websiteUrl,
-      description: item.description,
-      active: item.active,
-    });
-    setShowForm(true);
   }
 
   async function onSubmit(e: FormEvent) {
@@ -116,13 +103,13 @@ export default function AdminClientsPage() {
     setError("");
     setSuccess("");
     try {
-      if (!form.logoUrl) throw new Error("Logo is required");
+      if (!form.logoUrl) throw new Error("Please choose a logo first.");
       await adminFetch(editing ? `/api/admin/clients/${editing.id}` : "/api/admin/clients", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      setSuccess(editing ? "Client updated" : "Client created");
+      setSuccess(editing ? "Saved." : "Client added.");
       setShowForm(false);
       await load();
     } catch (err) {
@@ -132,20 +119,28 @@ export default function AdminClientsPage() {
     }
   }
 
+  async function toggle(item: Client) {
+    setError("");
+    setSuccess("");
+    // Change the card at once; save in the background and undo if the save fails.
+    setItems((list) => list.map((c) => (c.id === item.id ? { ...c, active: !item.active } : c)));
+    try {
+      await saveVisibility(`/api/admin/clients/${item.id}`, { active: !item.active });
+      setSuccess(item.active ? "Hidden from the website." : "Now shown on the website.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+      await load({ silent: true });
+    }
+  }
+
   async function confirmDelete() {
     if (!deleteId) return;
     setBusy(true);
     setDeleteError("");
     try {
-      const json = await adminFetch<{ detachedProjects?: number }>(`/api/admin/clients/${deleteId}`, {
-        method: "DELETE",
-      });
+      await adminFetch(`/api/admin/clients/${deleteId}`, { method: "DELETE" });
       setDeleteId(null);
-      setSuccess(
-        json.detachedProjects
-          ? `Client deleted (${json.detachedProjects} linked project(s) unlinked)`
-          : "Client deleted",
-      );
+      setSuccess("Client deleted.");
       await load();
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : "Delete failed");
@@ -160,7 +155,7 @@ export default function AdminClientsPage() {
     reload: () => load({ silent: true }),
     onSaved: () => {
       setError("");
-      setSuccess("Order saved");
+      setSuccess("Order saved.");
     },
     onError: (message) => {
       setSuccess("");
@@ -168,119 +163,93 @@ export default function AdminClientsPage() {
     },
   });
 
-  const pages = Math.max(1, Math.ceil(total / pageSize));
+  const visible = items.filter((c) => (filter === "all" ? true : filter === "shown" ? c.active : !c.active));
+  // Reordering a filtered or searched subset would make the rest of the list vanish from the
+  // screen until the next reload, so dragging is only offered on the full list.
+  const canReorder = filter === "all" && !q.trim();
 
   return (
     <div>
       <PageTitle
-        title="Client Management"
-        subtitle="Logos for /clients, About partners, and Services partners"
-        action={<Button onClick={openCreate}>Add client</Button>}
+        title="Clients"
+        subtitle="Client logos on the Clients page, the About page and the Services page (Services shows the first 7)."
+        action={<Button onClick={openCreate}>+ Add client</Button>}
       />
 
-      <Card className="mb-4 flex flex-wrap gap-3">
-        <Input
-          placeholder="Search clients…"
-          value={q}
-          onChange={(e) => {
-            setPage(1);
-            setQ(e.target.value);
-          }}
-          className="max-w-xs"
-        />
-        <Select
-          value={active}
-          onChange={(e) => {
-            setPage(1);
-            setActive(e.target.value);
-          }}
-          className="max-w-[180px]"
-        >
-          <option value="">All</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </Select>
-      </Card>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Input placeholder="Search by name…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
+        <Tabs label="Filter" value={filter} onChange={setFilter} options={VISIBILITY_FILTERS} />
+      </div>
 
       {error ? <div className="mb-3"><Alert tone="error">{error}</Alert></div> : null}
       {success ? <div className="mb-3"><Alert tone="success">{success}</Alert></div> : null}
 
       {showForm ? (
         <div ref={formRef} className="scroll-mt-4">
-        <Card className="mb-5">
-          <h3 className="mb-3 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit client" : "New client"}</h3>
-          <form onSubmit={onSubmit} className="grid gap-4 laptop:grid-cols-2">
-            <Field label="Client name">
-              <Input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-            </Field>
-            <Field label="Website URL">
-              <Input
-                type="url"
-                value={form.websiteUrl}
-                onChange={(e) => setForm((f) => ({ ...f, websiteUrl: e.target.value }))}
-                placeholder="https://"
-              />
-            </Field>
-            <div className="laptop:col-span-2">
-              <Field label="Description">
-                <TextArea rows={3} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-              </Field>
-            </div>
-            <div className="laptop:col-span-2">
+          <Card className="mb-5">
+            <h3 className="mb-4 text-lg font-semibold text-[#1F1F1F]">{editing ? "Edit client" : "Add client"}</h3>
+            <form onSubmit={onSubmit} className="space-y-5">
               <ImageUploader
                 folder="clients"
-                label="Client logo"
+                label="Logo"
                 spec={IMAGE_SPECS.clientLogo}
                 value={form.logoUrl}
                 onChange={(url) => setForm((f) => ({ ...f, logoUrl: url }))}
                 onUploadingChange={setUploading}
               />
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />
-              Active on public site
-            </label>
-            <div className="flex gap-2 laptop:col-span-2">
-              <Button type="submit" disabled={busy || uploading}>
-                {busy ? "Saving…" : uploading ? "Waiting for upload…" : "Save"}
-              </Button>
-              <Button type="button" variant="secondary" disabled={uploading} onClick={() => setShowForm(false)}>Cancel</Button>
-            </div>
-          </form>
-        </Card>
+              <div className="max-w-xl">
+                <Field label="Client name" hint="Not shown as text. It describes the logo to Google and to screen readers.">
+                  <Input required maxLength={200} value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Brigade Group" />
+                </Field>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />
+                Show on the website
+              </label>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={busy || uploading}>
+                  {busy ? "Saving…" : uploading ? "Waiting for upload…" : "Save"}
+                </Button>
+                <Button type="button" variant="secondary" disabled={uploading} onClick={() => setShowForm(false)}>Cancel</Button>
+              </div>
+            </form>
+          </Card>
         </div>
       ) : null}
 
       {loading ? (
-        <Card>Loading clients…</Card>
-      ) : items.length === 0 ? (
-        <EmptyState title="No clients" body="Add client logos to populate the clients and partners sections." />
+        <Card>Loading…</Card>
+      ) : visible.length === 0 ? (
+        <EmptyState
+          title={items.length ? "Nothing matches" : "No clients yet"}
+          body={items.length ? "Clear the search or choose “All”." : "Click “+ Add client” to add the first logo."}
+        />
       ) : (
         <>
           <p className="mb-3 text-sm text-[#616161]">
-            Drag the ⠿ handle to change the order logos appear on the website.
+            {items.filter((c) => c.active).length} of {items.length} shown on the website.{" "}
+            {canReorder ? "Drag ⠿ to change the order." : "To change the order, choose “All” and clear the search."}
           </p>
           <SortableList
-            items={items}
+            items={visible}
             onReorder={reorder}
+            disabled={!canReorder}
             className="grid gap-3 tablet:grid-cols-2 laptop:grid-cols-3"
             renderItem={(item, drag) => (
-              <Card className="h-full">
+              <Card className={`h-full ${item.active ? "" : "opacity-70"}`}>
                 <div className="flex items-center gap-3">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-[#D2D2D2] bg-white">
                     <Image src={item.logoUrl} alt={item.name} fill sizes="64px" className="object-contain p-1" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-[#1F1F1F]">{item.name}</p>
-                    <p className="text-xs text-[#616161]">
-                      {item.active ? "active" : "inactive"}
-                      {item._count ? ` · ${item._count.projects} projects` : ""}
-                    </p>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p className="truncate font-medium capitalize text-[#1F1F1F]">{item.name}</p>
+                    <VisibilityBadge shown={item.active} />
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <DragHandle drag={drag} label={item.name} />
+                  <DragHandle drag={drag} label={item.name} disabledReason="Choose “All” and clear the search to reorder" />
                   <Button type="button" variant="secondary" onClick={() => openEdit(item)}>Edit</Button>
+                  <Button type="button" variant="secondary" onClick={() => toggle(item)}>{item.active ? "Hide" : "Show"}</Button>
                   <Button type="button" variant="danger" onClick={() => setDeleteId(item.id)}>Delete</Button>
                 </div>
               </Card>
@@ -289,18 +258,10 @@ export default function AdminClientsPage() {
         </>
       )}
 
-      {pages > 1 ? (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-          <span className="text-sm text-[#616161]">Page {page} / {pages}</span>
-          <Button variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
-        </div>
-      ) : null}
-
       <ConfirmDialog
         open={Boolean(deleteId)}
-        title="Delete client?"
-        body="Linked projects will keep their data but lose the client association. Logos are removed from disk only if unused."
+        title="Delete this client?"
+        body="The logo will be removed from the website. To take it off the website but keep it here, use Hide instead."
         onCancel={() => {
           setDeleteId(null);
           setDeleteError("");
