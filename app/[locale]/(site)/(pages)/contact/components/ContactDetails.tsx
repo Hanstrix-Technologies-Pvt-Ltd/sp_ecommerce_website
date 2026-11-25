@@ -122,9 +122,8 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
 function ContactCard({ person }: { person: ContactPerson }) {
   return (
     <div className="space-y-2 text-[17px] leading-relaxed">
-      <p className="font-bold text-[#616161]">
-        {person.name}
-      </p>
+      {/* Name and email are optional: a contact can be listed by role + phone only. */}
+      {person.name && <p className="font-bold text-[#616161]">{person.name}</p>}
       <p className="text-[17px] text-[#616161]">{person.role}</p>
 
       <div className="mt-2 space-y-1 text-[13px]">
@@ -146,6 +145,7 @@ function ContactCard({ person }: { person: ContactPerson }) {
         </div>
 
         {/* Email */}
+        {person.email && (
         <div className="flex items-center gap-2">
           <Image
             src="/assets/contact/mail.svg"
@@ -161,6 +161,7 @@ function ContactCard({ person }: { person: ContactPerson }) {
             {person.email}
           </a>
         </div>
+        )}
       </div>
     </div>
   );

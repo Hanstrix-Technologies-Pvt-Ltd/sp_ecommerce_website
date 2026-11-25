@@ -277,8 +277,8 @@ export function generateLocalBusinessSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: "13.1939",
-      longitude: "77.6245",
+      latitude: "12.9084", // head office, BEML Layout 5th Stage (was Yelahanka, ~30 km off)
+      longitude: "77.5209",
     },
     sameAs: [
       content.footer.contact.socials.linkedin,

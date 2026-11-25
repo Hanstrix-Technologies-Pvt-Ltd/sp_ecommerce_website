@@ -79,11 +79,11 @@ export const content = {
   footer: {
     office: {
       title: "Büroadresse",
-      address: "Nr. 1955, 2. Stock, 5. Stufe, BEML Layout, Rajarajeshwari Nagar, Bengaluru 560098.",
+      address: "Nr. 1595, 2. Stock, Shree Venkateshwara Arcade, 5. Stufe, BEML Layout, Raja Rajeshwari Nagar, Bangalore - 560098.",
     },
     factory: {
       title: "Werksadresse",
-      address: "Sy. Nr. 56/2, Mr Rama und Sri M. Maramkrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
+      address: "Sy. Nr. 56/2, Mrs Rama und Sri. M. Ramakrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
     },
     contact: {
       title: "Kontaktinfo",

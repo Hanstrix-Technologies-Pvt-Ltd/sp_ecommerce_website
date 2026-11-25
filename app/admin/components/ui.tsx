@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { HEIC_ACCEPT, MAX_HEIC_MB, convertHeic, looksLikeHeic } from "./heic";
 
 /**
  * Vercel rejects function request bodies over 4.5 MB before our code runs, so keep uploads
@@ -357,7 +358,7 @@ function UploadGuidance({ spec }: { spec?: ImageSpec }) {
       ) : null}
       <p>
         <span className="font-semibold text-[#1F1F1F]">File:</span> JPEG, PNG, WebP or AVIF, max {MAX_UPLOAD_MB} MB.
-        Under 500 KB is best for fast pages (WebP is usually smallest).
+        iPhone HEIC photos are converted automatically. Under 500 KB is best for fast pages (WebP is usually smallest).
       </p>
     </div>
   );
@@ -387,14 +388,43 @@ export function ImageUploader({
   const [error, setError] = useState("");
   const [warning, setWarning] = useState("");
 
-  async function onFile(file: File | null) {
-    if (!file) return;
+  async function onFile(picked: File | null) {
+    if (!picked) return;
     setError("");
     setWarning("");
     setProgress("");
+    let file = picked;
+
+    // iPhone HEIC/HEIF photos: convert to WebP/JPEG in the browser first.
+    if (looksLikeHeic(file)) {
+      if (file.size > MAX_HEIC_MB * 1024 * 1024) {
+        setError(`File too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max ${MAX_HEIC_MB}MB for HEIC photos.`);
+        return;
+      }
+      setUploading(true);
+      onUploadingChange?.(true);
+      setProgress("Converting HEIC photo…");
+      try {
+        file = await convertHeic(file);
+      } catch (e) {
+        setError(
+          e instanceof Error && e.message.includes("JPEG")
+            ? e.message
+            : "Couldn't read this HEIC photo. Save it as JPEG and try again.",
+        );
+        setProgress("");
+        setUploading(false);
+        onUploadingChange?.(false);
+        return;
+      }
+      setUploading(false);
+      onUploadingChange?.(false);
+      setProgress("");
+    }
+
     // Check before uploading, so the user gets a clear message instead of a failed request.
     if (!UPLOAD_TYPES.includes(file.type)) {
-      setError("Unsupported image type. Use JPEG, PNG, WebP, or AVIF.");
+      setError("Unsupported image type. Use JPEG, PNG, WebP, AVIF or HEIC.");
       return;
     }
     if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
@@ -457,7 +487,7 @@ export function ImageUploader({
       <input
         ref={inputRef}
         type="file"
-        accept={UPLOAD_TYPES.join(",")}
+        accept={[...UPLOAD_TYPES, ...HEIC_ACCEPT].join(",")}
         className="hidden"
         onChange={(e) => {
           onFile(e.target.files?.[0] || null);
