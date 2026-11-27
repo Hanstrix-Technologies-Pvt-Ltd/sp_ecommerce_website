@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { stripLocaleFromPath } from "@/lib/i18n/slugMap";
-import { content as enContent } from "@/data/locale/en/HomeFooterContent";
-import { content as deContent } from "@/data/locale/de/HomeFooterContent";
 import { Space_Grotesk } from "next/font/google";
 import LeadCaptureModal from "@/components/LeadCaptureModal";
 import { submitLeadCapture, triggerBrochureDownload } from "@/lib/leadCapture";
+
+/** What the brochure form sends (name, phone, project, location). */
+type LeadFormValues = Parameters<React.ComponentProps<typeof LeadCaptureModal>["onSubmit"]>[0];
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -23,7 +24,6 @@ export default function FixedButtons() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const pathname = usePathname() || "/";
   const { locale } = useMemo(() => stripLocaleFromPath(pathname), [pathname]);
-  const localizedContent = locale === "de" ? deContent : enContent;
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -38,10 +38,15 @@ export default function FixedButtons() {
     setShowLeadModal(true);
   };
 
-  const handleLeadSubmit = async (leadData: any) => {
+  const handleLeadSubmit = async (leadData: LeadFormValues) => {
     setIsSubmitting(true);
     try {
-      const result = await submitLeadCapture(leadData);
+      // This button is always the company brochure; the time is filled in again when sent.
+      const result = await submitLeadCapture({
+        ...leadData,
+        source: "brochure_download",
+        timestamp: new Date().toISOString(),
+      });
       if (result.success) {
         // Close modal
         setShowLeadModal(false);
@@ -51,7 +56,7 @@ export default function FixedButtons() {
         alert(result.message);
       }
     } catch (error) {
-      alert('Failed to submit lead. Please try again.');
+      alert(error instanceof Error && error.message ? error.message : 'Failed to submit lead. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

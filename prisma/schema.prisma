@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Neon: pooled connection for app traffic, direct (unpooled) for schema push/migrations
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  section     String   // installation | concept
+  title       String   @default("")
+  titleDe     String   @default("")
+  description String   @default("")
+  altText     String   @default("")
+  category    String   @default("")
+  imageUrl    String
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([section, published, sortOrder])
+  @@index([category])
+}
+
+model Project {
+  id                  String         @id @default(cuid())
+  title               String
+  slug                String         @unique
+  shortDescription    String         @default("")
+  detailedDescription String         @default("")
+  category            String         @default("")
+  location            String         @default("")
+  spaces              String         @default("")
+  spacesDe            String         @default("")
+  instagramUrl        String         @default("")
+  coverImageUrl       String
+  clientId            String?
+  client              Client?        @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  completionYear      Int?
+  featured            Boolean        @default(false)
+  status              String         @default("published") // draft | published | archived
+  sortOrder           Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  images              ProjectImage[]
+  galleryItems        GalleryItem[]
+
+  @@index([status, sortOrder])
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  altText   String  @default("")
+  sortOrder Int     @default(0)
+
+  @@index([projectId, sortOrder])
+}
+
+model Client {
+  id          String    @id @default(cuid())
+  name        String
+  logoUrl     String
+  websiteUrl  String    @default("")
+  description String    @default("")
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+
+  @@index([active, sortOrder])
+}
+
+// Testimonial videos on the Clients page ("Real Stories. Real Satisfaction.").
+// Only the YouTube video id is stored; the embed URL is built in code, so admins can't
+// put arbitrary iframes on the site.
+model Testimonial {
+  id        String   @id @default(cuid())
+  title     String   // client / video name, shown in the admin and as the player's accessible title
+  youtubeId String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+// Brochure / datasheet download form submissions from the public website.
+// Saved before the notification email is sent, so a lead is never lost if email fails.
+model Lead {
+  id              String   @id @default(cuid())
+  name            String
+  contactNumber   String
+  projectName     String
+  projectLocation String
+  source          String   @default("brochure_download") // brochure_download | datasheet_download | contact
+  email           String   @default("") // contact form only
+  message         String   @default("") // contact form only
+  product         String   @default("") // product title, for datasheet requests
+  page            String   @default("") // website page the form was submitted from
+  emailSent       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Uploaded replacements for downloadable PDFs (brochure, product datasheets).
+// `key` is the original file's public path (e.g. /assets/brochure.pdf). With no row, the
+// original bundled file is served; with a row, the uploaded file in Neon storage is served.
+model Document {
+  key       String   @id
+  url       String
+  fileName  String
+  size      Int
+  updatedAt DateTime @updatedAt
+}

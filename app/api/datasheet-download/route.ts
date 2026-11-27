@@ -1,73 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { resolveDocument } from '@/lib/cms/documents';
 
+export const runtime = 'nodejs';
+
+/**
+ * Returns where to download a product datasheet from (the admin's uploaded version, or the
+ * original), for the datasheet URL the product page sends.
+ *
+ * SECURITY: only datasheets listed in the product data resolve. The value comes from the
+ * browser and is never used as a file path (the old version read any file on the server from
+ * a "../" path, including .env and other secrets).
+ * Like the brochure, the file isn't sent through this function: datasheets are 3–7 MB, over
+ * Vercel's 4.5 MB response limit, so the browser downloads them directly.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { leadId, datasheetUrl } = await request.json();
-
     if (!leadId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Lead ID is required'
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'Lead ID is required' }, { status: 400 });
     }
-
-    if (!datasheetUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Datasheet URL is required'
-        },
-        { status: 400 }
-      );
+    const doc = await resolveDocument(datasheetUrl);
+    if (!doc) {
+      return NextResponse.json({ success: false, message: 'Invalid datasheet' }, { status: 400 });
     }
-
-    // Log the download for analytics
-    console.log(`Datasheet download triggered for lead: ${leadId}, file: ${datasheetUrl}`);
-
-    // Path to datasheet file (remove leading slash from datasheetUrl)
-    const datasheetPath = path.join(process.cwd(), 'public', datasheetUrl.replace(/^\//, ''));
-
-    try {
-      // Check if datasheet file exists
-      await fs.access(datasheetPath);
-
-      // Read the file
-      const datasheetBuffer = await fs.readFile(datasheetPath);
-
-      // Extract filename from URL
-      const filename = datasheetUrl.split('/').pop() || 'STELZ-Datasheet.pdf';
-
-      // Return the file as download
-      return new NextResponse(datasheetBuffer, {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${filename}"`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-      });
-    } catch (fileError) {
-      console.error('Datasheet file not found:', fileError);
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Datasheet file not found'
-        },
-        { status: 404 }
-      );
-    }
+    return NextResponse.json({ success: true, url: doc.url, fileName: doc.fileName });
   } catch (error) {
     console.error('Datasheet download API error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error'
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

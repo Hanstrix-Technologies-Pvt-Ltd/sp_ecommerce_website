@@ -85,10 +85,11 @@ export const CONTACT_CONTENT: ContactPageContent = {
       contacts: [
         {
           id: 1,
-          name: "Sudarshan",
+          // Name and email removed at STELZ's request (2026-11-25); only role + phone are shown.
+          name: "",
           role: "Sales Executive",
           phone: "+91 99539 43114",
-          email: "sudarshan@stelzparking.com",
+          email: "",
         },
       ],
     },

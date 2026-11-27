@@ -20,12 +20,12 @@ export const content = {
       "Space Optimization Technology"
     ],
     images: [
-    "/assets/home/Website Images/1.png",
-    "/assets/home/Website Images/2.png", 
-    "/assets/home/Website Images/3.png",
-    "/assets/home/Website Images/4.png",
-    "/assets/home/Website Images/5.png",
-    "/assets/home/Website Images/6.png"
+    "/assets/home/hero/1.webp",
+    "/assets/home/hero/2.webp", 
+    "/assets/home/hero/3.webp",
+    "/assets/home/hero/4.webp",
+    "/assets/home/hero/5.webp",
+    "/assets/home/hero/6.webp"
   ],
     highlights: [
       "DESIGNED FOR BOTH INDOOR AND OUTDOOR CAR PARKING APPLICATIONS",
@@ -82,11 +82,11 @@ export const content = {
   footer: {
     office: {
       title: "Office Address",
-      address: "No. 1955, 2nd Floor, 5th Stage, BEML Layout, Rajarajeshwari Nagar, Bengaluru 560098.",
+      address: "No. 1595, 2nd Floor, Shree Venkateshwara Arcade, 5th Stage, BEML Layout, Raja Rajeshwari Nagar, Bangalore - 560098.",
     },
     factory: {
       title: "Factory Address",
-      address: "Sy. No. 56/2, Mr Rama and Sri.M.Maramkrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
+      address: "Sy. No. 56/2, Mrs Rama and Sri. M. Ramakrishnappa Layout, Kere Road, Dasanapura Hobli, Machohalli Village, Bengaluru 560091.",
     },
     contact: {
       title: "Contact Info",

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import Script from "next/script";
 import PageHeader from "@/app/[locale]/(site)/components/PageHeader";
 import { getRequestLocale } from "@/lib/i18n/locale";
+import { translatePath } from "@/lib/i18n/slugMap";
+import { SITE_URL } from "@/lib/i18n/config";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
 
@@ -15,7 +16,6 @@ async function loadProductsContent(locale: string) {
 }
 
 type Item = { id: number | string; image: string; title: string; link: string };
-const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -44,28 +44,35 @@ export default async function ProductsPage() {
         imageSrc={copy.products.header.background}
       />
 
-      <Script id="ld-products" type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "Products",
-          url: "https://stelzparking.com/products",
-          hasPart: items.map((it) => ({
-            "@type": "Product",
-            name: it.title,
-            url: `https://stelzparking.com/products/${slugify(it.title)}`,
-            image: `https://stelzparking.com${it.image}`,
-            brand: { "@type": "Brand", name: "STELZ" },
-          })),
-        })}
-      </Script>
+      {/* Plain <script> so it is in the server HTML. Product URLs are the real product pages
+          (they used to be invented /products/<title> URLs that returned 404). */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: copy.products.header.title,
+            url: `${SITE_URL}${translatePath("/products", locale)}`,
+            inLanguage: locale,
+            hasPart: items.map((it) => ({
+              "@type": "Product",
+              name: it.title,
+              url: `${SITE_URL}${translatePath(`/portfolios/${it.link}`, locale)}`,
+              image: `${SITE_URL}${it.image}`,
+              brand: { "@type": "Brand", name: "STELZ Multiparking" },
+            })),
+          }),
+        }}
+      />
 
       <main className="flex flex-col bg-white">
         <section className="px-3 py-8 tablet:px-1 tablet:py-26 desktop:px-35">
           <div className="mx-auto max-w-[1500px] px-[5px]">
             <div className="grid grid-cols-1 gap-6 sm:gap-8 tablet:grid-cols-3 laptop:grid-cols-2">
               {items.map((item) => {
-                const href = `/portfolios/${item.link}`;
+                // Localised link (e.g. /de/referenzen/stapel/stack-parkieren on German pages).
+                const href = translatePath(`/portfolios/${item.link}`, locale);
                 return (
                   <article key={item.id} className="group relative overflow-hidden bg-white">
                     <Link href={href} aria-label={`${item.title} image`} className="block">
@@ -83,17 +90,21 @@ export default async function ProductsPage() {
                       </div>
                     </Link>
 
+                    {/* Product name label: always visible on phones/tablets (no hover on touch
+                        screens, so names were never shown there); slides in on hover from laptop up. */}
                     <div
                       className="
                         pointer-events-none absolute left-0 bottom-4
-                        -translate-x-4 opacity-0
+                        translate-x-0 opacity-100
+                        laptop:-translate-x-4 laptop:opacity-0
                         transition-all duration-300 ease-out
-                        group-hover:translate-x-0 group-hover:opacity-100
+                        laptop:group-hover:translate-x-0 laptop:group-hover:opacity-100
+                        laptop:group-focus-within:translate-x-0 laptop:group-focus-within:opacity-100
                       "
                     >
                       <div
                         className="
-                          relative pointer-events-auto inline-flex items-center gap-10
+                          relative pointer-events-auto inline-flex items-center gap-4 tablet:gap-10
                           bg-white p-3
                           shadow-[0_6px_18px_rgba(0,0,0,0.12)]
                         "
@@ -103,7 +114,7 @@ export default async function ProductsPage() {
                         <Link
                           href={href}
                           className="
-                            text-[24px] font-medium leading-none
+                            text-[19px] tablet:text-[24px] font-medium leading-none
                             text-gray-900 hover:text-[#006ddb] focus:text-[#006ddb]
                             focus:outline-none
                           "

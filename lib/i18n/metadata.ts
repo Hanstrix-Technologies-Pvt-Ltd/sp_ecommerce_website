@@ -10,7 +10,22 @@ type BaseMeta = {
   pathname: string;
 };
 
+const BRAND = "STELZ Multiparking";
+
+/**
+ * The root layout's title template appends " | STELZ Multiparking". Many page titles already
+ * end with it (or contain the brand), which produced titles like
+ * "About Us | STELZ Multiparking | Innovative Parking Solutions | STELZ Multiparking" that
+ * Google cuts off. Drop a trailing brand, and if the brand is still in the title use it as-is
+ * (absolute) instead of letting the template add it again.
+ */
+function pageTitle(raw: string): { tag: Metadata["title"]; text: string } {
+  const text = raw.replace(/\s*\|\s*STELZ Multiparking\s*$/i, "").trim();
+  return /stelz/i.test(text) ? { tag: { absolute: text }, text } : { tag: text, text: `${text} | ${BRAND}` };
+}
+
 export function buildLocalizedMetadata(locale: Locale, base: BaseMeta): Metadata {
+  const { tag: titleTag, text: fullTitle } = pageTitle(base.title);
   const canonical = getCanonical(base.pathname, locale);
   const alternates = getHreflangAlternates(base.pathname);
   const normalizedImages = base.images?.map((url) => (url.startsWith("http") ? url : `${SITE_URL}${url}`));
@@ -21,7 +36,7 @@ export function buildLocalizedMetadata(locale: Locale, base: BaseMeta): Metadata
   }));
 
   return {
-    title: base.title,
+    title: titleTag,
     description: base.description,
     keywords: base.keywords ? [...base.keywords] : undefined,
     alternates: {
@@ -29,7 +44,7 @@ export function buildLocalizedMetadata(locale: Locale, base: BaseMeta): Metadata
       languages: alternates,
     },
     openGraph: {
-      title: base.title,
+      title: fullTitle,
       description: base.description,
       url: canonical,
       locale: `${locale}_${LOCALE_META[locale].region}`,
@@ -38,7 +53,7 @@ export function buildLocalizedMetadata(locale: Locale, base: BaseMeta): Metadata
     },
     twitter: {
       card: "summary_large_image",
-      title: base.title,
+      title: fullTitle,
       description: base.description,
       images: normalizedImages,
     },

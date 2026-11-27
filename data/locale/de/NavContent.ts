@@ -82,12 +82,12 @@ export const NAV: NavLink[] = [
 export const content = {
   hero: {
     images: [
-      "/assets/home/Website Images/1.png",
-      "/assets/home/Website Images/2.png", 
-      "/assets/home/Website Images/3.png",
-      "/assets/home/Website Images/4.png",
-      "/assets/home/Website Images/5.png",
-      "/assets/home/Website Images/6.png"
+      "/assets/home/hero/1.webp",
+      "/assets/home/hero/2.webp", 
+      "/assets/home/hero/3.webp",
+      "/assets/home/hero/4.webp",
+      "/assets/home/hero/5.webp",
+      "/assets/home/hero/6.webp"
     ],
     taglines: [
       "Parken für morgen entwickeln",

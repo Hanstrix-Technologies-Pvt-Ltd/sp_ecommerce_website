@@ -136,7 +136,7 @@ export const pageCopy = {
         "mechanical parking",
       ],
       canonical: "/products",
-      ogImage: "/assets/backgrounds/products.webp",
+      ogImage: "/assets/parking_models/3LevelStackParking.webp",
     },
     header: {
       title: "Products",
@@ -185,9 +185,9 @@ export const pageCopy = {
   },
   aboutBlog: {
     metadata: {
-      title: "Why Mechanical Parking Is Becoming Urban Infrastructure | STELZ Multiparking Blog",
+      title: "Why Mechanical Parking Is Becoming Urban Infrastructure | STELZ",
       description:
-        "Discover how mechanical parking systems are transforming urban infrastructure. Learn about space optimization, smart city integration, and the future of urban mobility with STELZ Multiparking.",
+        "How mechanical parking is transforming urban infrastructure: space optimisation, smart city integration and the future of urban mobility, by STELZ Multiparking.",
       keywords: ["mechanical parking", "urban infrastructure", "smart city parking", "automated parking systems", "space optimization", "urban mobility"],
       canonical: "/about/blog",
       ogImage: "/assets/home/Logo.webp",

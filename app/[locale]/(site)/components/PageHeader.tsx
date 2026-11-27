@@ -2,13 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { usePathname } from "next/navigation";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
 
 interface PageHeaderProps {
   title: string;
   breadcrumbLabel: string;
   homeLabel?: string;
   homeHref?: string;
+  /** Screen-reader label for the first breadcrumb link (e.g. "Back to Dashboard" in the admin). */
+  homeAriaLabel?: string;
   locale?: Locale;
   imageSrc?: string;
   heightClass?: string; // e.g. "h-40 tablet:h-52"
@@ -19,13 +22,17 @@ export default function PageHeader({
   breadcrumbLabel,
   homeLabel = "stelzparking.com",
   homeHref,
+  homeAriaLabel = "Go to homepage",
   locale,
   imageSrc = "/assets/pageTemplate/template_top.webp",
   heightClass = "h-27 tablet:h-31",
 }: PageHeaderProps) {
-  const resolvedHomeHref =
-    homeHref ??
-    ((locale && locale !== DEFAULT_LOCALE ? `/${locale}` : "/") || "/");
+  // Most pages don't pass `locale`, so read it from the URL; otherwise the breadcrumb on
+  // German pages linked back to the English home page.
+  const pathname = usePathname();
+  const firstSegment = pathname?.split("/").filter(Boolean)[0];
+  const effectiveLocale: Locale = locale ?? (isLocale(firstSegment) ? firstSegment : DEFAULT_LOCALE);
+  const resolvedHomeHref = homeHref ?? (effectiveLocale !== DEFAULT_LOCALE ? `/${effectiveLocale}` : "/");
   /* =========================
      Single built-in softener
      0–100 (higher = lighter)
@@ -68,7 +75,7 @@ export default function PageHeader({
             <nav aria-label="Breadcrumb" className="text-[15px] tablet:text-[16px]">
               <ol className="flex items-center gap-2 text-[#174b92] font-medium">
                 <li>
-                  <Link href={resolvedHomeHref} className="transition-colors hover:text-[#0C41AA]" aria-label="Go to homepage" prefetch>
+                  <Link href={resolvedHomeHref} className="transition-colors hover:text-[#0C41AA]" aria-label={homeAriaLabel} prefetch>
                     {homeLabel}
                   </Link>
                 </li>

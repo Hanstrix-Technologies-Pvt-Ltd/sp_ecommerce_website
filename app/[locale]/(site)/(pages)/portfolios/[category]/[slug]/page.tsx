@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import ProductBody from "../../components/ProductBody";
 import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
-import { translateSegments } from "@/lib/i18n/slugMap";
-import { isLocale, type Locale } from "@/lib/i18n/config";
+import { translatePath, translateSegments } from "@/lib/i18n/slugMap";
+import { isLocale, SITE_URL, type Locale } from "@/lib/i18n/config";
 
 type Params = { locale: string; category: string; slug: string };
 
@@ -58,13 +58,22 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   });
 }
 
+// Only the product URLs listed below exist. Anything else (wrong category, typo, made-up slug)
+// gets a real 404 status. Without this the page showed "not found" text but answered 200,
+// which search engines treat as a "soft 404" and may index.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   const locales: Locale[] = ["en", "de"];
   return import("@/data/locale/en/Products").then((m) =>
     locales.flatMap((locale) =>
-      m.allProductParams().map(({ category, slug }) => {
+      m.allProductParams().flatMap(({ category, slug }) => {
         const [cat, translatedSlug] = translateSegments([category, slug], "en", locale);
-        return { locale, category: cat, slug: translatedSlug };
+        const localized = { locale, category: cat, slug: translatedSlug };
+        // proxy.ts rewrites German URLs to the English segment shape before routing
+        // (/de/referenzen/stapel/... -> /de/portfolios/stack/...), so list that form too.
+        const base = { locale, category, slug };
+        return localized.category === category && localized.slug === slug ? [base] : [localized, base];
       })
     )
   );
@@ -90,30 +99,28 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
           : null);
   if (!product) notFound();
 
+  // Structured data uses this page's real (localised) URLs. The old breadcrumb pointed to
+  // /products/<category>, which doesn't exist, and German pages used English URLs/labels.
+  const SITE = SITE_URL;
+  const pageUrl = `${SITE}${translatePath(`/portfolios/${baseCategory}/${baseSlug}`, locale)}`;
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
     description: product.summary,
     brand: { "@type": "Brand", name: "STELZ Multiparking" },
-    url: `https://stelzparking.com${product.path}`,
-    image: `https://stelzparking.com${product.hero.src}`,
-    offers: { "@type": "AggregateOffer", availability: "https://schema.org/InStock", priceCurrency: "INR" },
+    url: pageUrl,
+    image: `${SITE}${product.hero.src}`,
+    inLanguage: locale,
   };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://stelzparking.com" },
-      { "@type": "ListItem", position: 2, name: "Products", item: "https://stelzparking.com/products" },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: product.category.charAt(0).toUpperCase() + product.category.slice(1),
-        item: `https://stelzparking.com/products/${product.category}`,
-      },
-      { "@type": "ListItem", position: 4, name: product.title, item: `https://stelzparking.com${product.path}` },
+      { "@type": "ListItem", position: 1, name: locale === "de" ? "Startseite" : "Home", item: `${SITE}${translatePath("/", locale)}` },
+      { "@type": "ListItem", position: 2, name: locale === "de" ? "Produkte" : "Products", item: `${SITE}${translatePath("/products", locale)}` },
+      { "@type": "ListItem", position: 3, name: product.title, item: pageUrl },
     ],
   };
 

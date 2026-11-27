@@ -8,11 +8,13 @@ import Footer from "@/components/layout/Footer";
 import FixedButtons from "@/components/common/FixedButtons";
 import CustomCursor from "@/components/common/CustomCursor";
 import ScrollRestore from "@/components/common/ScrollRestore";
+import NavigationProgress from "@/components/common/NavigationProgress";
 import AnalyticsConsent from "@/components/common/AnalyticsConsent";
 import { NetworkClassProvider } from "@/components/common/NetworkClassProvider";
 import { Poppins } from "next/font/google";
 import { viewport as seoViewport } from "@/lib/seo";
 import { getNetworkDetectionScript } from "@/lib/network-aware";
+import { headers } from "next/headers";
 import { getRequestLocale, getHreflangAlternates, getCanonical } from "@/lib/i18n/locale";
 import { LOCALE_META, SITE_URL, type Locale } from "@/lib/i18n/config";
 import { getFooterContent, getNavContent } from "@/lib/i18n/content";
@@ -133,7 +135,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  console.log("\n\n\n\ngaId", gaId, "\n\n\n\n");
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-pathname") || "";
+  const isAdmin = pathname.startsWith("/admin");
+
   const locale: Locale = await getRequestLocale();
   const [navModule, footerModule] = await Promise.all([
     getNavContent(locale),
@@ -141,6 +146,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   ]);
   const navItems = navModule.NAV as NavLink[];
   const footerContent = footerModule.content;
+
+  if (isAdmin) {
+    return (
+      <html lang="en" className={poppins.variable}>
+        <body className="bg-[#f4f6f9] text-neutral-900 font-sans antialiased">{children}</body>
+      </html>
+    );
+  }
 
   return (
     <html lang={locale} className={poppins.variable}>
@@ -188,11 +201,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               url: SITE_URL,
               logo: {
                 "@type": "ImageObject",
-                url: `${SITE_URL}/assets/Logo.webp`,
+                url: `${SITE_URL}/assets/home/Logo.webp`,
                 width: 250,
                 height: 250,
               },
-              image: `${SITE_URL}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/home/Logo.webp`,
               description: footerContent.meta.description,
               slogan: "Engineering Tomorrow's Parking",
               address: {
@@ -221,8 +234,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               foundingDate: "2020",
               geo: {
                 "@type": "GeoCoordinates",
-                latitude: "13.1939",
-                longitude: "77.6245",
+                latitude: "12.9084", // head office, BEML Layout 5th Stage (was Yelahanka, ~30 km off)
+                longitude: "77.5209",
               },
               areaServed: {
                 "@type": "Country",
@@ -251,7 +264,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               name: "STELZ Multiparking",
               url: SITE_URL,
               description: footerContent.meta.description,
-              image: `${SITE_URL}/assets/Logo.webp`,
+              image: `${SITE_URL}/assets/home/Logo.webp`,
             }),
           }}
         />
@@ -259,6 +272,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
       <body className="bg-white text-neutral-900 font-sans">
         <NetworkClassProvider />
+        <NavigationProgress />
         <CustomCursor />
         <Navbar locale={locale} nav={navItems} />
         {children}

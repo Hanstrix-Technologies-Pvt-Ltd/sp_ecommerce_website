@@ -25,9 +25,10 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
     <section className="bg-white pb-15 pt-25">
       <div className="mx-auto max-w-8xl px-5 laptop:px-12">
         {/* Page title */}
-        <h1 className="text-center text-[40px] tablet:text-[52px] font-medium text-[#1F1F1F]">
+        {/* h2: the page banner already holds the page's single <h1> ("Contact Us"). */}
+        <h2 className="text-center text-[40px] tablet:text-[52px] font-medium text-[#1F1F1F]">
           {pageTitle}
-        </h1>
+        </h2>
 
         {/* Desktop Tabs */}
         <div className="mt-6 hidden justify-center tablet:flex">
@@ -93,7 +94,9 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
                       opacity: isActive ? 1 : 0,
                     }}
                   >
-                    <div className="flex flex-col items-center gap-12 px-8 py-4">
+                    {/* items-start: one shared left edge. items-center centred each card by its own
+                        width, so the cards stepped further right one after another. */}
+                    <div className="flex flex-col items-start gap-10 px-6 py-5">
                       {tab.contacts.map((person) => (
                         <ContactCard key={person.id} person={person} />
                       ))}
@@ -119,9 +122,8 @@ export default function ContactDetails({ content }: { content: ContactContentTyp
 function ContactCard({ person }: { person: ContactPerson }) {
   return (
     <div className="space-y-2 text-[17px] leading-relaxed">
-      <p className="font-bold text-[#616161]">
-        {person.name}
-      </p>
+      {/* Name and email are optional: a contact can be listed by role + phone only. */}
+      {person.name && <p className="font-bold text-[#616161]">{person.name}</p>}
       <p className="text-[17px] text-[#616161]">{person.role}</p>
 
       <div className="mt-2 space-y-1 text-[13px]">
@@ -143,6 +145,7 @@ function ContactCard({ person }: { person: ContactPerson }) {
         </div>
 
         {/* Email */}
+        {person.email && (
         <div className="flex items-center gap-2">
           <Image
             src="/assets/contact/mail.svg"
@@ -158,6 +161,7 @@ function ContactCard({ person }: { person: ContactPerson }) {
             {person.email}
           </a>
         </div>
+        )}
       </div>
     </div>
   );

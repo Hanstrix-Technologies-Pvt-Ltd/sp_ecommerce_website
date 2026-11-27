@@ -137,7 +137,7 @@ const footer = (siteUrl?: string) => {
     <tr>
       <td style="padding:0 18px 4px;text-align:center;background:${baseStyles.cardBg};">
         <div style="font-size:12px;line-height:1.6;color:${baseStyles.subtext};">
-          2nd Floor, No. 1595, Opp. Rajsri Apartments, BEML Layout, Rajarajeshwari Nagar, Bengaluru, Karnataka 560098
+          No. 1595, 2nd Floor, Shree Venkateshwara Arcade, 5th Stage, BEML Layout, Raja Rajeshwari Nagar, Bangalore - 560098
         </div>
       </td>
     </tr>

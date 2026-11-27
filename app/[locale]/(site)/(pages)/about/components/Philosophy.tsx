@@ -60,7 +60,9 @@ export default function AboutPhilosophy({ content }: { content: PhilosophyConten
     <section className={`relative bg-white ${spaceGrotesk.className}`}>
       {/* —— Responsive background with white gutters on xl+ —— */}
       <div className="relative mx-0 desktop:mx-16 wide:mx-24">
-        <div className="laptop:-mx-3 desktop:-mx-4">
+        {/* Negative margin only once the parent has side margins (desktop+); at laptop widths
+            the parent is edge-to-edge, so -mx-3 pushed the section 12px past the screen. */}
+        <div className="desktop:-mx-4">
           <div
             className="relative w-full bg-no-repeat"
             style={{

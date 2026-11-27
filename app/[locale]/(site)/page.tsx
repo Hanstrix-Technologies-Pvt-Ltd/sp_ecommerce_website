@@ -8,12 +8,16 @@ import { buildLocalizedMetadata } from "@/lib/i18n/metadata";
 import { SITE_URL } from "@/lib/i18n/config";
 import { getFooterContent } from "@/lib/i18n/content";
 import { getPageCopy } from "@/lib/i18n/pageCopy";
+import { getPublicProjects } from "@/lib/cms/public";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  // German home page gets the German title/description (it used to show the English ones).
+  const meta = locale === "de" ? (await getFooterContent(locale)).content.meta : null;
   return buildLocalizedMetadata(locale, {
-    title: "STELZ Multiparking | Innovative Automated Parking Solutions",
+    title: meta?.title ?? "STELZ Multiparking | Innovative Automated Parking Solutions",
     description:
+      meta?.description ??
       "Discover STELZ Multiparking's cutting-edge automated parking systems. Engineering tomorrow's smart parking solutions for modern cities.",
     keywords: [
       "automated parking",
@@ -29,10 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const locale = await getRequestLocale();
-  const [footerModule, copy] = await Promise.all([getFooterContent(locale), getPageCopy(locale)]);
+  const [footerModule, copy, projects] = await Promise.all([
+    getFooterContent(locale),
+    getPageCopy(locale),
+    getPublicProjects(locale),
+  ]);
   const footerContent = footerModule.content;
   const heroContent = footerContent?.hero ?? { taglines: [], images: [], highlights: [] };
-  const footprintContent = footerContent?.footprint ?? { projects: [] };
   const modelItems = (footerContent.models.items as ModelItem[]) ?? [];
 
   return (
@@ -41,7 +48,7 @@ export default async function Home() {
       <FootprintCarousel
         content={{
           title: copy.home.footprint.title,
-          projects: footprintContent.projects ?? [],
+          projects,
           labels: {
             carSpaces: copy.home.footprint.carSpaces,
             location: copy.home.footprint.location,

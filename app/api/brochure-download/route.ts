@@ -1,60 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { BROCHURE_KEY, resolveDocument } from '@/lib/cms/documents';
 
+export const runtime = 'nodejs';
+
+/**
+ * Returns where to download the brochure from (the admin's uploaded version, or the original).
+ *
+ * The file itself is no longer sent through this function: the brochure is ~17 MB and Vercel
+ * functions can't return more than 4.5 MB, so the browser downloads it directly instead.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { leadId } = await request.json();
-
     if (!leadId) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Lead ID is required' 
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'Lead ID is required' }, { status: 400 });
     }
-
-    // Log the download for analytics
-    console.log(`Brochure download triggered for lead: ${leadId}`);
-
-    // Path to brochure file
-    const brochurePath = path.join(process.cwd(), 'public', 'assets', 'brochure.pdf');
-
-    try {
-      // Check if brochure file exists
-      await fs.access(brochurePath);
-      
-      // Read the file
-      const brochureBuffer = await fs.readFile(brochurePath);
-      
-      // Return the file as download
-      return new NextResponse(brochureBuffer, {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="STELZ-Multiparking-Brochure.pdf"`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-      });
-    } catch (fileError) {
-      console.error('Brochure file not found:', fileError);
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Brochure file not found' 
-        },
-        { status: 404 }
-      );
-    }
+    const doc = await resolveDocument(BROCHURE_KEY);
+    return NextResponse.json({ success: true, url: doc!.url, fileName: doc!.fileName });
   } catch (error) {
     console.error('Brochure download API error:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

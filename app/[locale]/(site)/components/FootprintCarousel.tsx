@@ -117,7 +117,8 @@ export default function FootprintCarousel({ content }: { content: FootprintConte
                         group-hover:-translate-y-2
                       "
                     >
-                      <h3 className="text-[14px] font-semibold text-[#1F1F1F] line-clamp-2">{project.name}</h3>
+                      {/* pr-8 keeps long names clear of the Instagram icon in the top-right corner */}
+                      <h3 className={`text-[14px] font-semibold text-[#1F1F1F] line-clamp-2 ${project.instagram ? "pr-8" : ""}`}>{project.name}</h3>
                       <div className="mt-2 text-[13px] leading-6">
                         {project.spaces ? (
                           <p className="text-[#616161]">

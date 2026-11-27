@@ -264,7 +264,7 @@ export function generateLocalBusinessSchema() {
     "@type": "LocalBusiness",
     "@id": baseUrl,
     name: "STELZ MULTIPARKING PVT LTD",
-    image: `${baseUrl}/assets/Logo.webp`,
+    image: `${baseUrl}/assets/home/Logo.webp`,
     url: baseUrl,
     telephone: content.footer.contact.phone,
     address: {
@@ -277,8 +277,8 @@ export function generateLocalBusinessSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: "13.1939",
-      longitude: "77.6245",
+      latitude: "12.9084", // head office, BEML Layout 5th Stage (was Yelahanka, ~30 km off)
+      longitude: "77.5209",
     },
     sameAs: [
       content.footer.contact.socials.linkedin,
@@ -301,7 +301,7 @@ export function generateWebsiteSchema() {
     url: baseUrl,
     description:
       "Innovative automated parking solutions for modern urban spaces",
-    image: `${baseUrl}/assets/Logo.webp`,
+    image: `${baseUrl}/assets/home/Logo.webp`,
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -326,11 +326,11 @@ export function generateEnhancedOrganizationSchema() {
     url: baseUrl,
     logo: {
       "@type": "ImageObject",
-      url: `${baseUrl}/assets/Logo.webp`,
+      url: `${baseUrl}/assets/home/Logo.webp`,
       width: 250,
       height: 250,
     },
-    image: `${baseUrl}/assets/Logo.webp`,
+    image: `${baseUrl}/assets/home/Logo.webp`,
     description:
       "Leading provider of innovative automated parking solutions in India",
     slogan: "Engineering Tomorrow's Parking",
